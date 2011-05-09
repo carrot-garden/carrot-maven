@@ -10,26 +10,18 @@
 	</parent>
 
 	<artifactId>carrot-maven-osgi-plugin-test</artifactId>
-	<packaging>bundle</packaging>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>carrot-maven-osgi-plugin-test-1</module>
+	</modules>
 
 	<dependencies>
 
 		<dependency>
 			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.configadmin</artifactId>
-			<version>1.2.8</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.scr</artifactId>
-			<version>1.6.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.eventadmin</artifactId>
-			<version>1.2.10</version>
+			<artifactId>org.apache.felix.framework</artifactId>
+			<version>3.2.1</version>
 		</dependency>
 
 	</dependencies>

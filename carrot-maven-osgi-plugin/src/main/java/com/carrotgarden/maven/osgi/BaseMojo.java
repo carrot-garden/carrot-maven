@@ -137,7 +137,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
 		} else {
 
-			getLog().warn(tab + "checking non-bundle: " + project.getId());
+			getLog().warn(tab + "check non-bundle: " + project.getId());
 
 		}
 
@@ -182,10 +182,10 @@ public abstract class BaseMojo extends AbstractMojo {
 	 */
 	protected void provisionBundle(Artifact bundle, String tab) {
 
-		if ("pom".equals(bundle.getType())) {
-			getLog().warn(tab + "skipping pom : " + bundle);
-			return;
-		}
+		// if ("pom".equals(bundle.getType())) {
+		// getLog().warn(tab + "skipping pom : " + bundle);
+		// return;
+		// }
 
 		/*
 		 * force download here, as next check tries to avoid downloading where
