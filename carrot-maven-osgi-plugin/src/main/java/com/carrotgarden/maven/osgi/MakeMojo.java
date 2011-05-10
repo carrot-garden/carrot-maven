@@ -26,8 +26,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.installer.ArtifactInstallationException;
@@ -134,7 +136,7 @@ public class MakeMojo extends BaseMojo {
 	@Override
 	public void execute() throws MojoExecutionException {
 
-		bundleIdList = new ArrayList<String>();
+		bundleIdSet = new HashSet<String>();
 
 		// if (deployPoms != null) {
 		// addAdditionalPoms();
@@ -228,7 +230,7 @@ public class MakeMojo extends BaseMojo {
 	 */
 	private void deployBundles() throws MojoExecutionException {
 
-		if (bundleIdList.size() == 0) {
+		if (bundleIdSet.size() == 0) {
 			getLog().info("~~~~~~~~~~~~~~~~~~~");
 			getLog().info(" No bundles found! ");
 			getLog().info("~~~~~~~~~~~~~~~~~~~");
@@ -236,9 +238,9 @@ public class MakeMojo extends BaseMojo {
 
 		List<Dependency> bundles = resolveProvisionedBundles();
 
-		// MavenProject deployProject = createDeploymentProject(bundles);
+		MavenProject deployProject = createDeploymentProject(bundles);
 
-		// installDeploymentPom(deployProject);
+		installDeploymentPom(deployProject);
 
 		// if (!deploy) {
 		if (1 == 1) {
@@ -268,29 +270,29 @@ public class MakeMojo extends BaseMojo {
 			delim = ",";
 		}
 
-		// if (PomUtils.needReleaseVersion(runner)) {
-		// // find the latest release of Pax-Runner by querying the local and
-		// // remote repos...
-		// Artifact runnerProject = m_factory.createProjectArtifact(
-		// PAX_RUNNER_GROUP, PAX_RUNNER_ARTIFACT, runner);
-		// runner = PomUtils.getReleaseVersion(runnerProject, m_source,
-		// m_remoteRepos, m_localRepo, null);
-		// }
+		if (PomUtils.needReleaseVersion(runner)) {
+			// find the latest release of Pax-Runner by querying the local and
+			// remote repos...
+			Artifact runnerProject = m_factory.createProjectArtifact(
+					PAX_RUNNER_GROUP, PAX_RUNNER_ARTIFACT, runner);
+			runner = PomUtils.getReleaseVersion(runnerProject, m_source,
+					m_remoteRepos, m_localRepo, null);
+		}
 
 		/*
 		 * Dynamically load the correct Pax-Runner code
 		 */
-		// Pattern classicVersion = Pattern.compile("0\\.[1-4]\\.\\d");
-		// if (classicVersion.matcher(runner).matches()) {
-		// Class clazz = loadRunnerClass("org.ops4j.pax", "runner",
-		// PAX_RUNNER_METHOD, false);
-		// deployRunnerClassic(clazz, deployProject,
-		// repoListBuilder.toString());
-		// } else {
-		// Class clazz = loadRunnerClass(PAX_RUNNER_GROUP,
-		// PAX_RUNNER_ARTIFACT, PAX_RUNNER_METHOD, true);
-		// deployRunnerNG(clazz, deployProject, repoListBuilder.toString());
-		// }
+		Pattern classicVersion = Pattern.compile("0\\.[1-4]\\.\\d");
+		if (classicVersion.matcher(runner).matches()) {
+			Class clazz = loadRunnerClass("org.ops4j.pax", "runner",
+					PAX_RUNNER_METHOD, false);
+			deployRunnerClassic(clazz, deployProject,
+					repoListBuilder.toString());
+		} else {
+			Class clazz = loadRunnerClass(PAX_RUNNER_GROUP,
+					PAX_RUNNER_ARTIFACT, PAX_RUNNER_METHOD, true);
+			deployRunnerNG(clazz, deployProject, repoListBuilder.toString());
+		}
 
 	}
 
@@ -340,7 +342,7 @@ public class MakeMojo extends BaseMojo {
 
 		List<Dependency> dependencies = new ArrayList<Dependency>();
 
-		for (String id : bundleIdList) {
+		for (String id : bundleIdSet) {
 
 			String[] fields = id.split(":");
 
@@ -368,7 +370,7 @@ public class MakeMojo extends BaseMojo {
 	 * @return deployment project
 	 * @throws MojoExecutionException
 	 */
-	private MavenProject createDeploymentProject(List bundles)
+	private MavenProject createDeploymentProject(List<Dependency> bundles)
 			throws MojoExecutionException {
 		MavenProject deployProject;
 

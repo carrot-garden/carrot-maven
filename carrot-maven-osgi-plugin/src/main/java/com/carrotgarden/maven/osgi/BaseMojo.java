@@ -26,7 +26,7 @@ public abstract class BaseMojo extends AbstractMojo {
 	/**
 	 * Accumulated set of bundles to be deployed
 	 */
-	protected List<String> bundleIdList;
+	protected Set<String> bundleIdSet;
 	/**
 	 * Component for resolving Maven metadata
 	 * 
@@ -209,8 +209,7 @@ public abstract class BaseMojo extends AbstractMojo {
 			String id = bundle.getGroupId() + ':' + bundle.getArtifactId()
 					+ ':' + version + ':' + bundle.getType();
 
-			if (!bundleIdList.contains(id)) {
-				bundleIdList.add(id);
+			if (bundleIdSet.add(id)) {
 				getLog().warn(tab + "using bundle : " + bundle);
 			}
 

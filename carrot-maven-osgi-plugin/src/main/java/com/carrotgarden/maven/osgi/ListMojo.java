@@ -1,6 +1,6 @@
 package com.carrotgarden.maven.osgi;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,7 +31,7 @@ public class ListMojo extends BaseMojo {
 
 		try {
 
-			bundleIdList = new ArrayList<String>();
+			bundleIdSet = new HashSet<String>();
 
 			// for (final MavenProject project : reactorProjects) {
 			// getLog().info("project : " + project);
