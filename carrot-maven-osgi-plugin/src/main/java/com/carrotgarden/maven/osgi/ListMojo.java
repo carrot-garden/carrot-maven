@@ -9,7 +9,7 @@ import org.apache.maven.project.MavenProject;
 /**
  * 
  * @goal list
- * @aggregator true
+ * @aggregator false
  * 
  * @requiresProject true
  * @requiresDependencyResolution test
