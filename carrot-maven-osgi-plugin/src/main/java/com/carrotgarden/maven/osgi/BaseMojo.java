@@ -23,6 +23,8 @@ public abstract class BaseMojo extends AbstractMojo {
 
 	protected final static String TAB = "\t";
 
+	protected static Object mark = new Object();
+
 	/**
 	 * Accumulated set of bundles to be deployed
 	 */

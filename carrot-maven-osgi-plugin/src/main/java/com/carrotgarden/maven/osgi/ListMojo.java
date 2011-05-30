@@ -1,10 +1,8 @@
 package com.carrotgarden.maven.osgi;
 
 import java.util.HashSet;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 
 /**
  * 
@@ -18,16 +16,24 @@ import org.apache.maven.project.MavenProject;
 public class ListMojo extends BaseMojo {
 
 	/**
-	 * The current Maven reactor.
 	 * 
-	 * @parameter expression="${reactorProjects}"
-	 * @required
-	 * @readonly
+	 * @parameter
 	 */
-	private List<MavenProject> reactorProjects;
+	private boolean isDescriptor;
+
+	/**
+	 * 
+	 * @parameter
+	 */
+	private boolean isPublicator;
 
 	@Override
 	public void execute() throws MojoExecutionException {
+
+		getLog().info("### mark=" + mark);
+		getLog().info("### isExecutionRoot=" + m_project.isExecutionRoot());
+		getLog().info("### isDescriptor=" + isDescriptor);
+		getLog().info("### isPublicator=" + isPublicator);
 
 		try {
 

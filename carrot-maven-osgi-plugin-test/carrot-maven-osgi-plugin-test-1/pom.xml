@@ -34,6 +34,10 @@
 
 	</dependencies>
 
+	<properties>
+		<isDescriptor>true</isDescriptor>
+	</properties>
+
 	<build>
 
 	</build>
