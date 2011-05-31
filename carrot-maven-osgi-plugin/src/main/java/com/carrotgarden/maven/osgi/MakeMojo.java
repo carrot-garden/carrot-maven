@@ -282,6 +282,6 @@ public class MakeMojo extends BaseMojo {
 	 * @parameter
 	 * @required
 	 */
-	protected List<ArtifactScope> includeScopeList;
+	protected List<String> includeScopeList;
 
 }

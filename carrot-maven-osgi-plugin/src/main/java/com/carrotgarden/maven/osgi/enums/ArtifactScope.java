@@ -30,11 +30,11 @@ public enum ArtifactScope {
 		this.code = code;
 	}
 
-	public static boolean isIncluded(List<ArtifactScope> includeScopeList,
+	public static boolean isIncluded(List<String> includeScopeList,
 			Artifact artifact) {
 
-		for (ArtifactScope scope : includeScopeList) {
-			if (scope.code.equalsIgnoreCase(artifact.getScope())) {
+		for (String scope : includeScopeList) {
+			if (scope.equalsIgnoreCase(artifact.getScope())) {
 				return true;
 			}
 		}
