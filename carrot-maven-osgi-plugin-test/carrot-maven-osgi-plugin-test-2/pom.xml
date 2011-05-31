@@ -10,9 +10,23 @@
 	</parent>
 
 	<artifactId>carrot-maven-osgi-plugin-test-2</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
+
+	<properties>
+		<projectFunction>FEATURE</projectFunction>
+		<featureName>osgi-extra</featureName>
+		<featureVersion>2</featureVersion>
+		<featureStartLevel>20</featureStartLevel>
+	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.felix</groupId>
+			<artifactId>org.apache.felix.scr</artifactId>
+			<version>1.4.0</version>
+			<type>bundle</type>
+		</dependency>
 
 		<dependency>
 			<groupId>org.ops4j.pax.web</groupId>
@@ -22,9 +36,5 @@
 		</dependency>
 
 	</dependencies>
-
-	<build>
-
-	</build>
 
 </project>

@@ -10,7 +10,14 @@
 	</parent>
 
 	<artifactId>carrot-maven-osgi-plugin-test-1</artifactId>
-	<packaging>bundle</packaging>
+	<packaging>pom</packaging>
+
+	<properties>
+		<projectFunction>FEATURE</projectFunction>
+		<featureName>osgi-core</featureName>
+		<featureVersion>1</featureVersion>
+		<featureStartLevel>10</featureStartLevel>
+	</properties>
 
 	<dependencies>
 
@@ -18,28 +25,30 @@
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.configadmin</artifactId>
 			<version>1.2.8</version>
+			<type>bundle</type>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.scr</artifactId>
 			<version>1.6.0</version>
+			<type>bundle</type>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.felix</groupId>
 			<artifactId>org.apache.felix.eventadmin</artifactId>
-			<version>1.2.10</version>
+			<version>1.2.12</version>
+			<type>bundle</type>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ops4j.pax.web</groupId>
+			<artifactId>pax-web-jetty-bundle</artifactId>
+			<version>1.0.3</version>
+			<type>bundle</type>
 		</dependency>
 
 	</dependencies>
-
-	<properties>
-		<isDescriptor>true</isDescriptor>
-	</properties>
-
-	<build>
-
-	</build>
 
 </project>

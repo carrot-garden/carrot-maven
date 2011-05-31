@@ -1,6 +1,7 @@
 package com.carrotgarden.maven.osgi;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,19 +17,116 @@ import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.zip.ZipArchiver;
 import org.ops4j.pax.construct.util.PomUtils;
 
 public abstract class BaseMojo extends AbstractMojo {
 
 	protected final static String TAB = "\t";
 
-	protected static Object mark = new Object();
+	/**
+	 * Accumulated set of bundles
+	 */
+	protected final static Set<Artifact> BUNDLES = new HashSet<Artifact>();
+
+	// #######################################
 
 	/**
-	 * Accumulated set of bundles to be deployed
 	 */
-	protected Set<String> bundleIdSet;
+	protected void addProjectBundles(MavenProject project, String tab) {
+
+		if (PomUtils.isBundleProject(//
+				project, m_resolver, m_remoteRepos, m_localRepo, true)) {
+
+			getLog().warn(tab + "found bundle : " + project.getId());
+
+			provisionBundle(project.getArtifact(), tab);
+
+		} else {
+
+			getLog().warn(tab + "check non-bundle: " + project.getId());
+
+		}
+
+		addProjectDependencies(project, tab + TAB);
+
+	}
+
+	/**
+	 */
+	protected void addProjectDependencies(MavenProject project, String tab) {
+
+		// getLog().warn("addProjectDependencies : " + project);
+
+		@SuppressWarnings("unchecked")
+		Set<Artifact> artifacts = project.getArtifacts();
+
+		// getLog().warn("artifacts.size : " + artifacts.size());
+
+		for (Artifact artifact : artifacts) {
+
+			if (artifact.isOptional()) {
+				continue;
+			}
+
+			if (Artifact.SCOPE_TEST.equals(artifact.getScope())) {
+				continue;
+			}
+
+			provisionBundle(artifact, tab);
+
+		}
+
+	}
+
+	/**
+	 */
+	protected void provisionBundle(Artifact bundle, String tab) {
+
+		// if ("pom".equals(bundle.getType())) {
+		// getLog().warn(tab + "skipping pom : " + bundle);
+		// return;
+		// }
+
+		/*
+		 * force download here, as next check tries to avoid downloading where
+		 * possible
+		 */
+
+		if (!PomUtils.downloadFile(bundle, m_resolver, m_remoteRepos,
+				m_localRepo)) {
+
+			getLog().warn(tab + "skipping missing : " + bundle);
+
+			return;
+
+		}
+
+		if (PomUtils.isBundleArtifact(bundle, m_resolver, m_remoteRepos,
+				m_localRepo, true)) {
+
+			String version = PomUtils.getMetaVersion(bundle);
+
+			String id = bundle.getGroupId() + ':' + bundle.getArtifactId()
+					+ ':' + version + ':' + bundle.getType();
+
+			if (BUNDLES.add(bundle)) {
+				getLog().warn(tab + "using bundle : " + bundle);
+			}
+
+		} else {
+
+			getLog().debug(tab + "skipping non-bundle : " + bundle);
+
+		}
+
+	}
+
+	// #######################################
+
 	/**
 	 * Component for resolving Maven metadata
 	 * 
@@ -119,108 +217,22 @@ public abstract class BaseMojo extends AbstractMojo {
 	protected Method m_getMirrorRepository;
 
 	/**
-	 * Adds project artifact (if it's a bundle) to the deploy list as well as
-	 * any non-optional bundle dependencies
+	 * The Zip archiver.
 	 * 
-	 * @param project
-	 *            a Maven project
-	 * @param checkDependencies
-	 *            when true, check project dependencies for other bundles to
-	 *            provision
+	 * @component role="org.codehaus.plexus.archiver.Archiver" roleHint="zip"
 	 */
-	protected void addProjectBundles(MavenProject project, String tab) {
-
-		if (PomUtils.isBundleProject(//
-				project, m_resolver, m_remoteRepos, m_localRepo, true)) {
-
-			getLog().warn(tab + "found bundle : " + project.getId());
-
-			provisionBundle(project.getArtifact(), tab);
-
-		} else {
-
-			getLog().warn(tab + "check non-bundle: " + project.getId());
-
-		}
-
-		addProjectDependencies(project, tab + TAB);
-
-	}
+	protected ZipArchiver m_zipArchiver;
 
 	/**
-	 * Adds any non-optional bundle dependencies to the deploy list
+	 * Maven ProjectHelper.
 	 * 
-	 * @param project
-	 *            a Maven project
+	 * @component
 	 */
-	protected void addProjectDependencies(MavenProject project, String tab) {
-
-		// getLog().warn("addProjectDependencies : " + project);
-
-		@SuppressWarnings("unchecked")
-		Set<Artifact> artifacts = project.getArtifacts();
-
-		// getLog().warn("artifacts.size : " + artifacts.size());
-
-		for (Artifact artifact : artifacts) {
-
-			if (artifact.isOptional()) {
-				continue;
-			}
-
-			if (Artifact.SCOPE_TEST.equals(artifact.getScope())) {
-				continue;
-			}
-
-			provisionBundle(artifact, tab);
-
-		}
-
-	}
+	protected MavenProjectHelper m_projectHelper;
 
 	/**
-	 * @param bundle
-	 *            potential bundle artifact
+	 * @component
 	 */
-	protected void provisionBundle(Artifact bundle, String tab) {
-
-		// if ("pom".equals(bundle.getType())) {
-		// getLog().warn(tab + "skipping pom : " + bundle);
-		// return;
-		// }
-
-		/*
-		 * force download here, as next check tries to avoid downloading where
-		 * possible
-		 */
-
-		if (!PomUtils.downloadFile(bundle, m_resolver, m_remoteRepos,
-				m_localRepo)) {
-
-			getLog().warn(tab + "skipping missing : " + bundle);
-
-			return;
-
-		}
-
-		if (PomUtils.isBundleArtifact(bundle, m_resolver, m_remoteRepos,
-				m_localRepo, true)) {
-
-			String version = PomUtils.getMetaVersion(bundle);
-
-			String id = bundle.getGroupId() + ':' + bundle.getArtifactId()
-					+ ':' + version + ':' + bundle.getType();
-
-			if (bundleIdSet.add(id)) {
-				getLog().warn(tab + "using bundle : " + bundle);
-			}
-
-		} else {
-
-			getLog().debug(tab + "skipping non-bundle : " + bundle);
-
-		}
-
-	}
+	protected ArchiverManager m_archiverManager;
 
 }

@@ -10,13 +10,45 @@
 	</parent>
 
 	<artifactId>carrot-maven-osgi-plugin-test-3</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<properties>
-		<isPublicator>true</isPublicator>
+
+		<projectFunction>REPOSITORY</projectFunction>
+
+		<tomcatContext>carrotgarden-repository</tomcatContext>
+		<tomcatWarFile>${repositoryBuildFolder}/${repositoryBuildFile}</tomcatWarFile>
+
 	</properties>
 
 	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>tomcat-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<id>deploy</id>
+						<phase>package</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+						<configuration>
+							<server>carrotgarden-tomcat-server</server>
+							<url>http://www.carrotgarden.com:8080/manager/text</url>
+							<path>/${tomcatContext}</path>
+							<warFile>${tomcatWarFile}</warFile>
+							<ignorePackaging>true</ignorePackaging>
+							<update>true</update>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
 
 	</build>
 

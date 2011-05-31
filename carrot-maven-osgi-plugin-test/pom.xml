@@ -18,52 +18,65 @@
 		<module>carrot-maven-osgi-plugin-test-3</module>
 	</modules>
 
-	<dependencies>
+	<properties>
 
-		<dependency>
-			<groupId>org.apache.felix</groupId>
-			<artifactId>org.apache.felix.framework</artifactId>
-			<version>3.2.1</version>
-		</dependency>
+		<projectFunction>NONE</projectFunction>
 
-	</dependencies>
+		<featureName>${project.artifactId}</featureName>
+		<featureVersion>${project.version}</featureVersion>
+		<featureStartLevel>100</featureStartLevel>
 
+		<repositoryURL>http://www.carrotgarden.com:8080/carrotgarden-repository</repositoryURL>
+		<repositoryIndex>repository.json</repositoryIndex>
+
+		<repositoryBuildFolder>${project.build.directory}</repositoryBuildFolder>
+		<repositoryBuildFile>repository.zip</repositoryBuildFile>
+
+	</properties>
 
 	<build>
 
 		<plugins>
 
 			<plugin>
+
 				<groupId>${project.parent.groupId}</groupId>
 				<artifactId>carrot-maven-osgi-plugin</artifactId>
 				<version>${project.parent.version}</version>
+
 				<configuration>
-					<isDescriptor>${isDescriptor}</isDescriptor>
-					<isPublicator>${isPublicator}</isPublicator>
+
+					<projectFunction>${projectFunction}</projectFunction>
+
+					<repositoryURL>${repositoryURL}</repositoryURL>
+					<repositoryIndex>${repositoryIndex}</repositoryIndex>
+
+					<repositoryBuildFolder>${repositoryBuildFolder}</repositoryBuildFolder>
+					<repositoryBuildFile>${repositoryBuildFile}</repositoryBuildFile>
+					<repositoryArchiver>zip</repositoryArchiver>
+
+					<featureName>${featureName}</featureName>
+					<featureVersion>${featureVersion}</featureVersion>
+					<featureStartLevel>${featureStartLevel}</featureStartLevel>
+
+					<includeTransitive>true</includeTransitive>
+					<includeOptional>false</includeOptional>
+					<includeScopeList>
+						<scope>COMPILE</scope>
+					</includeScopeList>
+
 				</configuration>
+
 				<executions>
 					<execution>
-						<id>test</id>
+						<id>make</id>
 						<phase>package</phase>
 						<goals>
-							<goal>test</goal>
+							<goal>make</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>list</id>
-						<phase>package</phase>
-						<goals>
-							<goal>list</goal>
-						</goals>
-					</execution>
-					<!-- <execution> -->
-					<!-- <id>make</id> -->
-					<!-- <phase>package</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>make</goal> -->
-					<!-- </goals> -->
-					<!-- </execution> -->
 				</executions>
+
 			</plugin>
 
 		</plugins>
