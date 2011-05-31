@@ -54,10 +54,9 @@ public class MakeMojo extends BaseMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException {
-
-		LogScopeList();
-
 		try {
+
+			// LogScopeList();
 
 			switch (projectFunction) {
 			case NONE:
@@ -101,8 +100,7 @@ public class MakeMojo extends BaseMojo {
 		Set<Artifact> resolvedArtifacts = new HashSet<Artifact>();
 
 		for (Artifact artifact : declaredArtifacts) {
-			if (isIncluded(artifact)) {
-				provisionBundle(artifact);
+			if (isIncluded(artifact) && hasProvisionedBundle(artifact)) {
 				resolvedArtifacts.add(artifact);
 			}
 		}
@@ -191,19 +189,23 @@ public class MakeMojo extends BaseMojo {
 				artifact, m_resolver, m_remoteRepos, m_localRepo);
 	}
 
-	protected void provisionBundle(Artifact artifact) {
+	protected boolean hasProvisionedBundle(Artifact artifact) {
 
 		if (!isDownloaded(artifact)) {
-			throw new IllegalStateException(//
+			getLog().error(//
 					"can not download artifact : " + artifact);
+			return false;
 		}
 
 		if (!isBundle(artifact)) {
-			throw new IllegalStateException(//
+			getLog().error(//
 					"can not use non-bundle artifact : " + artifact);
+			return false;
 		}
 
 		BUNDLES.add(artifact);
+
+		return true;
 
 	}
 
