@@ -42,8 +42,21 @@ public class MakeMojo extends BaseMojo {
 
 	//
 
+	protected void LogScopeList() {
+
+		getLog().info("### includeScopeList : " + includeScopeList);
+
+		for (Object scope : includeScopeList) {
+			getLog().info("### includeScopeList : " + scope.getClass());
+		}
+
+	}
+
 	@Override
 	public void execute() throws MojoExecutionException {
+
+		LogScopeList();
+
 		try {
 
 			switch (projectFunction) {
