@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.archiver.Archiver;
+import org.codehaus.plexus.util.FileUtils;
 import org.ops4j.pax.construct.util.PomUtils;
 
 import com.carrotgarden.maven.osgi.enums.ArtifactScope;
@@ -207,6 +208,22 @@ public class MakeMojo extends BaseMojo {
 
 		return true;
 
+	}
+
+	//
+
+	protected void copyFile(File source, File target)
+			throws MojoExecutionException {
+		try {
+
+			getLog().info("COPY");
+
+			FileUtils.copyFile(source, target);
+
+		} catch (Exception e) {
+			throw new MojoExecutionException("Error copying artifact from "
+					+ source + " to " + target, e);
+		}
 	}
 
 	//
