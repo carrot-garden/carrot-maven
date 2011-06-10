@@ -69,10 +69,10 @@
 
 				<executions>
 					<execution>
-						<id>make</id>
+						<id>make-folder</id>
 						<phase>package</phase>
 						<goals>
-							<goal>make</goal>
+							<goal>make-folder</goal>
 						</goals>
 					</execution>
 				</executions>

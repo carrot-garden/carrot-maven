@@ -32,7 +32,7 @@
 				<executions>
 					<execution>
 						<id>deploy</id>
-						<phase>package</phase>
+						<phase>deploy</phase>
 						<goals>
 							<goal>deploy</goal>
 						</goals>

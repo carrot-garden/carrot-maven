@@ -24,14 +24,14 @@ import com.carrotgarden.utils.json.JSON;
 
 /**
  * 
- * @goal make
+ * @goal make-archive
  * @aggregator false
  * 
  * @requiresProject true
  * @requiresDependencyResolution test
  * 
  */
-public class MakeMojo extends BaseMojo {
+public class MakeArchiveMojo extends BaseMojo {
 
 	protected final static FeatureRepository REPO = new FeatureRepository();
 
