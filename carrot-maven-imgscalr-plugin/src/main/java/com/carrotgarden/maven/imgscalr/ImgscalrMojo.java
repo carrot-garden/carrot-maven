@@ -25,7 +25,6 @@ package com.carrotgarden.maven.imgscalr;
  */
 
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.io.File;
 
 import javax.imageio.ImageIO;
@@ -78,21 +77,21 @@ public class ImgscalrMojo extends AbstractMojo {
 
 		try {
 
-			getLog().info("imgscalr");
+			getLog().info("imgscalr : source = " + source);
+			getLog().info("imgscalr : target = " + target);
+			getLog().info("imgscalr : w x h = " + width + " x " + height);
 
 			BufferedImage source = ImageIO.read(this.source);
 
-			BufferedImageOp ops = null;
-
 			BufferedImage target = Scalr.resize(source, Method.QUALITY,
-					Mode.AUTOMATIC, Rotation.NONE, width, height, ops);
+					Mode.AUTOMATIC, Rotation.NONE, width, height);
 
 			String format = getFileExtension(this.target);
 
 			ImageIO.write(target, format, this.target);
 
 		} catch (Throwable exception) {
-			throw new MojoExecutionException("imgscalr: rasterize failed",
+			throw new MojoExecutionException("imgscalr: scale failed",
 					exception);
 		}
 
