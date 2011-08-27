@@ -16,6 +16,7 @@
 	<modules>
 		<module>carrot-maven-osgi-plugin</module>
 		<module>carrot-maven-osgi-plugin-test</module>
+		<module>carrot-maven-batik-plugin</module>
 	</modules>
 
 </project>
