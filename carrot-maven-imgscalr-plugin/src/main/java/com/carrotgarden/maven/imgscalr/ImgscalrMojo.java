@@ -1,4 +1,4 @@
-package com.carrotgarden.maven.batik;
+package com.carrotgarden.maven.imgscalr;
 
 /*
  * The MIT License
@@ -24,29 +24,51 @@ package com.carrotgarden.maven.batik;
  * SOFTWARE.
  */
 
+import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.batik.apps.rasterizer.Main;
-import org.apache.batik.apps.rasterizer.SVGConverter;
-import org.apache.batik.apps.rasterizer.SVGConverterSource;
+import javax.imageio.ImageIO;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.thebuzzmedia.imgscalr.Scalr;
+import com.thebuzzmedia.imgscalr.Scalr.Method;
+import com.thebuzzmedia.imgscalr.Scalr.Mode;
+import com.thebuzzmedia.imgscalr.Scalr.Rotation;
+
 /**
  * 
- * @goal rasterize
+ * @goal scale
  * @phase generate-resources
  */
-public class BatikMojo extends AbstractMojo {
+public class ImgscalrMojo extends AbstractMojo {
 
 	/**
 	 * @parameter
 	 * @required
 	 */
-	protected String arguments;
+	protected File source;
+
+	/**
+	 * @parameter
+	 * @required
+	 */
+	protected File target;
+
+	/**
+	 * @parameter
+	 * @required
+	 */
+	protected int width;
+
+	/**
+	 * @parameter
+	 * @required
+	 */
+	protected int height;
 
 	/**
 	 * {@inheritDoc}
@@ -56,55 +78,31 @@ public class BatikMojo extends AbstractMojo {
 
 		try {
 
-			String[] args = arguments.split("\\s+");
+			getLog().info("imgscalr");
 
-			getLog().info("batik: args = " + Arrays.toString(args));
+			BufferedImage source = ImageIO.read(this.source);
 
-			Main main = new Main(args) {
+			BufferedImageOp ops = null;
 
-				@Override
-				public boolean proceedOnSourceTranscodingFailure(
-						SVGConverterSource source, File dest, String errorCode) {
+			BufferedImage target = Scalr.resize(source, Method.QUALITY,
+					Mode.AUTOMATIC, Rotation.NONE, width, height, ops);
 
-					super.proceedOnSourceTranscodingFailure(source, dest,
-							errorCode);
+			String format = getFileExtension(this.target);
 
-					String message = "batik: convert failed";
-					getLog().error(message);
-					throw new RuntimeException(message);
-
-				}
-
-				@Override
-				public void validateConverterConfig(SVGConverter c) {
-
-					@SuppressWarnings("unchecked")
-					List<String> expandedSources = c.getSources();
-
-					if ((expandedSources == null)
-							|| (expandedSources.size() < 1)) {
-						System.out.println(USAGE);
-						System.out.flush();
-
-						String message = "batik: invalid config";
-						getLog().error(message);
-						throw new RuntimeException(message);
-
-					}
-
-				}
-
-			};
-
-			main.execute();
+			ImageIO.write(target, format, this.target);
 
 		} catch (Throwable exception) {
-			String help = "http://xmlgraphics.apache.org/batik/tools/rasterizer.html";
-			String message = "batik: help @ " + help;
-			getLog().error(message);
-			throw new MojoExecutionException("batik: rasterize failed",
+			throw new MojoExecutionException("imgscalr: rasterize failed",
 					exception);
 		}
 
 	}
+
+	protected String getFileExtension(File file) {
+		String name = file.getName();
+		int pos = name.lastIndexOf('.');
+		String extension = name.substring(pos + 1);
+		return extension;
+	}
+
 }

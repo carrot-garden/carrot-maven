@@ -4,13 +4,20 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.carrotgarden</groupId>
 		<artifactId>carrot-maven</artifactId>
+		<groupId>com.carrotgarden</groupId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>carrot-maven-batik-plugin</artifactId>
+	<artifactId>carrot-maven-imgscalr-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
+
+	<repositories>
+		<repository>
+			<id>The Buzz Media Maven Repository</id>
+			<url>http://maven.thebuzzmedia.com</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<mavenVersion>2.2.1</mavenVersion>
@@ -31,9 +38,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.apache.xmlgraphics</groupId>
-			<artifactId>batik-rasterizer</artifactId>
-			<version>1.7</version>
+			<groupId>com.thebuzzmedia</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>3.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>

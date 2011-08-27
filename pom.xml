@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,9 +16,13 @@
 	<packaging>pom</packaging>
 
 	<modules>
+
+		<module>carrot-maven-batik-plugin</module>
+		<module>carrot-maven-imgscalr-plugin</module>
+
 		<module>carrot-maven-osgi-plugin</module>
 		<module>carrot-maven-osgi-plugin-test</module>
-		<module>carrot-maven-batik-plugin</module>
+
 	</modules>
 
 </project>
