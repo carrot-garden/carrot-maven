@@ -23,6 +23,7 @@
 		<module>carrot-maven-osgi-plugin</module>
 		<module>carrot-maven-osgi-plugin-test</module>
 
+		<module>carrot-maven-image4j-plugin</module>
 	</modules>
 
 </project>
