@@ -1,6 +1,5 @@
 package com.carrotgarden.maven.imgscalr;
 
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -16,7 +15,7 @@ import com.thebuzzmedia.imgscalr.Scalr.Mode;
 import com.thebuzzmedia.imgscalr.Scalr.Rotation;
 
 /**
- *
+ * 
  * @goal scale
  * @phase generate-resources
  */
@@ -64,6 +63,8 @@ public class ImgscalrMojo extends AbstractMojo {
 					Mode.AUTOMATIC, Rotation.NONE, width, height);
 
 			String format = getFileExtension(this.target);
+
+			this.target.getParentFile().mkdirs();
 
 			ImageIO.write(target, format, this.target);
 
