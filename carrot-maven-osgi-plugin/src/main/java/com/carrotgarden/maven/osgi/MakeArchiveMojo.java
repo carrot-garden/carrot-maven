@@ -20,7 +20,7 @@ import com.carrotgarden.maven.osgi.enums.ProjectFunction;
 import com.carrotgarden.osgi.feature.FeatureBundle;
 import com.carrotgarden.osgi.feature.FeatureEntry;
 import com.carrotgarden.osgi.feature.FeatureRepository;
-import com.carrotgarden.utils.json.JSON;
+import com.carrotgarden.util.json.JSON;
 
 /**
  * 
