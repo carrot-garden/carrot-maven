@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+
+<plugin>
+
+   <extension 
+   		point="org.eclipse.m2e.core.projectConfigurators">
+      <configurator
+            class="com.carrotgarden.m2e.config.ConfigProjectConfigurator"
+            id="com.carrotgarden.m2e.config.Config"
+            name="Carrot Garden OSGI Configurator">
+      </configurator>
+   </extension>
+   
+   <extension
+         point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
+   </extension>
+   
+</plugin>

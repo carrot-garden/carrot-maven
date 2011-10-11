@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+   <description name="Carrot Garden" url="https://github.com/carrot-garden">
+      Carrot Garden
+   </description>
+   
+   <feature 
+   		url="features/com.carrotgarden.m2e.config.feature_0.0.0.jar" 
+   		id="com.carrotgarden.m2e.config.feature" 
+   		version="0.0.0">
+      <category name="carrot-config"/>
+   </feature>
+   
+   <category-def name="carrot-config" label="carrot config"/>
+   
+</site>
