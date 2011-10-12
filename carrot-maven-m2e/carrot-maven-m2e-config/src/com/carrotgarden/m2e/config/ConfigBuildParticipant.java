@@ -19,11 +19,13 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
+	private static final String ANNOTATIONS = "org.apache.felix.scr.annotations";
+
+	private final static Set<IProject> NOOP = null;
+
 	public ConfigBuildParticipant(final MojoExecution execution) {
 		super(execution, true);
 	}
-
-	private final static Set<IProject> NOOP = null;
 
 	private boolean isValid(final Set<?> set) {
 		return set != null && set.size() > 0;
@@ -38,9 +40,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 	}
 
 	private boolean hasAnnotations(final String text) {
-
-		throw new RuntimeException("HELLO MAVEN");
-
+		return text.contains(ANNOTATIONS);
 	}
 
 	private boolean isInteresing(final String filePath) throws Exception {
