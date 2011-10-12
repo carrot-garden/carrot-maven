@@ -15,10 +15,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
 public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
+    private static final Logger log = LoggerFactory.getLogger( ConfigBuildParticipant.class );
+	
 	private static final String ANNOTATIONS = "org.apache.felix.scr.annotations";
 
 	private final static Set<IProject> NOOP = null;
@@ -63,18 +67,41 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		return true;
 	}
+	
+	private boolean isTest(){
+		return true;
+	}
 
+	/**
+	 * @see <a href=
+	 *      "https://github.com/sonatype/sisu-build-api/tree/master/src/main/java/org/sonatype/plexus/build/incremental"
+	 *      />
+	 */
 	@Override
 	public Set<IProject> build(final int kind, final IProgressMonitor monitor)
 			throws Exception {
 
 		final IMaven maven = MavenPlugin.getMaven();
 		final Settings settings = maven.getSettings();
+
 		final BuildContext buildContext = getBuildContext();
 		final MavenSession session = getSession();
 		final MojoExecution execution = getMojoExecution();
 		final MavenProject project = session.getCurrentProject();
 
+		//
+		
+		if(isTest()){
+			
+			log.info("### project : {}", project); 
+			
+			log.info("### execution : {}", execution);
+
+			log.info("### isIncremental : {}", buildContext.isIncremental());
+			
+			return NOOP;
+		}
+		
 		//
 
 		final List<String> sourceRoots = project.getCompileSourceRoots();

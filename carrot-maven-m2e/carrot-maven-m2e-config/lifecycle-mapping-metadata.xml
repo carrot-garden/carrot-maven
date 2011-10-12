@@ -20,21 +20,21 @@
 			</action>
 		</pluginExecution>
 
-		<pluginExecution>
-			<pluginExecutionFilter>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<versionRange>[2.3.5,)</versionRange>
-				<goals>
-					<goal>manifest</goal>
-				</goals>
-			</pluginExecutionFilter>
-			<action>
-				<configurator>
-					<id>com.carrotgarden.m2e.config.Config</id>
-				</configurator>
-			</action>
-		</pluginExecution>
+		<!-- <pluginExecution> -->
+		<!-- <pluginExecutionFilter> -->
+		<!-- <groupId>org.apache.felix</groupId> -->
+		<!-- <artifactId>maven-bundle-plugin</artifactId> -->
+		<!-- <versionRange>[2.3.5,)</versionRange> -->
+		<!-- <goals> -->
+		<!-- <goal>manifest</goal> -->
+		<!-- </goals> -->
+		<!-- </pluginExecutionFilter> -->
+		<!-- <action> -->
+		<!-- <configurator> -->
+		<!-- <id>com.carrotgarden.m2e.config.Config</id> -->
+		<!-- </configurator> -->
+		<!-- </action> -->
+		<!-- </pluginExecution> -->
 
 	</pluginExecutions>
 
