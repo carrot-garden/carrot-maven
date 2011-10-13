@@ -44,7 +44,9 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		final MojoExecution execution = getMojoExecution();
 		final MavenProject project = session.getCurrentProject();
 
-		log.info("### build : {}", project);
+		log.info("### project : {}", project);
+		log.info("### execution : {}", execution);
+		log.info("### isIncremental : {}", buildContext.isIncremental());
 
 		//
 
@@ -104,10 +106,6 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		final boolean hasBND = countBND > 0 && MojoUtil.isMojoBND(context);
 
 		if (hasSCR || hasBND) {
-
-			log.info("### project : {}", project);
-			log.info("### execution : {}", execution);
-			log.info("### isIncremental : {}", buildContext.isIncremental());
 
 			final String key = context.getKey();
 
