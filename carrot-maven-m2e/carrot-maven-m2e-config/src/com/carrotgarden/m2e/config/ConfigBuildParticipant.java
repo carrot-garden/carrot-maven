@@ -51,7 +51,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		final List<String> sourceRoots = project.getCompileSourceRoots();
 
 		if (!MojoUtil.isValid(sourceRoots)) {
-			log.warn("not valid source roots");
+			log.warn("### not valid source roots");
 			return NOOP;
 		}
 
@@ -61,7 +61,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		for (final String rootPath : sourceRoots) {
 
 			if (!MojoUtil.isValid(rootPath)) {
-				log.warn("not valid root path");
+				log.warn("### not valid root path");
 				continue;
 			}
 
@@ -125,7 +125,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		} else {
 
-			log.warn("no interesting files");
+			log.warn("### no interesting files");
 
 		}
 

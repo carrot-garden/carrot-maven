@@ -60,7 +60,6 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<!-- <execute /> -->
 										<configurator>
 											<id>com.carrotgarden.m2e.config.Config</id>
 										</configurator>
@@ -76,7 +75,9 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<configurator>
+											<id>com.carrotgarden.m2e.config.Config</id>
+										</configurator>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
