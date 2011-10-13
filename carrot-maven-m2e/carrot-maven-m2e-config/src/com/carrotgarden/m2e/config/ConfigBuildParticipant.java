@@ -47,17 +47,13 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		return text.contains(ANNOTATIONS);
 	}
 
-	private boolean isInteresing(final String filePath) throws Exception {
+	private boolean isInteresing(final File file) throws Exception {
 
-		if (filePath == null) {
-			return false;
-		}
+		final String filePath = file.getAbsolutePath();
 
 		if (!filePath.endsWith("java")) {
 			return false;
 		}
-
-		final File file = new File(filePath);
 
 		final String text = FileUtil.readTextFile(file);
 
@@ -107,24 +103,26 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			log.info("### rootPath : {}", rootPath);
 
-			final File rootFile = new File(rootPath);
+			final File rootDir = new File(rootPath);
 
-			final Scanner scanner = buildContext.newScanner(rootFile);
+			final Scanner scanner = buildContext.newScanner(rootDir);
 
 			scanner.scan();
 
 			final String[] includedFiles = scanner.getIncludedFiles();
 
 			if (!isValid(includedFiles)) {
-				log.warn("not valid includedFiles");
+				log.warn("not valid included files");
 				continue;
 			}
 
-			for (final String filePath : includedFiles) {
+			for (final String relativePath : includedFiles) {
 
-				log.warn("### filePath : {}", filePath);
+				final File file = new File(rootDir, relativePath);
 
-				if (isInteresing(filePath)) {
+				log.info("### file : {}", file);
+
+				if (isInteresing(file)) {
 					count++;
 				}
 
