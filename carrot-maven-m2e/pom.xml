@@ -11,6 +11,7 @@
 	</parent>
 
 	<artifactId>carrot-maven-m2e</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<modules>
