@@ -85,11 +85,14 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		final MojoExecution execution = getMojoExecution();
 		final MavenProject project = session.getCurrentProject();
 
+		log.info("### build : {}", project);
+
 		//
 
 		final List<String> sourceRoots = project.getCompileSourceRoots();
 
 		if (!isValid(sourceRoots)) {
+			log.warn("not valid source roots");
 			return NOOP;
 		}
 
@@ -98,6 +101,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		for (final String rootPath : sourceRoots) {
 
 			if (!isValid(rootPath)) {
+				log.warn("not valid source path");
 				continue;
 			}
 
@@ -110,6 +114,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			final String[] includedFiles = scanner.getIncludedFiles();
 
 			if (!isValid(includedFiles)) {
+				log.warn("not valid includedFiles");
 				continue;
 			}
 
@@ -122,6 +127,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		}
 
 		if (count == 0) {
+			log.warn("no interesting files");
 			return NOOP;
 		}
 

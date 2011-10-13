@@ -6,9 +6,9 @@
    </description>
    
    <feature 
-   		url="features/com.carrotgarden.m2e.config.feature_1.0.1.201110131858.jar" 
+   		url="features/com.carrotgarden.m2e.config.feature_1.0.1.201110131905.jar" 
    		id="com.carrotgarden.m2e.config.feature" 
-   		version="1.0.1.201110131858">
+   		version="1.0.1.201110131905">
       <category name="carrot-config"/>
    </feature>
    
