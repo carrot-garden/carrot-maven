@@ -46,7 +46,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		log.info("### project : {}", project);
 		log.info("### execution : {}", execution);
-		log.info("### isIncremental : {}", buildContext.isIncremental());
+		log.info("### incremental : {}", buildContext.isIncremental());
 
 		//
 
@@ -67,7 +67,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 				continue;
 			}
 
-			log.info("### rootPath : {}", rootPath);
+			log.debug("### rootPath : {}", rootPath);
 
 			final File rootDir = new File(rootPath);
 
@@ -86,7 +86,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 				final File file = new File(rootDir, relativePath);
 
-				log.info("### file : {}", file);
+				log.debug("### file : {}", file);
 
 				if (MojoUtil.isInterestSCR(file)) {
 					countSCR++;
@@ -120,6 +120,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			buildContext.setValue(key, job);
 
 			job.schedule(1 * 1000);
+
+			log.info("### job scheduled");
 
 		} else {
 
