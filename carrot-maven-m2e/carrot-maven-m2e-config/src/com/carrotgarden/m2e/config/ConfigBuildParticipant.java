@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.settings.Settings;
 import org.codehaus.plexus.util.Scanner;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,45 +22,10 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 	private static final Logger log = LoggerFactory
 			.getLogger(ConfigBuildParticipant.class);
 
-	private static final String ANNOTATIONS = "org.apache.felix.scr.annotations";
-
 	private final static Set<IProject> NOOP = null;
 
 	public ConfigBuildParticipant(final MojoExecution execution) {
 		super(execution, true);
-	}
-
-	private boolean isValid(final String text) {
-		return text != null && text.length() > 0;
-	}
-
-	private boolean isValid(final List<?> list) {
-		return list != null && list.size() > 0;
-	}
-
-	private boolean isValid(final Object[] array) {
-		return array != null && array.length > 0;
-	}
-
-	private boolean hasAnnotations(final String text) {
-		return text.contains(ANNOTATIONS);
-	}
-
-	private boolean isInteresing(final File file) throws Exception {
-
-		final String filePath = file.getAbsolutePath();
-
-		if (!filePath.endsWith("java")) {
-			return false;
-		}
-
-		final String text = FileUtil.readTextFile(file);
-
-		if (!hasAnnotations(text)) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -74,7 +38,6 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			throws Exception {
 
 		final IMaven maven = MavenPlugin.getMaven();
-		final Settings settings = maven.getSettings();
 
 		final BuildContext buildContext = getBuildContext();
 		final MavenSession session = getSession();
@@ -87,16 +50,17 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		final List<String> sourceRoots = project.getCompileSourceRoots();
 
-		if (!isValid(sourceRoots)) {
+		if (!MojoUtil.isValid(sourceRoots)) {
 			log.warn("not valid source roots");
 			return NOOP;
 		}
 
-		int count = 0;
+		int countSCR = 0;
+		int countBND = 0;
 
 		for (final String rootPath : sourceRoots) {
 
-			if (!isValid(rootPath)) {
+			if (!MojoUtil.isValid(rootPath)) {
 				log.warn("not valid root path");
 				continue;
 			}
@@ -111,7 +75,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			final String[] includedFiles = scanner.getIncludedFiles();
 
-			if (!isValid(includedFiles)) {
+			if (!MojoUtil.isValid(includedFiles)) {
 				log.warn("not valid included files");
 				continue;
 			}
@@ -122,38 +86,48 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 				log.info("### file : {}", file);
 
-				if (isInteresing(file)) {
-					count++;
+				if (MojoUtil.isInterestSCR(file)) {
+					countSCR++;
+				}
+
+				if (MojoUtil.isInterestBND(file)) {
+					countBND++;
 				}
 
 			}
 
 		}
 
-		if (count == 0) {
-			log.warn("no interesting files");
-			return NOOP;
-		}
-
-		log.info("### project : {}", project);
-		log.info("### execution : {}", execution);
-		log.info("### isIncremental : {}", buildContext.isIncremental());
-
 		final MavenContext context = new MavenContext(maven, session, execution);
 
-		final String key = context.getKey();
+		final boolean hasSCR = countSCR > 0 && MojoUtil.isMojoSCR(context);
+		final boolean hasBND = countBND > 0 && MojoUtil.isMojoBND(context);
 
-		MavenJob job = (MavenJob) buildContext.getValue(key);
+		if (hasSCR || hasBND) {
 
-		if (job != null) {
-			job.cancel();
+			log.info("### project : {}", project);
+			log.info("### execution : {}", execution);
+			log.info("### isIncremental : {}", buildContext.isIncremental());
+
+			final String key = context.getKey();
+
+			MavenJob job = (MavenJob) buildContext.getValue(key);
+
+			if (job != null) {
+				job.cancel();
+			}
+
+			job = new MavenJob(context);
+
+			buildContext.setValue(key, job);
+
+			job.schedule(1 * 1000);
+
+		} else {
+
+			log.warn("no interesting files");
+
 		}
-
-		job = new MavenJob(context);
-
-		buildContext.setValue(key, job);
-
-		job.schedule(1 * 1000);
 
 		return NOOP;
 

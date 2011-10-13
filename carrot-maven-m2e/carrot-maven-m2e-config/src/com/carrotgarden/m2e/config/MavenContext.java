@@ -13,11 +13,11 @@ public class MavenContext {
 	private static final Logger log = LoggerFactory
 			.getLogger(MavenContext.class);
 
-	final IMaven maven;
+	private final IMaven maven;
 
-	final MavenSession session;
+	private final MavenSession session;
 
-	final MojoExecution execution;
+	private final MojoExecution execution;
 
 	MavenContext(final IMaven maven, final MavenSession session,
 			final MojoExecution execution) {
@@ -28,7 +28,19 @@ public class MavenContext {
 
 	}
 
-	String getKey() {
+	public IMaven getMaven() {
+		return maven;
+	}
+
+	public MavenSession getSession() {
+		return session;
+	}
+
+	public MojoExecution getExecution() {
+		return execution;
+	}
+
+	public String getKey() {
 
 		final MavenProject project = session.getCurrentProject();
 
@@ -42,17 +54,19 @@ public class MavenContext {
 
 	}
 
-	void execute(final IProgressMonitor monitor) {
+	public void execute(final IProgressMonitor monitor) {
 
-		log.debug("### EXECUTE @ CONTEXT");
+		log.info("### EXECUTE @ CONTEXT");
 
 		maven.execute(session, execution, monitor);
 
 	}
 
-	void cancel() {
+	public void cancel() {
 
-		log.debug("### CANCEL  @ CONTEXT");
+		log.info("### CANCEL  @ CONTEXT");
+
+		// FIXME do actual cancel
 
 	}
 
