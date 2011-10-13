@@ -23,8 +23,7 @@ public class MavenContext {
 	}
 
 	String getName() {
-		return session.getCurrentProject().getName() + " / "
-				+ execution.toString();
+		return session.getCurrentProject().getName() + " / " + execution;
 	}
 
 	void execute(final IProgressMonitor monitor) {

@@ -17,6 +17,7 @@
 		<module>carrot-maven-m2e-config</module>
 		<module>carrot-maven-m2e-config-feature</module>
 		<module>carrot-maven-m2e-config-site</module>
+		<module>carrot-maven-m2e-usage</module>
 	</modules>
 
 	<prerequisites>

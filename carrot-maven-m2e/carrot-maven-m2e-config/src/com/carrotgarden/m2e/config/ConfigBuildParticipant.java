@@ -100,6 +100,21 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			log.info("### isIncremental : {}", buildContext.isIncremental());
 
+			final MavenContext context = new MavenContext(maven, session,
+					execution);
+
+			MavenJob job = (MavenJob) buildContext.getValue(MavenJob.KEY);
+
+			if (job != null) {
+				job.cancel();
+			}
+
+			job = new MavenJob(context);
+
+			buildContext.setValue(MavenJob.KEY, job);
+
+			job.schedule(1 * 1000);
+
 			return NOOP;
 		}
 
