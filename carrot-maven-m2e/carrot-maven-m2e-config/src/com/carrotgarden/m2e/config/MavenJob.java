@@ -16,15 +16,13 @@ public class MavenJob extends Job {
 
 	private static final Logger log = LoggerFactory.getLogger(MavenJob.class);
 
-	public static final String KEY = "MAVEN_JOB";
-
 	private static final AtomicInteger COUNT = new AtomicInteger(0);
 
 	final MavenContext context;
 
 	public MavenJob(final MavenContext context) {
 
-		super(context.getName());
+		super(context.getKey());
 
 		this.context = context;
 
@@ -88,12 +86,11 @@ public class MavenJob extends Job {
 		log.info("### CANCEL : {}", count);
 
 		if (thread != null) {
-
 			thread.interrupt();
-
 			thread = null;
-
 		}
+
+		context.cancel();
 
 	}
 

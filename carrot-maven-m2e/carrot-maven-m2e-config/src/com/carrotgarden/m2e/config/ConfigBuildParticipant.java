@@ -1,7 +1,6 @@
 package com.carrotgarden.m2e.config;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +31,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		super(execution, true);
 	}
 
-	private boolean isValid(final Set<?> set) {
-		return set != null && set.size() > 0;
+	private boolean isValid(final String text) {
+		return text != null && text.length() > 0;
 	}
 
 	private boolean isValid(final List<?> list) {
@@ -69,10 +68,6 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		return true;
 	}
 
-	private boolean isTest() {
-		return true;
-	}
-
 	/**
 	 * @see <a href=
 	 *      "https://github.com/sonatype/sisu-build-api/tree/master/src/main/java/org/sonatype/plexus/build/incremental"
@@ -92,43 +87,19 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		//
 
-		if (isTest()) {
-
-			log.info("### project : {}", project);
-
-			log.info("### execution : {}", execution);
-
-			log.info("### isIncremental : {}", buildContext.isIncremental());
-
-			final MavenContext context = new MavenContext(maven, session,
-					execution);
-
-			MavenJob job = (MavenJob) buildContext.getValue(MavenJob.KEY);
-
-			if (job != null) {
-				job.cancel();
-			}
-
-			job = new MavenJob(context);
-
-			buildContext.setValue(MavenJob.KEY, job);
-
-			job.schedule(1 * 1000);
-
-			return NOOP;
-		}
-
-		//
-
 		final List<String> sourceRoots = project.getCompileSourceRoots();
 
 		if (!isValid(sourceRoots)) {
 			return NOOP;
 		}
 
-		final Set<IProject> buildSet = new HashSet<IProject>();
+		int count = 0;
 
 		for (final String rootPath : sourceRoots) {
+
+			if (!isValid(rootPath)) {
+				continue;
+			}
 
 			final File rootFile = new File(rootPath);
 
@@ -142,28 +113,39 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 				continue;
 			}
 
-			int count = 0;
 			for (final String filePath : includedFiles) {
 				if (isInteresing(filePath)) {
 					count++;
 				}
 			}
 
-			if (count == 0) {
-				continue;
-			}
-
-			final Set<IProject> rootSet = super.build(kind, monitor);
-
-			if (!isValid(rootSet)) {
-				continue;
-			}
-
-			buildSet.addAll(rootSet);
-
 		}
 
-		return buildSet;
+		if (count == 0) {
+			return NOOP;
+		}
+
+		log.info("### project : {}", project);
+		log.info("### execution : {}", execution);
+		log.info("### isIncremental : {}", buildContext.isIncremental());
+
+		final MavenContext context = new MavenContext(maven, session, execution);
+
+		final String key = context.getKey();
+
+		MavenJob job = (MavenJob) buildContext.getValue(key);
+
+		if (job != null) {
+			job.cancel();
+		}
+
+		job = new MavenJob(context);
+
+		buildContext.setValue(key, job);
+
+		job.schedule(1 * 1000);
+
+		return NOOP;
 
 	}
 
