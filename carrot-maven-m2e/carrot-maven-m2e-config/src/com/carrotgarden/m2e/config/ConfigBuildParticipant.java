@@ -21,8 +21,9 @@ import org.sonatype.plexus.build.incremental.BuildContext;
 
 public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
-    private static final Logger log = LoggerFactory.getLogger( ConfigBuildParticipant.class );
-	
+	private static final Logger log = LoggerFactory
+			.getLogger(ConfigBuildParticipant.class);
+
 	private static final String ANNOTATIONS = "org.apache.felix.scr.annotations";
 
 	private final static Set<IProject> NOOP = null;
@@ -67,8 +68,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		return true;
 	}
-	
-	private boolean isTest(){
+
+	private boolean isTest() {
 		return true;
 	}
 
@@ -90,18 +91,18 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		final MavenProject project = session.getCurrentProject();
 
 		//
-		
-		if(isTest()){
-			
-			log.info("### project : {}", project); 
-			
+
+		if (isTest()) {
+
+			log.info("### project : {}", project);
+
 			log.info("### execution : {}", execution);
 
 			log.info("### isIncremental : {}", buildContext.isIncremental());
-			
+
 			return NOOP;
 		}
-		
+
 		//
 
 		final List<String> sourceRoots = project.getCompileSourceRoots();
