@@ -48,11 +48,15 @@ public class MavenJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
+		log.info("### START :  {} : {}", count, context.getKey());
+
 		monitor.beginTask("running maven goals", IProgressMonitor.UNKNOWN);
 
 		context.execute(monitor);
 
 		monitor.done();
+
+		log.info("### FINISH : {} : {}", count, context.getKey());
 
 		return Status.OK_STATUS;
 
@@ -85,9 +89,10 @@ public class MavenJob extends Job {
 
 		log.info("### CANCEL : {}", count);
 
+		final Thread thread = this.thread;
+
 		if (thread != null) {
 			thread.interrupt();
-			thread = null;
 		}
 
 		context.cancel();

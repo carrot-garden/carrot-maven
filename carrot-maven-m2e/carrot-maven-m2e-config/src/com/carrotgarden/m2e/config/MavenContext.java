@@ -54,7 +54,11 @@ public class MavenContext {
 
 	}
 
+	private volatile IProgressMonitor monitor;
+
 	public void execute(final IProgressMonitor monitor) {
+
+		this.monitor = monitor;
 
 		log.info("### EXECUTE @ CONTEXT : {}", getKey());
 
@@ -66,7 +70,11 @@ public class MavenContext {
 
 		log.info("### CANCEL  @ CONTEXT : {}", getKey());
 
-		// FIXME do actual cancel
+		final IProgressMonitor monitor = this.monitor;
+
+		if (monitor != null) {
+			monitor.setCanceled(true);
+		}
 
 	}
 
