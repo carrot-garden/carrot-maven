@@ -101,9 +101,11 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 		for (final String rootPath : sourceRoots) {
 
 			if (!isValid(rootPath)) {
-				log.warn("not valid source path");
+				log.warn("not valid root path");
 				continue;
 			}
+
+			log.info("### rootPath : {}", rootPath);
 
 			final File rootFile = new File(rootPath);
 
@@ -119,9 +121,13 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			}
 
 			for (final String filePath : includedFiles) {
+
+				log.warn("### filePath : {}", filePath);
+
 				if (isInteresing(filePath)) {
 					count++;
 				}
+
 			}
 
 		}
