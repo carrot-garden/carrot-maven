@@ -10,11 +10,20 @@ class MojoUtil {
 	static final String FILE_JAVA_EXTENSION = "java";
 	static final String FILE_MAVEN_POM_XML = "pom.xml";
 
+	/**
+	 * http://felix.apache.org/site/scr-annotations.html
+	 */
 	static final String SCR_PACKACKAGE_ANNOTATIONS = "org.apache.felix.scr.annotations";
 
+	/**
+	 * http://felix.apache.org/site/apache-felix-maven-scr-plugin.html
+	 */
 	static final String SCR_GROUP_ID = "org.apache.felix";
 	static final String SCR_ARTIFACT_ID = "maven-scr-plugin";
 
+	/**
+	 * http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
+	 */
 	static final String BND_GROUP_ID = "org.apache.felix";
 	static final String BND_ARTIFACT_ID = "maven-bundle-plugin";
 

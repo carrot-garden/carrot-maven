@@ -1,7 +1,6 @@
 package com.carrotgarden.m2e.config;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.maven.plugin.MojoExecution;
 import org.eclipse.core.runtime.CoreException;
@@ -23,13 +22,14 @@ public class ConfigProjectConfigurator extends AbstractJavaProjectConfigurator {
 
 	}
 
+	/** this configuration does not generate java source files */
 	@Override
 	protected File[] getSourceFolders(
 			final ProjectConfigurationRequest request,
 			final MojoExecution mojoExecution) throws CoreException {
 
-		final List<String> sourceRoots = request.getMavenProject()
-				.getCompileSourceRoots();
+		// final List<String> sourceRoots = request.getMavenProject()
+		// .getCompileSourceRoots();
 
 		return new File[] {};
 
@@ -37,7 +37,9 @@ public class ConfigProjectConfigurator extends AbstractJavaProjectConfigurator {
 
 	@Override
 	protected String getOutputFolderParameterName() {
+
 		throw new UnsupportedOperationException("should not use");
+
 	}
 
 }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.plexus.build.incremental.BuildContext;
 
+/**  */
 public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 	private static final Logger log = LoggerFactory
@@ -38,11 +39,12 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			throws Exception {
 
 		final IMaven maven = MavenPlugin.getMaven();
-
 		final BuildContext buildContext = getBuildContext();
 		final MavenSession session = getSession();
 		final MojoExecution execution = getMojoExecution();
 		final MavenProject project = session.getCurrentProject();
+
+		//
 
 		log.info("### project : {}", project);
 		log.info("### execution : {}", execution);
@@ -78,7 +80,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			final String[] includedFiles = scanner.getIncludedFiles();
 
 			if (!MojoUtil.isValid(includedFiles)) {
-				log.warn("not valid included files");
+				log.warn("### not valid included files");
 				continue;
 			}
 
@@ -119,6 +121,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			buildContext.setValue(key, job);
 
+			/** delay launch */
 			job.schedule(1 * 1000);
 
 			log.info("### job scheduled");

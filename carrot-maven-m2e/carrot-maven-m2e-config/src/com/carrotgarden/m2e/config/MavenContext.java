@@ -56,7 +56,7 @@ public class MavenContext {
 
 	public void execute(final IProgressMonitor monitor) {
 
-		log.info("### EXECUTE @ CONTEXT");
+		log.info("### EXECUTE @ CONTEXT : {}", getKey());
 
 		maven.execute(session, execution, monitor);
 
@@ -64,7 +64,7 @@ public class MavenContext {
 
 	public void cancel() {
 
-		log.info("### CANCEL  @ CONTEXT");
+		log.info("### CANCEL  @ CONTEXT : {}", getKey());
 
 		// FIXME do actual cancel
 
