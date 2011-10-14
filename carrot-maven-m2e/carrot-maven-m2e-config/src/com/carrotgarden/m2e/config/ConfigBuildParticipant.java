@@ -2,7 +2,9 @@ package com.carrotgarden.m2e.config;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecution;
@@ -24,6 +26,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			.getLogger(ConfigBuildParticipant.class);
 
 	private final static Set<IProject> NOOP = null;
+
+	private static final Map<String, MavenJob> jobMap = new ConcurrentHashMap<String, MavenJob>();
 
 	public ConfigBuildParticipant(final MojoExecution execution) {
 		super(execution, true);
@@ -111,7 +115,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			final String key = context.getKey();
 
-			MavenJob job = (MavenJob) buildContext.getValue(key);
+			// MavenJob job = (MavenJob) buildContext.getValue(key);
+			MavenJob job = jobMap.get(key);
 
 			if (job != null) {
 				job.cancel();
@@ -119,7 +124,8 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 			job = new MavenJob(context);
 
-			buildContext.setValue(key, job);
+			// buildContext.setValue(key, job);
+			jobMap.put(key, job);
 
 			/** delay launch */
 			job.schedule(1 * 1000);
