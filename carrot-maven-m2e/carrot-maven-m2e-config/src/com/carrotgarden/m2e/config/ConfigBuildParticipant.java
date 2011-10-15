@@ -12,8 +12,6 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.Scanner;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.embedder.IMaven;
 import org.eclipse.m2e.core.project.configurator.MojoExecutionBuildParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,6 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 	public Set<IProject> build(final int kind, final IProgressMonitor monitor)
 			throws Exception {
 
-		final IMaven maven = MavenPlugin.getMaven();
 		final BuildContext buildContext = getBuildContext();
 		final MavenSession session = getSession();
 		final MojoExecution execution = getMojoExecution();
@@ -106,7 +103,7 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 
 		}
 
-		final MavenContext context = new MavenContext(maven, session, execution);
+		final MavenContext context = new MavenContext(session, execution);
 
 		final boolean hasSCR = countSCR > 0 && MojoUtil.isMojoSCR(context);
 		final boolean hasBND = countBND > 0 && MojoUtil.isMojoBND(context);

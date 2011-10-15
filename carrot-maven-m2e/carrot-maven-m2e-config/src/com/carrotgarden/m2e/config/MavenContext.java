@@ -4,6 +4,7 @@ import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecution;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.embedder.IMaven;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,23 +14,16 @@ public class MavenContext {
 	private static final Logger log = LoggerFactory
 			.getLogger(MavenContext.class);
 
-	private final IMaven maven;
-
 	private final MavenSession session;
 
 	private final MojoExecution execution;
 
-	MavenContext(final IMaven maven, final MavenSession session,
-			final MojoExecution execution) {
+	MavenContext(final MavenSession session, final MojoExecution execution) {
 
-		this.maven = maven;
-		this.session = session;
+		this.session = session.clone();
+
 		this.execution = execution;
 
-	}
-
-	public IMaven getMaven() {
-		return maven;
 	}
 
 	public MavenSession getSession() {
@@ -62,6 +56,8 @@ public class MavenContext {
 
 		log.info("### EXECUTE @ CONTEXT : {}", getKey());
 
+		final IMaven maven = MavenPlugin.getMaven();
+
 		maven.execute(session, execution, monitor);
 
 	}
@@ -70,11 +66,10 @@ public class MavenContext {
 
 		log.info("### CANCEL  @ CONTEXT : {}", getKey());
 
-		final IProgressMonitor monitor = this.monitor;
-
-		if (monitor != null) {
-			monitor.setCanceled(true);
-		}
+		// final IProgressMonitor monitor = this.monitor;
+		// if (monitor != null) {
+		// monitor.setCanceled(true);
+		// }
 
 	}
 

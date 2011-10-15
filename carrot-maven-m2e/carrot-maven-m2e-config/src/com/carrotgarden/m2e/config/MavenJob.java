@@ -26,12 +26,15 @@ public class MavenJob extends Job {
 
 		this.context = context;
 
-		addJobChangeListener(listener);
+		setPriority(Job.BUILD);
+
+		// addJobChangeListener(listener);
 
 	}
 
 	private volatile Thread thread;
 
+	@SuppressWarnings("unused")
 	private final IJobChangeListener listener = new JobChangeAdapter() {
 		@Override
 		public void done(final IJobChangeEvent event) {
@@ -48,15 +51,15 @@ public class MavenJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		log.info("### START :  {} : {}", count, context.getKey());
-
 		monitor.beginTask("running maven goals", IProgressMonitor.UNKNOWN);
+
+		log.info("### START :  {} : {}", count, context.getKey());
 
 		context.execute(monitor);
 
-		monitor.done();
-
 		log.info("### FINISH : {} : {}", count, context.getKey());
+
+		monitor.done();
 
 		return Status.OK_STATUS;
 
