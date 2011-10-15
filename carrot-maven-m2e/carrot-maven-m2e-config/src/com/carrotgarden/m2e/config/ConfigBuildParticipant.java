@@ -115,17 +115,13 @@ public class ConfigBuildParticipant extends MojoExecutionBuildParticipant {
 			// MavenJob job = (MavenJob) buildContext.getValue(key);
 			MavenJob job = jobMap.get(key);
 
-			if (job != null) {
-				job.cancel();
+			if (job == null) {
+				job = new MavenJob(context);
+				// buildContext.setValue(key, job);
+				jobMap.put(key, job);
 			}
 
-			job = new MavenJob(context);
-
-			// buildContext.setValue(key, job);
-			jobMap.put(key, job);
-
-			/** delay launch */
-			job.schedule(1 * 1000);
+			job.schedule();
 
 			log.info("### job scheduled");
 

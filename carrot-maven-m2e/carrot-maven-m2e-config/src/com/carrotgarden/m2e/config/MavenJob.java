@@ -26,14 +26,12 @@ public class MavenJob extends Job {
 
 		this.context = context;
 
-		setPriority(Job.BUILD);
-		setSystem(true);
+		// setPriority(Job.BUILD);
+		// setSystem(true);
 
 		// addJobChangeListener(listener);
 
 	}
-
-	private volatile Thread thread;
 
 	@SuppressWarnings("unused")
 	private final IJobChangeListener listener = new JobChangeAdapter() {
@@ -52,37 +50,21 @@ public class MavenJob extends Job {
 	@Override
 	protected IStatus run(final IProgressMonitor monitor) {
 
-		monitor.beginTask("running maven goals", IProgressMonitor.UNKNOWN);
-
-		log.info("### START :  {} : {}", count, context.getKey());
-
-		context.execute(monitor);
-
-		log.info("### FINISH : {} : {}", count, context.getKey());
-
-		monitor.done();
-
-		return Status.OK_STATUS;
-
-	}
-
-	// @Override
-	protected IStatus runXXX(final IProgressMonitor monitor) {
-
-		monitor.beginTask("running maven goals", IProgressMonitor.UNKNOWN);
-
-		log.info("### START : {}", count);
-
 		try {
-			thread = Thread.currentThread();
-			Thread.sleep(10 * 1000);
-		} catch (final InterruptedException e) {
-			log.info("### TRAP : {}", count);
+
+			monitor.beginTask("running maven goals", IProgressMonitor.UNKNOWN);
+
+			log.info("### START :  {} : {}", count, context.getKey());
+
+			context.execute(monitor);
+
+			log.info("### FINISH : {} : {}", count, context.getKey());
+
+		} finally {
+
+			monitor.done();
+
 		}
-
-		log.info("### FINISH : {}", count);
-
-		monitor.done();
 
 		return Status.OK_STATUS;
 
@@ -92,12 +74,6 @@ public class MavenJob extends Job {
 	protected void canceling() {
 
 		log.info("### CANCEL : {}", count);
-
-		final Thread thread = this.thread;
-
-		if (thread != null) {
-			thread.interrupt();
-		}
 
 		context.cancel();
 
