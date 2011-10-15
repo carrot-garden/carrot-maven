@@ -27,6 +27,7 @@ public class MavenJob extends Job {
 		this.context = context;
 
 		setPriority(Job.BUILD);
+		setSystem(true);
 
 		// addJobChangeListener(listener);
 

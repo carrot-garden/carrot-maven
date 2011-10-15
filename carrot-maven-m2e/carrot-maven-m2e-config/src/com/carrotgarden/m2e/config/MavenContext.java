@@ -48,11 +48,11 @@ public class MavenContext {
 
 	}
 
-	private volatile IProgressMonitor monitor;
+	// private volatile IProgressMonitor monitor;
 
 	public void execute(final IProgressMonitor monitor) {
 
-		this.monitor = monitor;
+		// this.monitor = monitor;
 
 		log.info("### EXECUTE @ CONTEXT : {}", getKey());
 
