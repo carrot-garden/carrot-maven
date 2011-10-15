@@ -16,4 +16,49 @@
          point="org.eclipse.m2e.core.lifecycleMappingMetadataSource">
    </extension>
    
+   <!-- -->
+   
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.carrotgarden.m2e.config.LaunchDelegate"
+            id="com.carrotgarden.m2e.config.launchType"
+            name="Carrot Launcher"
+            modes="run,debug"
+            >
+      </launchConfigurationType>
+   </extension>
+   
+   <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    	<launchConfigurationTypeImage
+        	icon="icons/carrot_01.png"
+        	configTypeID="com.carrotgarden.m2e.config.launchType"
+        	id="com.carrotgarden.m2e.config.launchType.icon">
+    	</launchConfigurationTypeImage>
+	</extension>
+
+	<extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+	    <launchConfigurationTabGroup
+	        type="com.carrotgarden.m2e.config.launchType"
+	        class="com.carrotgarden.m2e.config.LaunchTabGroup"
+	        id="com.carrotgarden.m2e.config.launchType.tab">
+	    </launchConfigurationTabGroup>
+	</extension>
+
+<!--
+	<extension point="org.eclipse.debug.ui.launchShortcuts">
+	    <shortcut
+	        id="org.eclipse.jdt.debug.ui.javaAppletShortcut"
+	        class="org.eclipse.jdt.internal.debug.ui.launcher.JavaAppletLaunchShortcut"
+	        label="Carrot Launch"
+	        icon="icons/alt_launcher.ico"
+	        modes="run, debug">
+	            <perspective id="org.eclipse.jdt.ui.JavaPerspective"/>
+	            <perspective id="org.eclipse.jdt.ui.JavaHierarchyPerspective"/>
+	            <perspective id="org.eclipse.jdt.ui.JavaBrowsingPerspective"/>
+	            <perspective id="org.eclipse.debug.ui.DebugPerspective"/>
+	    </shortcut>
+	</extension>
+-->
+
 </plugin>
