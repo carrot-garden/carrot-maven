@@ -2,6 +2,7 @@ package com.carrotgarden.m2e.config;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 		final String command = configuration.getAttribute(
 				LaunchConst.ATTR_MAVEN_COMMAND, "");
 
-		final String[] commandArray = command.split("\\W+");
+		final String[] commandArray = command.split("\n+");
 
 		return commandArray;
 
@@ -146,7 +147,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 		final String projects = configuration.getAttribute(
 				LaunchConst.ATTR_MAVEN_PROJECTS, "");
 
-		final String[] projectArray = projects.split("\\W+");
+		final String[] projectArray = projects.split("\n+");
 
 		return projectArray;
 
@@ -167,7 +168,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		for (final String project : projectArray) {
 
-			launchMaven(project, commandArray, monitor);
+			launchMaven(project.trim(), commandArray, monitor);
 
 			monitor.worked(1);
 
@@ -236,7 +237,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 		final List<String> goalList = new LinkedList<String>();
 
 		for (final String goal : commandArray) {
-			goalList.add(goal);
+			goalList.add(goal.trim());
 		}
 
 		final MavenExecutionRequest request = maven
@@ -248,8 +249,10 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		//
 
-		ConfigPlugin.log(IStatus.INFO,
-				"maven execute : " + mavenProject.getId());
+		ConfigPlugin.log(
+				IStatus.INFO,
+				"maven execute : " + mavenProject.getId() + " "
+						+ Arrays.toString(commandArray));
 
 		maven.execute(request, monitor);
 
