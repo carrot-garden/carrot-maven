@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.execution.MavenExecutionRequest;
+import org.apache.maven.execution.MavenExecutionResult;
 import org.apache.maven.model.Model;
 import org.apache.maven.project.MavenProject;
 import org.eclipse.core.resources.IProject;
@@ -18,6 +19,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jdt.internal.launching.LaunchingMessages;
@@ -168,6 +170,8 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		for (final String project : projectArray) {
 
+			monitor.subTask(project);
+
 			launchMaven(project.trim(), commandArray, monitor);
 
 			monitor.worked(1);
@@ -249,12 +253,30 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		//
 
+		final String id = mavenProject.getId();
+
 		ConfigPlugin.log(
 				IStatus.INFO,
 				"maven execute : " + mavenProject.getId() + " "
 						+ Arrays.toString(commandArray));
 
-		maven.execute(request, monitor);
+		// final Job job = new Job(id) {
+		// {
+		// setSystem(true);
+		// setPriority(BUILD);
+		// }
+		// @Override
+		// protected IStatus run(final IProgressMonitor monitor) {
+		// return null;
+		// }
+		// };
+
+		final MavenExecutionResult result = maven.execute(request, monitor);
+
+		if (result.hasExceptions()) {
+			throw new CoreException(new Status(IStatus.ERROR, ConfigPlugin.ID,
+					"maven execution failed", result.getExceptions().get(0)));
+		}
 
 	}
 
