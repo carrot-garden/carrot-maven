@@ -2,7 +2,6 @@ package com.carrotgarden.m2e.config;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 			final String mode, final ILaunch launch,
 			final IProgressMonitor monitor) throws CoreException {
 
-		final int workMaven = projectArray(configuration).length;
+		final int workMaven = projectList(configuration).size();
 		final int workJava = 3;
 		final int workTotal = workMaven + workJava;
 
@@ -131,27 +130,61 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 	}
 
-	private String[] commandArray(final ILaunchConfiguration configuration)
+	private List<String> commandList(final ILaunchConfiguration configuration)
 			throws CoreException {
 
-		final String command = configuration.getAttribute(
+		final String commandText = configuration.getAttribute(
 				LaunchConst.ATTR_MAVEN_COMMAND, "");
 
-		final String[] commandArray = command.split("\n+");
+		final List<String> list = new LinkedList<String>();
 
-		return commandArray;
+		if (!MojoUtil.isValid(commandText)) {
+			return list;
+		}
+
+		final String[] commandArray = commandText.split("\n+");
+
+		for (final String commandLine : commandArray) {
+			if (!MojoUtil.isValid(commandLine)) {
+				continue;
+			}
+			final String command = commandLine.trim();
+			if (!MojoUtil.isValid(command)) {
+				continue;
+			}
+			list.add(command);
+		}
+
+		return list;
 
 	}
 
-	private String[] projectArray(final ILaunchConfiguration configuration)
+	private List<String> projectList(final ILaunchConfiguration configuration)
 			throws CoreException {
 
-		final String projects = configuration.getAttribute(
+		final String projectText = configuration.getAttribute(
 				LaunchConst.ATTR_MAVEN_PROJECTS, "");
 
-		final String[] projectArray = projects.split("\n+");
+		final List<String> list = new LinkedList<String>();
 
-		return projectArray;
+		if (!MojoUtil.isValid(projectText)) {
+			return list;
+		}
+
+		final String[] projectArray = projectText.split("\n+");
+
+		for (final String projectLine : projectArray) {
+			if (!MojoUtil.isValid(projectLine)) {
+				continue;
+			}
+			final String project = projectLine.trim();
+			if (!MojoUtil.isValid(project)) {
+				continue;
+			}
+			list.add(project);
+		}
+
+		return list;
 
 	}
 
@@ -165,14 +198,14 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		//
 
-		final String[] commandArray = commandArray(configuration);
-		final String[] projectArray = projectArray(configuration);
+		final List<String> commandList = commandList(configuration);
+		final List<String> projectArray = projectList(configuration);
 
 		for (final String project : projectArray) {
 
 			monitor.subTask(project);
 
-			launchMaven(project.trim(), commandArray, monitor);
+			launchMaven(project, commandList, monitor);
 
 			monitor.worked(1);
 
@@ -180,8 +213,9 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 	}
 
-	private void launchMaven(final String project, final String[] commandArray,
-			final IProgressMonitor monitor) throws CoreException {
+	private void launchMaven(final String project,
+			final List<String> commandList, final IProgressMonitor monitor)
+			throws CoreException {
 
 		final IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
@@ -215,12 +249,13 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 
 		//
 
-		launchMaven(pomFile, commandArray, monitor);
+		launchMaven(pomFile, commandList, monitor);
 
 	}
 
-	private void launchMaven(final File pomFile, final String[] commandArray,
-			final IProgressMonitor monitor) throws CoreException {
+	private void launchMaven(final File pomFile,
+			final List<String> commandList, final IProgressMonitor monitor)
+			throws CoreException {
 
 		final IMaven maven = MavenPlugin.getMaven();
 
@@ -239,17 +274,43 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 		//
 
 		final List<String> goalList = new LinkedList<String>();
+		final List<String> profileActiveList = new LinkedList<String>();
+		final List<String> profileInactiveList = new LinkedList<String>();
 
-		for (final String goal : commandArray) {
-			goalList.add(goal.trim());
+		for (final String command : commandList) {
+
+			if (command.startsWith("-")) {
+
+				/** command line options */
+
+				if (command.startsWith("--activate-profiles")) {
+					ConfigPlugin.log(IStatus.ERROR, "TODO : " + command);
+				} else {
+					ConfigPlugin.log(IStatus.ERROR, "not supported : "
+							+ command);
+				}
+
+			} else {
+
+				/** maven execution goals */
+
+				goalList.add(command);
+
+			}
+
 		}
+
+		//
 
 		final MavenExecutionRequest request = maven
 				.createExecutionRequest(monitor);
 
 		request.setPom(pomFile);
-
 		request.setGoals(goalList);
+
+		// TODO
+		// request.setActiveProfiles(profileActiveList);
+		// request.setInactiveProfiles(profileInactiveList);
 
 		//
 
@@ -258,7 +319,7 @@ public class LaunchDelegate extends JavaLaunchDelegate {
 		ConfigPlugin.log(
 				IStatus.INFO,
 				"maven execute : " + mavenProject.getId() + " "
-						+ Arrays.toString(commandArray));
+						+ MojoUtil.join(commandList, ","));
 
 		// final Job job = new Job(id) {
 		// {

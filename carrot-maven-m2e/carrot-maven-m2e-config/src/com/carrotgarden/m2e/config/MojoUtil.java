@@ -122,4 +122,22 @@ class MojoUtil {
 		return true;
 	}
 
+	static String join(final List<String> list, final String sepa) {
+
+		final StringBuilder text = new StringBuilder(256);
+
+		final int size = list.size();
+
+		for (int k = 0; k < size; k++) {
+			text.append(list.get(k));
+			if (k == size - 1) {
+				break;
+			}
+			text.append(sepa);
+		}
+
+		return text.toString();
+
+	}
+
 }
