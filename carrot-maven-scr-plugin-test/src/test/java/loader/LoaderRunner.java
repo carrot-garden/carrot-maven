@@ -8,7 +8,9 @@ public class LoaderRunner {
 	public static void main(final String[] args) throws Exception {
 
 		// final String path = "./target/classes";
-		final String path = "/home/user1/Workspaces/github/carrot-maven/carrot-maven-scr-plugin-test/target/classes";
+		// final String path =
+		// "/home/user1/Workspaces/github/carrot-maven/carrot-maven-scr-plugin-test/target/classes";
+		final String path = "/home/user1/Temp";
 
 		final URL url = new URL("file://" + path);
 
@@ -18,7 +20,7 @@ public class LoaderRunner {
 
 		final URLClassLoader loader = new URLClassLoader(urlArray);
 
-		final String name = "bench.Comp1";
+		final String name = "bench.Comp0";
 
 		final Class<?> klaz = loader.loadClass(name);
 

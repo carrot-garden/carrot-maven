@@ -41,7 +41,6 @@ import com.carrotgarden.osgi.anno.scr.make.Maker;
 /**
  * @description make scr descriptors form java classes
  * 
- * 
  * @goal scr
  * 
  * @phase process-classes
@@ -54,8 +53,6 @@ public class CarrotMojo extends AbstractMojo {
 	private final Maker maker = new Maker();
 
 	/**
-	 * POM
-	 * 
 	 * @parameter expression="${project}"
 	 * @readonly
 	 * @required
@@ -63,16 +60,25 @@ public class CarrotMojo extends AbstractMojo {
 	protected MavenProject project;
 
 	/**
-	 * Location of the file.
-	 * 
+	 * @parameter 
+	 *            default-value="${project.build.outputDirectory}/OSGI-INF/components"
+	 * @required
+	 */
+	protected File outputDirectoryOSGI;
+
+	/**
+	 * @parameter default-value="xml"
+	 * @required
+	 */
+	protected String outputExtensionOSGI;
+
+	/**
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 * @required
 	 */
 	protected File outputDirectory;
 
 	/**
-	 * Location of the file.
-	 * 
 	 * @parameter default-value="${project.build.testOutputDirectory}"
 	 * @required
 	 */
@@ -102,52 +108,70 @@ public class CarrotMojo extends AbstractMojo {
 
 				final String name = getClassName(file);
 
-				getLog().info("name : " + name);
+				final Class<?> klaz = Class.forName(name, true, loader);
 
-				// final Class<?> klaz = Class.forName(name, true, loader);
-
-				final Class<?> klaz = loader.loadClass(name);
+				saveDescriptor(klaz);
 
 			}
 
 		} catch (final Throwable exception) {
-			final String message = "failed";
+			final String message = "execution failure";
 			getLog().error(message);
 			throw new MojoExecutionException(message, exception);
 		}
 
 	}
 
-	String getClassName(final File file) {
+	private void saveDescriptor(final Class<?> klaz) throws Exception {
+
+		final String text = maker.make(klaz);
+
+		if (text == null) {
+			return;
+		}
+
+		final String name = klaz.getName() + "." + outputExtensionOSGI;
+
+		final File file = new File(outputDirectoryOSGI, name);
+
+		getLog().info("\t descriptor : " + file);
+
+		FileUtils.writeStringToFile(file, text);
+
+	}
+
+	private String getClassName(final File file) {
 
 		final String path = outputDirectory.toURI().relativize(file.toURI())
 				.getPath();
 
 		final int index = path.lastIndexOf(".");
 
-		String name = path.substring(0, index);
-
-		name = name.replace("/", ".");
+		final String name = path.substring(0, index).replace("/", ".");
 
 		return name;
 
 	}
 
-	ClassLoader getClassloader() throws Exception {
+	private ClassLoader getClassloader() throws Exception {
 
 		@SuppressWarnings("unchecked")
 		final List<String> list = project.getCompileClasspathElements();
 
 		final URL[] urlArray = new URL[list.size()];
 
-		int k = 0;
+		int index = 0;
 		for (final String path : list) {
-			final URL url = new URL("file://" + path);
-			urlArray[k++] = url;
-			getLog().info("\t url : " + url);
+			final URL url = new File(path).toURI().toURL();
+			getLog().info("\t class url : " + url);
+			urlArray[index++] = url;
 		}
 
-		final URLClassLoader loader = new URLClassLoader(urlArray);
+		// maven plugin loader
+		final ClassLoader TCCL = Thread.currentThread().getContextClassLoader();
+
+		// project compile class path loader
+		final URLClassLoader loader = new URLClassLoader(urlArray, TCCL);
 
 		return loader;
 
