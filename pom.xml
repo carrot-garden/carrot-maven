@@ -26,7 +26,9 @@
 		<module>carrot-maven-image4j-plugin</module>
 
 		<module>carrot-maven-m2e</module>
-		
+
+		<module>carrot-maven-scr-plugin</module>
+		<module>carrot-maven-scr-plugin-test</module>
 	</modules>
 
 </project>
