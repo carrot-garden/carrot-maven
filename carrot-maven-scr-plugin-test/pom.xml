@@ -27,6 +27,19 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>4.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<version>4.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -37,6 +50,11 @@
 				<groupId>com.carrotgarden</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
+				<configuration>
+				<ignoreService>
+					<service>java.lang.Runnable</service>
+				</ignoreService>
+				</configuration>
 				<executions>
 					<execution>
 						<id>scr</id>

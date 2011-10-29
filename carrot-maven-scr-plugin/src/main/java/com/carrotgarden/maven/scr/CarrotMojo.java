@@ -27,8 +27,10 @@ package com.carrotgarden.maven.scr;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.AbstractMojo;
@@ -49,8 +51,6 @@ import com.carrotgarden.osgi.anno.scr.make.Maker;
  * 
  */
 public class CarrotMojo extends AbstractMojo {
-
-	private final Maker maker = new Maker();
 
 	/**
 	 * @parameter expression="${project}"
@@ -84,9 +84,27 @@ public class CarrotMojo extends AbstractMojo {
 	 */
 	protected File testOutputDirectory;
 
+	/**
+	 * @parameter
+	 */
+	protected Set<String> ignoreService = new HashSet<String>();
+
+	//
+
 	static final String[] EXTENSIONS = new String[] { "class" };
 
 	static final boolean RECURSIVE = true;
+
+	//
+
+	private Maker maker;
+
+	protected Maker getMaker() {
+		if (maker == null) {
+			maker = new Maker(ignoreService);
+		}
+		return maker;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -124,7 +142,7 @@ public class CarrotMojo extends AbstractMojo {
 
 	private void saveDescriptor(final Class<?> klaz) throws Exception {
 
-		final String text = maker.make(klaz);
+		final String text = getMaker().make(klaz);
 
 		if (text == null) {
 			return;
