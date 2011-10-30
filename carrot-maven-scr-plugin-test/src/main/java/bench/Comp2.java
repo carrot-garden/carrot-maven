@@ -3,10 +3,11 @@ package bench;
 import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Property;
 import org.osgi.service.component.annotations.Reference;
 
-@Component
+@Component(property = { "hello-string:String=hello string" })
 public class Comp2 extends Comp1 implements Runnable {
 
 	@Property
@@ -30,6 +31,11 @@ public class Comp2 extends Comp1 implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Deactivate
+	protected void deactivate2() {
 
 	}
 
