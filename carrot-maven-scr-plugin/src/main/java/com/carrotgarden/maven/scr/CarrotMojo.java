@@ -114,6 +114,11 @@ public class CarrotMojo extends AbstractMojo {
 
 		try {
 
+			if (outputDirectory == null) {
+				getLog().error("outputDirectory == null");
+				return;
+			}
+
 			final ClassLoader loader = getClassloader();
 
 			@SuppressWarnings("unchecked")
