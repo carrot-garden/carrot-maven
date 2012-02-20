@@ -8,11 +8,9 @@ import javax.imageio.ImageIO;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-
-import com.thebuzzmedia.imgscalr.Scalr;
-import com.thebuzzmedia.imgscalr.Scalr.Method;
-import com.thebuzzmedia.imgscalr.Scalr.Mode;
-import com.thebuzzmedia.imgscalr.Scalr.Rotation;
+import org.imgscalr.Scalr;
+import org.imgscalr.Scalr.Method;
+import org.imgscalr.Scalr.Mode;
 
 /**
  * 
@@ -57,29 +55,34 @@ public class ImgscalrMojo extends AbstractMojo {
 			getLog().info("imgscalr : target = " + target);
 			getLog().info("imgscalr : w x h = " + width + " x " + height);
 
-			BufferedImage source = ImageIO.read(this.source);
+			final BufferedImage source = ImageIO.read(this.source);
 
-			BufferedImage target = Scalr.resize(source, Method.QUALITY,
-					Mode.AUTOMATIC, Rotation.NONE, width, height);
+			final BufferedImage target = Scalr.resize(source, Method.QUALITY,
+					Mode.AUTOMATIC, width, height);
 
-			String format = getFileExtension(this.target);
+			final String format = getFileExtension(this.target);
 
 			this.target.getParentFile().mkdirs();
 
 			ImageIO.write(target, format, this.target);
 
-		} catch (Throwable exception) {
+		} catch (final Throwable exception) {
 			throw new MojoExecutionException("imgscalr: scale failed",
 					exception);
 		}
 
 	}
 
-	protected String getFileExtension(File file) {
-		String name = file.getName();
-		int pos = name.lastIndexOf('.');
-		String extension = name.substring(pos + 1);
+	protected String getFileExtension(final File file) {
+
+		final String name = file.getName();
+
+		final int pos = name.lastIndexOf('.');
+
+		final String extension = name.substring(pos + 1);
+
 		return extension;
+
 	}
 
 }
