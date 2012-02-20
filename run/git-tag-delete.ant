@@ -2,7 +2,7 @@
 
 	<echo message="basedir : ${basedir}" />
 
-	<property name="tag" value="carrot-maven-1.0.0" />
+	<property name="tag" value="carrot-maven-1.1.0" />
 
 	<target name="git">
 		<exec executable="git">
