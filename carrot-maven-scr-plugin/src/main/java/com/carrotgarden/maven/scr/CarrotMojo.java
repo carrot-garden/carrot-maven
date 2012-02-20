@@ -106,6 +106,25 @@ public class CarrotMojo extends AbstractMojo {
 		return maker;
 	}
 
+	private static boolean isValidDirectory(final File file) {
+		if (file == null) {
+			return false;
+		}
+		if (!file.exists()) {
+			return false;
+		}
+		if (!file.isDirectory()) {
+			return false;
+		}
+		if (!file.canRead()) {
+			return false;
+		}
+		if (!file.canWrite()) {
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -113,6 +132,13 @@ public class CarrotMojo extends AbstractMojo {
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		try {
+
+			getLog().info("outputDirectory=" + outputDirectory);
+
+			if (!isValidDirectory(outputDirectory)) {
+				getLog().error("outputDirectory is invalid");
+				return;
+			}
 
 			final ClassLoader loader = getClassloader();
 
