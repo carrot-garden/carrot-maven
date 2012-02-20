@@ -41,24 +41,31 @@ public class Image4jMojoSingle extends AbstractMojo {
 			getLog().info("image4j : source = " + source);
 			getLog().info("image4j : target = " + target);
 
-			BufferedImage source = ImageIO.read(this.source);
+			final BufferedImage source = ImageIO.read(this.source);
 
 			this.target.getParentFile().mkdirs();
 
 			ICOEncoder.write(source, this.target);
 
-		} catch (Throwable exception) {
+		} catch (final Throwable exception) {
+
 			throw new MojoExecutionException("image4j: convert failed",
 					exception);
+
 		}
 
 	}
 
-	protected String getFileExtension(File file) {
-		String name = file.getName();
-		int pos = name.lastIndexOf('.');
-		String extension = name.substring(pos + 1);
+	protected String getFileExtension(final File file) {
+
+		final String name = file.getName();
+
+		final int pos = name.lastIndexOf('.');
+
+		final String extension = name.substring(pos + 1);
+
 		return extension;
+
 	}
 
 }

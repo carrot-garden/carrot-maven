@@ -17,6 +17,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * 
  * @goal multiple
  * @phase generate-resources
+ * 
  */
 public class Image4jMojoMultiple extends AbstractMojo {
 
@@ -43,10 +44,10 @@ public class Image4jMojoMultiple extends AbstractMojo {
 			getLog().info("image4j : sources = " + sources);
 			getLog().info("image4j : target = " + target);
 
-			List<BufferedImage> sources = new LinkedList<BufferedImage>();
+			final List<BufferedImage> sources = new LinkedList<BufferedImage>();
 
-			for (File file : this.sources) {
-				BufferedImage source = ImageIO.read(file);
+			for (final File file : this.sources) {
+				final BufferedImage source = ImageIO.read(file);
 				sources.add(source);
 			}
 
@@ -54,18 +55,25 @@ public class Image4jMojoMultiple extends AbstractMojo {
 
 			ICOEncoder.write(sources, this.target);
 
-		} catch (Throwable exception) {
+		} catch (final Throwable exception) {
+
 			throw new MojoExecutionException("image4j: convert failed",
 					exception);
+
 		}
 
 	}
 
-	protected String getFileExtension(File file) {
-		String name = file.getName();
-		int pos = name.lastIndexOf('.');
-		String extension = name.substring(pos + 1);
+	protected String getFileExtension(final File file) {
+
+		final String name = file.getName();
+
+		final int pos = name.lastIndexOf('.');
+
+		final String extension = name.substring(pos + 1);
+
 		return extension;
+
 	}
 
 }
