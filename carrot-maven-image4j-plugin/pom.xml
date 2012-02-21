@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>com.carrotgarden.maven</groupId>
 		<artifactId>carrot-maven</artifactId>
-		<version>1.1.0</version>
+		<version>1.1.1</version>
 	</parent>
 
 	<artifactId>carrot-maven-image4j-plugin</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.1-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<scm>
