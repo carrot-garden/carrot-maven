@@ -4,39 +4,48 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+		<groupId>com.carrotgarden.maven</groupId>
 		<artifactId>carrot-maven</artifactId>
-		<groupId>com.carrotgarden</groupId>
-		<version>1.0.0-SNAPSHOT</version>
-		<relativePath>..</relativePath>
+		<version>1.1.0</version>
 	</parent>
 
 	<artifactId>carrot-maven-scr-plugin-test</artifactId>
+	<version>1.1.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+
+	<properties>
+
+		<carrotScrAnnoVersion>1.1.0-SNAPSHOT</carrotScrAnnoVersion>
+
+	</properties>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>com.carrotgarden</groupId>
-			<artifactId>carrot-osgi-anno-scr</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>com.carrotgarden.osgi</groupId>
+			<artifactId>carrot-osgi-anno-scr-core</artifactId>
+			<version>${carrotScrAnnoVersion}</version>
 		</dependency>
 
 		<dependency>
-			<groupId>com.carrotgarden</groupId>
-			<artifactId>carrot-osgi-anno-scr-make</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>test</scope>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
-			<version>4.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.compendium</artifactId>
-			<version>4.2.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -44,26 +53,45 @@
 
 	<build>
 
+		<!-- <resources> -->
+		<!-- <resource> -->
+		<!-- <directory>src/main/resources</directory> -->
+		<!-- </resource> -->
+		<!-- <resource> -->
+		<!-- <directory>target/scr</directory> -->
+		<!-- </resource> -->
+		<!-- </resources> -->
+
 		<plugins>
 
 			<plugin>
-				<groupId>com.carrotgarden</groupId>
+				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-				<configuration>
-				<ignoreService>
-					<service>java.lang.Runnable</service>
-				</ignoreService>
-				</configuration>
+				<version>1.1.0-SNAPSHOT</version>
 				<executions>
 					<execution>
-						<id>scr</id>
+						<id>generate</id>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>scr</goal>
 						</goals>
-						<phase>package</phase>
+						<configuration>
+							<excludedServices>
+								<service>java.lang.Runnable</service>
+							</excludedServices>
+						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<configuration>
+					<instructions>
+						<Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
+					</instructions>
+				</configuration>
 			</plugin>
 
 		</plugins>
