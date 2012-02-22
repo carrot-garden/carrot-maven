@@ -53,33 +53,24 @@
 
 	<build>
 
-		<!-- <resources> -->
-		<!-- <resource> -->
-		<!-- <directory>src/main/resources</directory> -->
-		<!-- </resource> -->
-		<!-- <resource> -->
-		<!-- <directory>target/scr</directory> -->
-		<!-- </resource> -->
-		<!-- </resources> -->
-
 		<plugins>
 
 			<plugin>
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
 				<version>1.1.0-SNAPSHOT</version>
+				<configuration>
+					<excludedServices>
+						<service>java.lang.Runnable</service>
+					</excludedServices>
+				</configuration>
 				<executions>
 					<execution>
 						<id>generate</id>
 						<phase>prepare-package</phase>
 						<goals>
-							<goal>scr</goal>
+							<goal>generate</goal>
 						</goals>
-						<configuration>
-							<excludedServices>
-								<service>java.lang.Runnable</service>
-							</excludedServices>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

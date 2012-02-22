@@ -22,11 +22,11 @@ import org.apache.maven.project.MavenProject;
 import com.carrotgarden.osgi.anno.scr.make.Maker;
 
 /**
- * @description make scr descriptors form annotated java classes
+ * @description generate component descriptors form annotated java classes
  * 
- * @goal scr
+ * @goal generate
  * 
- * @phase process-classes
+ * @phase prepare-package
  * 
  * @inheritByDefault true
  * 
@@ -108,6 +108,13 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 	protected boolean isProcessTestClasses;
 
 	/**
+	 * should include an empty component descriptor?
+	 * 
+	 * @parameter default-value="true"
+	 */
+	protected boolean isIncludeEmptyDescriptor;
+
+	/**
 	 * should generated descriptor resource files be included in final bundle?
 	 * 
 	 * @parameter default-value="true"
@@ -170,9 +177,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 		getLog().info("");
 
 		if (!isProcessMainClasses && !isProcessTestClasses) {
-			getLog().error(
-					"you have not selected neither main nor test classes");
-			return;
+			getLog().warn("you have not selected neither main nor test classes");
 		}
 
 		if (isProcessMainClasses) {
@@ -181,6 +186,10 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 
 		if (isProcessTestClasses) {
 			processClassesDirectory(ClassesSelector.TESTING);
+		}
+
+		if (isIncludeEmptyDescriptor) {
+			includeEmptyDescriptor();
 		}
 
 		if (isIncludeGeneratedDescritors) {
@@ -398,6 +407,25 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 		getLog().info("including descriptor resource = " + resource);
 
 		project.addResource(resource);
+
+	}
+
+	protected static final String NULL_XML = "null.xml";
+
+	protected void includeEmptyDescriptor() throws MojoFailureException {
+
+		final URL source = getClass().getResource(NULL_XML);
+
+		final File target = new File(outputDirectorySCR, NULL_XML);
+
+		try {
+			FileUtils.copyURLToFile(source, target);
+		} catch (final Exception e) {
+			throw new MojoFailureException("can not get " + NULL_XML, e);
+		}
+
+		getLog().info("");
+		getLog().info("including empty descriptor = " + target);
 
 	}
 
