@@ -23,13 +23,12 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * @readonly
-	 * @required
 	 * @parameter expression="${project}"
 	 */
 	protected MavenProject project;
 
 	/**
-	 * optional map of key/value settings for eclipse m2e connector
+	 * map of key/value settings for eclipse m2e connector
 	 * 
 	 * @parameter
 	 */
@@ -38,7 +37,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of generated scr component descriptor files in final bundle
 	 * 
-	 * @required
 	 * @parameter default-value= "OSGI-INF/service-component"
 	 */
 	protected String targetDirectorySCR;
@@ -55,7 +53,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * default extension used for generated scr component descriptor files
 	 * 
-	 * @required
 	 * @parameter default-value="xml"
 	 */
 	protected String outputExtensionSCR;
@@ -63,7 +60,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of compiled "main" class files
 	 * 
-	 * @required
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 */
 	protected File outputMainClasses;
@@ -71,13 +67,12 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of compiled "test" class files
 	 * 
-	 * @required
 	 * @parameter default-value="${project.build.testOutputDirectory}"
 	 */
 	protected File outputTestClasses;
 
 	/**
-	 * optional collection of names of unwanted component service interfaces
+	 * collection of names of unwanted component service interfaces
 	 * 
 	 * @parameter
 	 */
@@ -86,7 +81,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should "main" classes be processed?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isProcessMainClasses;
@@ -94,7 +88,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should "test" classes be processed?
 	 * 
-	 * @required
 	 * @parameter default-value="false"
 	 */
 	protected boolean isProcessTestClasses;
@@ -102,7 +95,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should include an empty component descriptor?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isIncludeEmptyDescriptor;
@@ -110,12 +102,13 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should generated descriptor resource files be included in final bundle?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isIncludeGeneratedDescritors;
 
-	// ##########################
+	// ####################################################
+	// ####################################################
+	// ####################################################
 
 	private Maker maker;
 

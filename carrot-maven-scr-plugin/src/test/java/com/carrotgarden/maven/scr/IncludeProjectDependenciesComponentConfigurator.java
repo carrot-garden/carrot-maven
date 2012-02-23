@@ -37,7 +37,7 @@ public class IncludeProjectDependenciesComponentConfigurator extends
 	// private static final Logger LOGGER = Logger
 	// .getLogger(IncludeProjectDependenciesComponentConfigurator.class);
 
-	@Override
+	// @Override
 	public void configureComponent(final Object component,
 			final PlexusConfiguration configuration,
 			final ExpressionEvaluator expressionEvaluator,
