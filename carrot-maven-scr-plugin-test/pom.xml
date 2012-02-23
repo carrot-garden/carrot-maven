@@ -63,6 +63,13 @@
 					<excludedServices>
 						<service>java.lang.Runnable</service>
 					</excludedServices>
+					<eclipseSettings>
+						<logBuildTimes>true</logBuildTimes>
+						<logExcludedServices>true</logExcludedServices>
+						<logInvocationDetails>true</logInvocationDetails>
+						<logErrorTraces>true</logErrorTraces>
+						<logComponentDescriptors>true</logComponentDescriptors>
+					</eclipseSettings>
 				</configuration>
 				<executions>
 					<execution>

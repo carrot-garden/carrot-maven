@@ -11,6 +11,9 @@ import org.osgi.service.component.annotations.Reference;
 public class Comp2 extends Comp1 implements Runnable {
 
 	@Property
+	private static final String AAA = "aaa aaa aaa";
+
+	@Property
 	private static final String hello = "hello there";
 
 	@Property(name = "good-bye")
