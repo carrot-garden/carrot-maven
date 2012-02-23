@@ -66,6 +66,13 @@
 				</configuration>
 				<executions>
 					<execution>
+						<id>clean</id>
+						<phase>clean</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+					<execution>
 						<id>generate</id>
 						<phase>prepare-package</phase>
 						<goals>

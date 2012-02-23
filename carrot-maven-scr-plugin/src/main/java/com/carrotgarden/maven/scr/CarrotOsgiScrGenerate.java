@@ -7,19 +7,14 @@ import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-
-import com.carrotgarden.osgi.anno.scr.make.Maker;
 
 /**
  * @description generate component descriptors form annotated java classes
@@ -33,140 +28,7 @@ import com.carrotgarden.osgi.anno.scr.make.Maker;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotOsgiScrMojo extends AbstractMojo {
-
-	/**
-	 * internal
-	 * 
-	 * @required
-	 * @parameter expression="${project}"
-	 * @readonly
-	 */
-	protected MavenProject project;
-
-	/**
-	 * location of generated scr component descriptor files in final bundle
-	 * 
-	 * @parameter default-value= "OSGI-INF/service-component"
-	 * 
-	 */
-	protected String targetDirectorySCR;
-
-	/**
-	 * location of generated scr component descriptor files in maven build
-	 * folder
-	 * 
-	 * @required
-	 * @parameter default-value= "${project.build.directory}/service-component"
-	 */
-	protected File outputDirectorySCR;
-
-	/**
-	 * default extension used for generated scr component descriptor files
-	 * 
-	 * @required
-	 * @parameter default-value="xml"
-	 */
-	protected String outputExtensionSCR;
-
-	/**
-	 * location of compiled "main" class files
-	 * 
-	 * @parameter default-value="${project.build.outputDirectory}"
-	 * @required
-	 */
-	protected File outputMainClasses;
-
-	/**
-	 * location of compiled "test" class files
-	 * 
-	 * @parameter default-value="${project.build.testOutputDirectory}"
-	 * @required
-	 */
-	protected File outputTestClasses;
-
-	/**
-	 * optional collection of names of unwanted component service interfaces
-	 * 
-	 * @parameter
-	 */
-	protected Set<String> excludedServices = new HashSet<String>();
-
-	/**
-	 * should "main" classes be processed?
-	 * 
-	 * @parameter default-value="true"
-	 */
-
-	protected boolean isProcessMainClasses;
-
-	/**
-	 * should "test" classes be processed?
-	 * 
-	 * @parameter default-value="false"
-	 */
-	protected boolean isProcessTestClasses;
-
-	/**
-	 * should include an empty component descriptor?
-	 * 
-	 * @parameter default-value="true"
-	 */
-	protected boolean isIncludeEmptyDescriptor;
-
-	/**
-	 * should generated descriptor resource files be included in final bundle?
-	 * 
-	 * @parameter default-value="true"
-	 */
-	protected boolean isIncludeGeneratedDescritors;
-
-	//
-
-	private Maker maker;
-
-	protected Maker getMaker() {
-		if (maker == null) {
-			maker = new Maker(excludedServices);
-		}
-		return maker;
-	}
-
-	protected static boolean isValidDirectory(final File file) {
-
-		if (file == null) {
-			return false;
-		}
-
-		if (!file.exists()) {
-			return false;
-		}
-
-		if (!file.isDirectory()) {
-			return false;
-		}
-
-		if (!file.canRead()) {
-			return false;
-		}
-
-		if (!file.canWrite()) {
-			return false;
-		}
-
-		return true;
-
-	}
-
-	//
-
-	//
-
-	/** java class extension during class discovery */
-	protected static final String[] EXTENSIONS = new String[] { "class" };
-
-	/** find classes from all packages during class discovery */
-	protected static final boolean IS_RECURSIVE = true;
+public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 	/**
 	 * {@inheritDoc}
@@ -221,7 +83,8 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 			final ClassLoader loader = getClassloader(selector);
 
 			getLog().info("");
-			getLog().info("output descriptor directory = " + outputDirectorySCR);
+			getLog().info(
+					"output descriptor directory = " + outputDirectorySCR());
 
 			int classCount = 0;
 
@@ -286,7 +149,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 
 		final String name = klaz.getName() + "." + outputExtensionSCR;
 
-		final File file = new File(outputDirectorySCR, name);
+		final File file = new File(outputDirectorySCR(), name);
 
 		getLog().info("\t descriptor : " + file);
 
@@ -362,7 +225,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 			}
 
 			@Override
-			public File getClassesDirectory(final CarrotOsgiScrMojo mojo) {
+			public File getClassesDirectory(final CarrotOsgiScrGenerate mojo) {
 				return mojo.outputMainClasses;
 			}
 
@@ -378,7 +241,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 			}
 
 			@Override
-			public File getClassesDirectory(final CarrotOsgiScrMojo mojo) {
+			public File getClassesDirectory(final CarrotOsgiScrGenerate mojo) {
 				return mojo.outputTestClasses;
 			}
 
@@ -389,7 +252,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 		public abstract List<String> getClasspathElements(MavenProject project)
 				throws DependencyResolutionRequiredException;
 
-		public abstract File getClassesDirectory(CarrotOsgiScrMojo mojo);
+		public abstract File getClassesDirectory(CarrotOsgiScrGenerate mojo);
 
 	}
 
@@ -397,7 +260,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 
 		final Resource resource = new Resource();
 
-		final String sourcePath = outputDirectorySCR.getPath();
+		final String sourcePath = outputDirectorySCR().getPath();
 		final String targetPath = targetDirectorySCR;
 
 		resource.setDirectory(sourcePath);
@@ -416,7 +279,7 @@ public class CarrotOsgiScrMojo extends AbstractMojo {
 
 		final URL source = getClass().getResource(NULL_XML);
 
-		final File target = new File(outputDirectorySCR, NULL_XML);
+		final File target = new File(outputDirectorySCR(), NULL_XML);
 
 		try {
 			FileUtils.copyURLToFile(source, target);

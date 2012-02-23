@@ -30,13 +30,10 @@ public class Comp2 extends Comp1 implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Deactivate
 	protected void deactivate2() {
-
 	}
 
 }
