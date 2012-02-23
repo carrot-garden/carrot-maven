@@ -23,8 +23,7 @@
 
 	<dependencies>
 
-		<!-- -->
-
+		<!-- maven api and impl -->
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
@@ -36,33 +35,39 @@
 			<version>${mavenVersion}</version>
 		</dependency>
 
-		<!-- -->
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.3.2</version>
-		</dependency>
-
-		<!-- -->
-
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-
-		<!-- -->
-
+		<!-- scr annotations -->
 		<dependency>
 			<groupId>com.carrotgarden.osgi</groupId>
 			<artifactId>carrot-osgi-anno-scr-core</artifactId>
 			<version>${carrotScrAnnoVersion}</version>
 		</dependency>
+
+		<!-- scr descriptor generator -->
 		<dependency>
 			<groupId>com.carrotgarden.osgi</groupId>
 			<artifactId>carrot-osgi-anno-scr-make</artifactId>
 			<version>${carrotScrAnnoVersion}</version>
+		</dependency>
+
+		<!-- used by generator -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.1</version>
 		</dependency>
 
 	</dependencies>

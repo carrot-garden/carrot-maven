@@ -34,7 +34,7 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 		final boolean isDelete = deleteDir(outputDirectorySCR());
 
 		if (!isDelete) {
-			getLog().error("delete failed");
+			getLog().warn("delete failed");
 		}
 
 		getLog().info("create " + outputDirectorySCR());
@@ -42,7 +42,7 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 		final boolean isCreate = outputDirectorySCR().mkdirs();
 
 		if (!isCreate) {
-			getLog().error("create failed");
+			getLog().warn("create failed");
 		}
 
 	}
