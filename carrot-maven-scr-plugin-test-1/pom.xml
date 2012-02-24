@@ -66,6 +66,7 @@
 						<service>java.lang.Runnable</service>
 					</excludedServices>
 					<eclipseSettings>
+						<!-- eclipse maven console -->
 						<logBuildTimes>true</logBuildTimes>
 						<logErrorTraces>true</logErrorTraces>
 						<logExcludedServices>true</logExcludedServices>
