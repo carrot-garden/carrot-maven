@@ -27,6 +27,12 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	@Override
 	public void execute() throws MojoFailureException {
 
+		if (isImproperPackaging()) {
+			return;
+		}
+
+		//
+
 		getLog().info("");
 
 		getLog().info("delete " + outputDirectorySCR());

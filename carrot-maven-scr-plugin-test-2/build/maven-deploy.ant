@@ -1,0 +1,11 @@
+<project default="maven" basedir="./..">
+
+	<echo message="basedir : ${basedir}" />
+
+	<target name="maven">
+		<exec executable="mvn">
+			<arg value="deploy" />
+		</exec>
+	</target>
+
+</project>

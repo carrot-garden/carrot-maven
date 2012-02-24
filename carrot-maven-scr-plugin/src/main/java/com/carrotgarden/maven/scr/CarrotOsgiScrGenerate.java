@@ -39,6 +39,12 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	@Override
 	public void execute() throws MojoFailureException {
 
+		if (isImproperPackaging()) {
+			return;
+		}
+
+		//
+
 		descriptorCounter = 0;
 		allclassesCounter = 0;
 
