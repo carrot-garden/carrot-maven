@@ -33,6 +33,7 @@ public class Comp2 extends Comp1 implements Runnable {
 
 	@Override
 	public void run() {
+		//
 	}
 
 	@Deactivate

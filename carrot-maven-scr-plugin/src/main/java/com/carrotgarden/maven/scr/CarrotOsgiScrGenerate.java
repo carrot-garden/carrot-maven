@@ -30,11 +30,19 @@ import org.apache.maven.project.MavenProject;
  */
 public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
+	private int descriptorCounter;
+	private int allclassesCounter;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void execute() throws MojoFailureException {
+
+		descriptorCounter = 0;
+		allclassesCounter = 0;
+
+		final long timeStart = System.nanoTime();
 
 		getLog().info("");
 
@@ -57,6 +65,20 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		if (isIncludeGeneratedDescritors) {
 			includeDescriptorResource();
 		}
+
+		final long timeFinish = System.nanoTime();
+
+		//
+
+		getLog().info("");
+
+		final long timeDiff = timeFinish - timeStart;
+		final long timeRate = descriptorCounter == 0 ? 0 : timeDiff
+				/ descriptorCounter;
+		getLog().info("combined classes count = " + allclassesCounter);
+		getLog().info("descriptor class count = " + descriptorCounter);
+		getLog().info("time, millis total     = " + timeDiff / 1000000);
+		getLog().info("rate, millis per descr = " + timeRate / 1000000);
 
 	}
 
@@ -86,8 +108,6 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			getLog().info(
 					"output descriptor directory = " + outputDirectorySCR());
 
-			int classCount = 0;
-
 			while (iter.hasNext()) {
 
 				/** discovered *.class file */
@@ -105,11 +125,13 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 				/** non component returns null */
 				final boolean isComponent = text != null;
 
+				allclassesCounter++;
+
 				if (isComponent) {
 
 					saveDescriptor(klaz, text);
 
-					classCount++;
+					descriptorCounter++;
 
 				}
 
@@ -117,10 +139,10 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 			getLog().info("");
 
-			if (classCount == 0) {
+			if (descriptorCounter == 0) {
 				getLog().warn("did not find any active scr components");
 			} else {
-				getLog().info("active components count = " + classCount);
+				getLog().info("active components count = " + descriptorCounter);
 			}
 
 		} catch (final MojoFailureException exception) {

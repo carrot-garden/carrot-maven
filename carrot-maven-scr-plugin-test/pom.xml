@@ -65,9 +65,9 @@
 					</excludedServices>
 					<eclipseSettings>
 						<logBuildTimes>true</logBuildTimes>
+						<logErrorTraces>true</logErrorTraces>
 						<logExcludedServices>true</logExcludedServices>
 						<logInvocationDetails>true</logInvocationDetails>
-						<logErrorTraces>true</logErrorTraces>
 						<logComponentDescriptors>true</logComponentDescriptors>
 					</eclipseSettings>
 				</configuration>

@@ -6,8 +6,7 @@ import org.osgi.service.component.annotations.Reference;
 
 //
 //
-//
-//
+////////////////
 //
 
 @Component
@@ -27,6 +26,7 @@ public class Comp1 {
 
 }
 
+//
 //
 //
 
