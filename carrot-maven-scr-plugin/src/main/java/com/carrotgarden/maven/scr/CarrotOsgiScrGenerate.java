@@ -15,6 +15,7 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * @description generate component descriptors form annotated java classes
@@ -122,8 +123,32 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 				/** resolved class name */
 				final String name = getClassName(classesDirectory, file);
 
-				/** load and resolve class and all super classes */
-				final Class<?> klaz = Class.forName(name, true, loader);
+				// ########################
+				// ########################
+				// ########################
+
+				getLog().debug("\t trying to load class : " + name);
+
+				Class<?> klaz;
+
+				/** load NO init */
+				klaz = Class.forName(name, false, loader);
+
+				getLog().debug("\t class load ok.");
+
+				final boolean hasComponent = klaz
+						.isAnnotationPresent(Component.class);
+
+				if (!hasComponent) {
+					continue;
+				}
+
+				/** load WITH init */
+				klaz = Class.forName(name, true, loader);
+
+				// ########################
+				// ########################
+				// ########################
 
 				/** make individual descriptor */
 				final String text = getMaker().make(klaz);
@@ -135,9 +160,17 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 				if (isComponent) {
 
+					final String outputFile = outputFileSCR(klaz);
+
+					getLog().info("\t descriptor : " + outputFile);
+
 					saveDescriptor(klaz, text);
 
 					descriptorCounter++;
+
+				} else {
+
+					getLog().debug("\t class is not a component");
 
 				}
 
@@ -175,14 +208,14 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	protected void saveDescriptor(final Class<?> klaz, final String text)
 			throws Exception {
 
-		final String name = klaz.getName() + "." + outputExtensionSCR;
-
-		final File file = new File(outputDirectorySCR(), name);
-
-		getLog().info("\t descriptor : " + file);
+		final File file = new File(outputDirectorySCR(), outputFileSCR(klaz));
 
 		FileUtils.writeStringToFile(file, text);
 
+	}
+
+	protected String outputFileSCR(final Class<?> klaz) {
+		return klaz.getName() + "." + outputExtensionSCR;
 	}
 
 	/**
@@ -245,7 +278,6 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		COMPILE() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public List<String> getClasspathElements(final MavenProject project)
 					throws DependencyResolutionRequiredException {
@@ -261,7 +293,6 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		TESTING() {
 
-			@SuppressWarnings("unchecked")
 			@Override
 			public List<String> getClasspathElements(final MavenProject project)
 					throws DependencyResolutionRequiredException {
