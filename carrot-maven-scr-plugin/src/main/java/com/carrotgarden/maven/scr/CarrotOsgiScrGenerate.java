@@ -15,7 +15,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.osgi.service.component.annotations.Component;
 
 /**
  * @description generate component descriptors form annotated java classes
@@ -98,8 +97,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 			if (isValidDirectory(classesDirectory)) {
 				getLog().info("");
-				getLog().info(
-						"processing classes directory = " + classesDirectory);
+				getLog().info("input classes = " + classesDirectory);
 			} else {
 				throw new MojoFailureException("classes directory invalid");
 			}
@@ -112,8 +110,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			final ClassLoader loader = getClassloader(selector);
 
 			getLog().info("");
-			getLog().info(
-					"output descriptor directory = " + outputDirectorySCR());
+			getLog().info("output directory = " + outputDirectorySCR());
 
 			while (iter.hasNext()) {
 
@@ -123,35 +120,10 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 				/** resolved class name */
 				final String name = getClassName(classesDirectory, file);
 
-				// ########################
-				// ########################
-				// ########################
-
-				getLog().debug("\t trying to load class : " + name);
-
-				Class<?> klaz;
-
-				/** load NO init */
-				klaz = Class.forName(name, false, loader);
-
-				getLog().debug("\t class load ok.");
-
-				final boolean hasComponent = klaz
-						.isAnnotationPresent(Component.class);
-
-				if (!hasComponent) {
-					continue;
-				}
-
-				/** load WITH init */
-				klaz = Class.forName(name, true, loader);
-
-				// ########################
-				// ########################
-				// ########################
+				getLog().debug("\t class : " + name);
 
 				/** make individual descriptor */
-				final String text = getMaker().make(klaz);
+				final String text = getMaker().make(loader, name);
 
 				/** non component returns null */
 				final boolean isComponent = text != null;
@@ -160,11 +132,11 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 				if (isComponent) {
 
-					final String outputFile = outputFileSCR(klaz);
+					final String outputFile = outputFileSCR(name);
 
-					getLog().info("\t descriptor : " + outputFile);
+					getLog().info("\t descriptor = " + outputFile);
 
-					saveDescriptor(klaz, text);
+					saveDescriptor(name, text);
 
 					descriptorCounter++;
 
@@ -205,17 +177,17 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	 * into: com.carrotgarden.test.TestComp.xml
 	 * 
 	 */
-	protected void saveDescriptor(final Class<?> klaz, final String text)
+	protected void saveDescriptor(final String name, final String text)
 			throws Exception {
 
-		final File file = new File(outputDirectorySCR(), outputFileSCR(klaz));
+		final File file = new File(outputDirectorySCR(), outputFileSCR(name));
 
 		FileUtils.writeStringToFile(file, text);
 
 	}
 
-	protected String outputFileSCR(final Class<?> klaz) {
-		return klaz.getName() + "." + outputExtensionSCR;
+	protected String outputFileSCR(final String name) {
+		return name + "." + outputExtensionSCR;
 	}
 
 	/**
@@ -260,7 +232,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		int index = 0;
 		for (final String path : pathList) {
 			final URL entryURL = new File(path).toURI().toURL();
-			getLog().info("\t found class path entry = " + entryURL);
+			getLog().info("\t dependency = " + entryURL);
 			entryUrlArray[index++] = entryURL;
 		}
 
