@@ -60,19 +60,19 @@
 			<plugin>
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
-				<version>1.1.3</version>
+				<version>1.1.4-SNAPSHOT</version>
 				<configuration>
-					<excludedServices>
-						<service>java.lang.Runnable</service>
-					</excludedServices>
-					<eclipseSettings>
-						<!-- eclipse maven console -->
-						<logBuildTimes>true</logBuildTimes>
-						<logErrorTraces>true</logErrorTraces>
-						<logExcludedServices>true</logExcludedServices>
-						<logInvocationDetails>true</logInvocationDetails>
-						<logComponentDescriptors>true</logComponentDescriptors>
-					</eclipseSettings>
+					<!-- <excludedServices> -->
+					<!-- <service>java.lang.Runnable</service> -->
+					<!-- </excludedServices> -->
+					<!-- eclipse maven console -->
+					<!-- <eclipseSettings> -->
+					<!-- <logBuildTimes>true</logBuildTimes> -->
+					<!-- <logErrorTraces>true</logErrorTraces> -->
+					<!-- <logExcludedServices>true</logExcludedServices> -->
+					<!-- <logInvocationDetails>true</logInvocationDetails> -->
+					<!-- <logComponentDescriptors>true</logComponentDescriptors> -->
+					<!-- </eclipseSettings> -->
 				</configuration>
 				<executions>
 					<execution>

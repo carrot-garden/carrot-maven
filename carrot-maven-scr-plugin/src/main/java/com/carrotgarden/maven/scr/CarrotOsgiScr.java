@@ -5,7 +5,6 @@ package com.carrotgarden.maven.scr;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,12 +22,15 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * @readonly
+	 * @required
 	 * @parameter expression="${project}"
 	 */
 	protected MavenProject project;
 
 	/**
 	 * map of key/value settings for eclipse m2e connector
+	 * 
+	 * NOTrequired
 	 * 
 	 * @parameter
 	 */
@@ -37,6 +39,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of generated scr component descriptor files in final bundle
 	 * 
+	 * @required
 	 * @parameter default-value= "OSGI-INF/service-component"
 	 */
 	protected String targetDirectorySCR;
@@ -53,6 +56,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * default extension used for generated scr component descriptor files
 	 * 
+	 * @required
 	 * @parameter default-value="xml"
 	 */
 	protected String outputExtensionSCR;
@@ -60,6 +64,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of compiled "main" class files
 	 * 
+	 * @required
 	 * @parameter default-value="${project.build.outputDirectory}"
 	 */
 	protected File outputMainClasses;
@@ -67,6 +72,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * location of compiled "test" class files
 	 * 
+	 * @required
 	 * @parameter default-value="${project.build.testOutputDirectory}"
 	 */
 	protected File outputTestClasses;
@@ -74,13 +80,15 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * collection of names of unwanted component service interfaces
 	 * 
-	 * @parameter
+	 * @required
+	 * @parameter default-value="java.lang.Cloneable"
 	 */
-	protected Set<String> excludedServices = new HashSet<String>();
+	protected Set<String> excludedServices;
 
 	/**
 	 * should "main" classes be processed?
 	 * 
+	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isProcessMainClasses;
@@ -88,6 +96,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should "test" classes be processed?
 	 * 
+	 * @required
 	 * @parameter default-value="false"
 	 */
 	protected boolean isProcessTestClasses;
@@ -95,6 +104,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should include an empty component descriptor?
 	 * 
+	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isIncludeEmptyDescriptor;
@@ -102,6 +112,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	/**
 	 * should generated descriptor resource files be included in final bundle?
 	 * 
+	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean isIncludeGeneratedDescritors;
@@ -110,12 +121,10 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	 * collection of names of unwanted maven project packaging types for which
 	 * to skip invocation of this plugin; by defaul includes "pom";
 	 * 
-	 * @parameter
+	 * @required
+	 * @parameter default-value="pom"
 	 */
-	protected Set<String> improperPackaging = new HashSet<String>();
-	{
-		improperPackaging.add("pom");
-	}
+	protected Set<String> improperPackaging;
 
 	// ####################################################
 	// ####################################################
@@ -178,5 +187,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/** find classes from all packages during class discovery */
 	protected static final boolean IS_RECURSIVE = true;
+
+	//
 
 }

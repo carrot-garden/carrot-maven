@@ -43,14 +43,24 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			return;
 		}
 
+		getLog().info("");
+		getLog().info("excludedServices");
+		for (final String service : excludedServices) {
+			getLog().info("\t service=" + service);
+		}
+
+		getLog().info("");
+		getLog().info("improperPackaging");
+		for (final String packaging : improperPackaging) {
+			getLog().info("\t packaging=" + packaging);
+		}
+
 		//
 
 		descriptorCounter = 0;
 		allclassesCounter = 0;
 
 		final long timeStart = System.nanoTime();
-
-		getLog().info("");
 
 		if (!isProcessMainClasses && !isProcessTestClasses) {
 			getLog().warn("you have not selected neither main nor test classes");
