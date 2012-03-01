@@ -1,0 +1,124 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "builder instance",
+    "Mappings": {
+        "RegionMap": {
+            "us-east-1": {
+                "AMI": "ami-a7f539ce"
+            },
+            "us-west-1": {
+                "AMI": "ami-79772b3c"
+            },
+            "us-west-2": {
+                "AMI": "ami-20f97410"
+            },
+            "eu-west-1": {
+                "AMI": "ami-65b28011"
+            },
+            "ap-southeast-1": {
+                "AMI": "ami-76057f24"
+            },
+            "ap-northeast-1": {
+                "AMI": "ami-2e90242f"
+            }
+        }
+    },
+    "Resources": {
+        "BuilderInstance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "KeyName": "carrotgarden",
+                "ImageId": {
+                    "Fn::FindInMap": [
+                        "RegionMap",
+                        {
+                            "Ref": "AWS::Region"
+                        },
+                        "AMI"
+                    ]
+                },
+                "InstanceType": "t1.micro",
+                "UserData": {
+                    "Fn::Base64": "user data"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "builder"
+                    }
+                ]
+            }
+        },
+        "BuilderInstanceDNS": {
+            "Type": "AWS::Route53::RecordSet",
+            "Properties": {
+                "HostedZoneName": "carrotgarden.com.",
+                "Comment": "CNAME for builder",
+                "Name": "builder.carrotgarden.com.",
+                "Type": "CNAME",
+                "TTL": "60",
+                "ResourceRecords": [
+                    {
+                        "Fn::GetAtt": [
+                            "BuilderInstance",
+                            "PublicDnsName"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "InstanceId": {
+            "Description": "EC2 InstanceId",
+            "Value": {
+                "Ref": "BuilderInstance"
+            }
+        },
+        "AvailabilityZone": {
+            "Description": "Availability Zone",
+            "Value": {
+                "Fn::GetAtt": [
+                    "BuilderInstance",
+                    "AvailabilityZone"
+                ]
+            }
+        },
+        "PublicIp": {
+            "Description": "Public IP address",
+            "Value": {
+                "Fn::GetAtt": [
+                    "BuilderInstance",
+                    "PublicIp"
+                ]
+            }
+        },
+        "PrivateIp": {
+            "Description": "Private IP address",
+            "Value": {
+                "Fn::GetAtt": [
+                    "BuilderInstance",
+                    "PrivateIp"
+                ]
+            }
+        },
+        "PublicDnsName": {
+            "Description": "Public Dns Name",
+            "Value": {
+                "Fn::GetAtt": [
+                    "BuilderInstance",
+                    "PublicDnsName"
+                ]
+            }
+        },
+        "PrivateDnsName": {
+            "Description": "Private Dns Name",
+            "Value": {
+                "Fn::GetAtt": [
+                    "BuilderInstance",
+                    "PrivateDnsName"
+                ]
+            }
+        }
+    }
+}
