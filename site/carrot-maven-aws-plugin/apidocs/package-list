@@ -1,0 +1,4 @@
+com.carrotgarden.maven.aws
+com.carrotgarden.maven.aws.cfn
+com.carrotgarden.maven.aws.ecc
+com.carrotgarden.maven.aws.ssh
