@@ -3,7 +3,7 @@
 
   <bannerLeft>
     <name>${project.name}</name>
-    <href>${project.scm.url}</href>
+    <href>${project.url}</href>
   </bannerLeft>
   
   <bannerRight>
