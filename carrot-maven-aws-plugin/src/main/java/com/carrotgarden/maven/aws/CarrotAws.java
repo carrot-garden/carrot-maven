@@ -34,9 +34,7 @@ public abstract class CarrotAws extends AbstractMojo {
 	 */
 	protected Settings settings;
 
-	// ############################################
-	// ############################################
-	// ############################################
+	//
 
 	protected static boolean isValidDirectory(final File file) {
 

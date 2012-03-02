@@ -36,12 +36,11 @@ public class TestCloudFormation {
 		final CloudFormation formation = new CloudFormation(logger, stackName,
 				stackTemplate, stackParams, timeout, awsAccessKey, awsSecretKey);
 
-		final Map<String, String> output = formation.create();
+		formation.stackCreate();
 
 		assertTrue(true);
 
-		final boolean isDeleted = formation.delete();
+		formation.stackDelete();
 
 	}
-
 }

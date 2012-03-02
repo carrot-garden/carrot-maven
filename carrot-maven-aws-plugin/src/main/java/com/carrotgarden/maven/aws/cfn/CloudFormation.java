@@ -5,7 +5,6 @@ package com.carrotgarden.maven.aws.cfn;
  */
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +20,6 @@ import com.amazonaws.services.cloudformation.model.DescribeStackEventsRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStackEventsResult;
 import com.amazonaws.services.cloudformation.model.DescribeStacksRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStacksResult;
-import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackEvent;
@@ -30,8 +28,8 @@ import com.google.common.collect.Lists;
 
 /**
  * 
- * @author erick dovale
- * 
+ * @author Andrei Pozolotin
+ * @author Erick Dovale
  *         https://github.com/Syncapse/jenkins-cloudformation-plugin
  * 
  */
@@ -50,7 +48,6 @@ public class CloudFormation {
 
 	private final AmazonCloudFormation amazonClient;
 
-	// private Stack stack;
 	private final long waitBetweenAttempts;
 
 	public CloudFormation(final Logger logger, final String stackName,
@@ -95,11 +92,8 @@ public class CloudFormation {
 	}
 
 	/**
-	 * @return
 	 */
-	public boolean delete() {
-
-		logger.info("Deleting Cloud Formation stack: " + name);
+	public Stack stackDelete() throws Exception {
 
 		final DeleteStackRequest request = new DeleteStackRequest();
 
@@ -107,68 +101,27 @@ public class CloudFormation {
 
 		amazonClient.deleteStack(request);
 
-		waitForStackDelete();
+		final Stack stack = waitForStackDelete();
 
-		logger.info("Cloud Formation stack: " + name + " deleted successfully");
-
-		return true;
+		return stack;
 
 	}
 
 	/**
-	 * @return A Map containing all outputs or null if creating the stack fails.
-	 * 
 	 */
-	public Map<String, String> create() {
+	public Stack stackCreate() throws Exception {
 
-		final Map<String, String> stackOutput = new HashMap<String, String>();
+		final CreateStackRequest request = new CreateStackRequest();
 
-		try {
+		request.withStackName(name);
+		request.withParameters(paramList);
+		request.withTemplateBody(template);
 
-			logger.info("Creating Cloud Formation stack: " + name);
+		amazonClient.createStack(request);
 
-			final CreateStackRequest request = new CreateStackRequest();
+		final Stack stack = waitForStackCreate();
 
-			request.withStackName(name);
-			request.withParameters(paramList);
-			request.withTemplateBody(template);
-
-			amazonClient.createStack(request);
-
-			final Stack stack = waitForStackCreate();
-
-			if (isStatus(stack, StackStatus.CREATE_COMPLETE)) {
-
-				final List<Output> outputs = stack.getOutputs();
-
-				for (final Output output : outputs) {
-					stackOutput.put(output.getOutputKey(),
-							output.getOutputValue());
-				}
-
-				logger.info("Successfully created stack: " + name);
-
-				return stackOutput;
-
-			} else {
-
-				final String reason = stack.getStackStatusReason();
-
-				logger.error("Failed to create stack: " + name + ". Reason: "
-						+ reason);
-
-				return null;
-
-			}
-
-		} catch (final Exception e) {
-
-			logger.error("Failed to create stack: " + name + ". Reason: "
-					+ e.getLocalizedMessage());
-
-			return null;
-
-		}
+		return stack;
 
 	}
 
@@ -188,7 +141,7 @@ public class CloudFormation {
 		return stack != null;
 	}
 
-	private Stack waitForStackDelete() {
+	private Stack waitForStackDelete() throws Exception {
 
 		final long timeStart = System.currentTimeMillis();
 
@@ -212,7 +165,8 @@ public class CloudFormation {
 						"stack delete invalid/missing");
 			}
 
-			final StackStatus status = getStatus(stack);
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
 
 			switch (status) {
 			case DELETE_IN_PROGRESS:
@@ -247,7 +201,7 @@ public class CloudFormation {
 
 	}
 
-	private Stack waitForStackCreate() {
+	private Stack waitForStackCreate() throws Exception {
 
 		final long timeStart = System.currentTimeMillis();
 
@@ -271,7 +225,8 @@ public class CloudFormation {
 						"stack create invalid/missing");
 			}
 
-			final StackStatus status = getStatus(stack);
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
 
 			switch (status) {
 			case CREATE_IN_PROGRESS:
@@ -281,10 +236,11 @@ public class CloudFormation {
 				sleep();
 				continue;
 			case CREATE_COMPLETE:
-				logger.info("stack create complete");
+				logger.info("stack create success");
 				printStackEvents();
 				return stack;
 			default:
+				logger.error("stack create failure");
 				return stack;
 			}
 
@@ -359,50 +315,14 @@ public class CloudFormation {
 
 	}
 
-	private void sleep() {
+	private void sleep() throws Exception {
 		try {
-
 			Thread.sleep(waitBetweenAttempts * 1000);
-
 		} catch (final InterruptedException ie) {
-
-			Stack stack = null;
-			try {
-				stack = getStack();
-			} catch (final Exception e) {
-				//
-			}
-
-			if (stack != null) {
-
-				logger.error("Received an interruption signal. "
-						+ "There is a stack created or in the proces of creation. "
-						+ "Check in your amazon account to ensure you are not charged for this.");
-
-				logger.info("Stack details: " + stack);
-
-			}
-
+			throw new IllegalStateException("operation interrupted; "
+					+ "resources are left in inconsistent state; "
+					+ "requires manual intervention");
 		}
-
-	}
-
-	private boolean isStatus(final Stack stack, final StackStatus status) {
-		if (stack == null) {
-			return false;
-		} else {
-			return getStatus(stack) == status;
-		}
-	}
-
-	private StackStatus getStatus(final Stack stack) {
-
-		final String status = stack.getStackStatus();
-
-		final StackStatus result = StackStatus.fromValue(status);
-
-		return result;
-
 	}
 
 }

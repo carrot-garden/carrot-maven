@@ -24,13 +24,13 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * @required
 	 * @parameter default-value="./src/main/resources/formation.template"
 	 */
-	protected File templateFile;
+	protected File stackTemplateFile;
 
 	/**
 	 * cloud formation operation timeout; seconds
 	 * 
 	 * @required
-	 * @parameter default-value="300"
+	 * @parameter default-value="600"
 	 */
 	protected Long stackTimeout;
 
@@ -56,19 +56,25 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * @required
 	 * @parameter default-value="amazon-cloud-formation"
 	 */
-	protected String serverId;
+	protected String stackServerId;
 
 	//
 
 	protected CloudFormation getCloudFormation() throws Exception {
 
-		final String stackTemplate = FileUtils.readFileToString(templateFile);
+		final String stackTemplate;
+		if (stackTemplateFile.exists()) {
+			stackTemplate = FileUtils.readFileToString(stackTemplateFile);
+		} else {
+			stackTemplate = "{}";
+		}
 
-		final Server server = settings.getServer(serverId);
+		final Server server = settings.getServer(stackServerId);
 
 		if (server == null) {
 			throw new IllegalArgumentException(
-					"server definition is missing for serverId=" + serverId);
+					"server definition is missing for serverId="
+							+ stackServerId);
 		}
 
 		final String username = server.getUsername();

@@ -5,8 +5,11 @@ package com.carrotgarden.maven.aws.cfn;
 
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.amazonaws.services.cloudformation.model.Stack;
+import com.amazonaws.services.cloudformation.model.StackStatus;
+
 /**
- * @description
+ * @description delete existing cloud formation stack by stack name
  * 
  * @goal cloud-formation-delete
  * 
@@ -27,15 +30,28 @@ public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("");
+			getLog().info("stack delete init");
 
 			final CloudFormation formation = getCloudFormation();
 
-			formation.delete();
+			final Stack stack = formation.stackDelete();
+
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
+
+			switch (status) {
+			case DELETE_COMPLETE:
+				break;
+			default:
+				throw new IllegalStateException("delete format failed");
+			}
+
+			getLog().info("stack delete done");
 
 		} catch (final Exception e) {
 
-			throw new MojoFailureException("delete failed", e);
+			throw new MojoFailureException("bada-boom", e);
+
 		}
 
 	}

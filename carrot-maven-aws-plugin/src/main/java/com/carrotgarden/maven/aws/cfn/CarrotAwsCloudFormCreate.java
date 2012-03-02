@@ -3,12 +3,20 @@ package com.carrotgarden.maven.aws.cfn;
 /**
  */
 
-import java.util.Map;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.util.List;
+import java.util.Properties;
 
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.amazonaws.services.cloudformation.model.Output;
+import com.amazonaws.services.cloudformation.model.Stack;
+import com.amazonaws.services.cloudformation.model.StackStatus;
+
 /**
- * @description
+ * @description create new cloud formation stack based on template
  * 
  * @goal cloud-formation-create
  * 
@@ -22,6 +30,14 @@ import org.apache.maven.plugin.MojoFailureException;
 public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 	/**
+	 * cloud formation stack create execution result output properties file
+	 * 
+	 * @required
+	 * @parameter default-value="./target/formation/formation.properties"
+	 */
+	protected File stackPropertiesOutputFile;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -29,34 +45,66 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("");
+			getLog().info("stack create init");
 
 			final CloudFormation formation = getCloudFormation();
 
-			final Map<String, String> output = formation.create();
+			final Stack stack = formation.stackCreate();
 
-			if (output == null) {
-				getLog().error("create failed");
-				return;
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
+
+			switch (status) {
+			case CREATE_COMPLETE:
+				break;
+			default:
+				throw new IllegalStateException("create format failed");
 			}
 
-			getLog().info("create output");
+			getLog().info("stack create output:");
 
-			for (final Map.Entry<String, String> entry : output.entrySet()) {
+			final List<Output> outputList = stack.getOutputs();
 
-				final String key = entry.getKey();
-				final String value = entry.getValue();
+			final Properties props = new Properties();
 
-				getLog().info("\n\t" + " ");
-				getLog().info("\n\t" + " key=" + key);
-				getLog().info("\n\t" + " value=" + value);
+			for (final Output output : outputList) {
+
+				final String key = output.getOutputKey();
+				final String value = output.getOutputValue();
+
+				props.put(key, value);
+
+				getLog().info("\t" + key + "=" + value);
 
 			}
+
+			save(props);
+
+			getLog().info("stack create done");
 
 		} catch (final Exception e) {
 
-			throw new MojoFailureException("create failed", e);
+			throw new MojoFailureException("bada-boom", e);
+
 		}
+
+	}
+
+	protected void save(final Properties props) throws Exception {
+
+		getLog().info("stack create output : " + stackPropertiesOutputFile);
+
+		final File folder = stackPropertiesOutputFile.getParentFile();
+
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		final Writer writer = new FileWriter(stackPropertiesOutputFile);
+
+		final String comments = "stack name : " + stackName;
+
+		props.store(writer, comments);
 
 	}
 
