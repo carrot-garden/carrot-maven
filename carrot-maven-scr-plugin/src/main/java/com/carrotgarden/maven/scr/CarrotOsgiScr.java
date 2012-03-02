@@ -14,9 +14,6 @@ import org.apache.maven.project.MavenProject;
 import com.carrotgarden.osgi.anno.scr.make.Maker;
 
 /**
- * @inheritByDefault true
- * 
- * @requiresDependencyResolution test
  */
 public abstract class CarrotOsgiScr extends AbstractMojo {
 
@@ -28,9 +25,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected MavenProject project;
 
 	/**
-	 * map of key/value settings for eclipse m2e connector
-	 * 
-	 * NOTrequired
+	 * map of key/value settings for eclipse m2e scr connector
 	 * 
 	 * @parameter
 	 */
@@ -43,15 +38,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	 * @parameter default-value= "OSGI-INF/service-component"
 	 */
 	protected String targetDirectorySCR;
-
-	/**
-	 * "${project.build.outputDirectory}/OSGI-INF/service-component"
-	 */
-	protected File outputDirectorySCR() {
-
-		return new File(outputMainClasses, targetDirectorySCR);
-
-	}
 
 	/**
 	 * default extension used for generated scr component descriptor files
@@ -119,7 +105,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * collection of names of unwanted maven project packaging types for which
-	 * to skip invocation of this plugin; by defaul includes "pom";
+	 * to skip invocation of this plugin;
 	 * 
 	 * @required
 	 * @parameter default-value="pom"
@@ -127,8 +113,15 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected Set<String> improperPackaging;
 
 	// ####################################################
-	// ####################################################
-	// ####################################################
+
+	/**
+	 * such as "./target/OSGI-INF/service-component"
+	 */
+	protected File outputDirectorySCR() {
+
+		return new File(outputMainClasses, targetDirectorySCR);
+
+	}
 
 	protected boolean isImproperPackaging() {
 

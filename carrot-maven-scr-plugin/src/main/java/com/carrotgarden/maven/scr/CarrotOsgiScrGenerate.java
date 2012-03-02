@@ -17,7 +17,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * @description generate component descriptors form annotated java classes
+ * generate component descriptors form annotated java classes
  * 
  * @goal generate
  * 

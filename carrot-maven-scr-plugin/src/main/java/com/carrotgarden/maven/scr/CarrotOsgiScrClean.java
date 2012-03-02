@@ -8,7 +8,7 @@ import java.io.File;
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * @description clean component descriptors from outputDirectorySCR
+ * clean component descriptors from outputDirectorySCR
  * 
  * @goal clean
  * 
