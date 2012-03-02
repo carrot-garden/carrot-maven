@@ -16,7 +16,7 @@ import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
 
 /**
- * @description create new cloud formation stack based on template
+ * create new cloud formation stack based on: name, template, parameters
  * 
  * @goal cloud-formation-create
  * 
@@ -30,7 +30,7 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
 public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 	/**
-	 * cloud formation stack create execution result output properties file
+	 * AWS CloudFormation stack create execution result output properties file
 	 * 
 	 * @required
 	 * @parameter default-value="./target/formation/formation.properties"

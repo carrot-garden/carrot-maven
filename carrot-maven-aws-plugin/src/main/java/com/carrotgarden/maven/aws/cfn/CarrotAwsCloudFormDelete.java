@@ -9,7 +9,7 @@ import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
 
 /**
- * @description delete existing cloud formation stack by stack name
+ * delete existing cloud formation stack by: stack name
  * 
  * @goal cloud-formation-delete
  * 

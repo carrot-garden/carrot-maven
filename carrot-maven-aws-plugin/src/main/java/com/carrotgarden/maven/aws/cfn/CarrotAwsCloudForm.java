@@ -19,7 +19,10 @@ import com.carrotgarden.maven.aws.CarrotAws;
 public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	/**
-	 * cloud formation template file
+	 * AWS CloudFormation template file
+	 * 
+	 * {@link http
+	 * ://aws.amazon.com/cloudformation/aws-cloudformation-templates/}
 	 * 
 	 * @required
 	 * @parameter default-value="./src/main/resources/formation.template"
@@ -27,7 +30,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	protected File stackTemplateFile;
 
 	/**
-	 * cloud formation operation timeout; seconds
+	 * AWS CloudFormation operation timeout; seconds
 	 * 
 	 * @required
 	 * @parameter default-value="600"
@@ -35,7 +38,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	protected Long stackTimeout;
 
 	/**
-	 * cloud formation stack name
+	 * AWS CloudFormation stack name
 	 * 
 	 * @required
 	 * @parameter default-value="amazon-tester"
@@ -43,18 +46,18 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	protected String stackName;
 
 	/**
-	 * cloud formation stack input parameters
+	 * AWS CloudFormation stack input parameters
 	 * 
 	 * @parameter
 	 */
 	protected Map<String, String> stackInputParams = new HashMap<String, String>();
 
 	/**
-	 * cloud formation login credentials stored in settings.xml under server id
-	 * entry
+	 * AWS CloudFormation login credentials stored in settings.xml under server
+	 * id entry; username="aws key id", password="aws secret key";
 	 * 
 	 * @required
-	 * @parameter default-value="amazon-cloud-formation"
+	 * @parameter default-value="com.example.aws.stack"
 	 */
 	protected String stackServerId;
 

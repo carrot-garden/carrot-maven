@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.carrotgarden.maven</groupId>
 		<artifactId>carrot-maven</artifactId>
-		<version>1.1.3</version>
+		<version>1.1.4-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>carrot-maven-aws-plugin</artifactId>
@@ -19,10 +19,25 @@
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
 	</scm>
 
+	<description>
+<![CDATA[
+
+carrot-maven-aws-plugin provides few functions for aws:
+
+* create/delete of cloud formation stacks
+
+* publish/execute ssh scripts on ec2 instances
+
+* image register for ami image creation    
+
+]]>	
+	</description>
+
+	<prerequisites>
+		<maven>${carrotMavenVersion}</maven>
+	</prerequisites>
+
 	<properties>
-
-		<mavenVersion>3.0.4</mavenVersion>
-
 	</properties>
 
 	<dependencies>
@@ -31,12 +46,12 @@
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
-			<version>${mavenVersion}</version>
+			<version>${carrotMavenVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-core</artifactId>
-			<version>${mavenVersion}</version>
+			<version>${carrotMavenVersion}</version>
 		</dependency>
 
 		<!-- logger -->
@@ -65,11 +80,11 @@
 			<version>1.3.2</version>
 		</dependency>
 
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.1</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.thoughtworks.xstream</groupId> -->
+		<!-- <artifactId>xstream</artifactId> -->
+		<!-- <version>1.4.1</version> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>com.jcraft</groupId>

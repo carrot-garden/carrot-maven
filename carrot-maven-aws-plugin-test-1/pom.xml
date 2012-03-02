@@ -76,6 +76,7 @@
 					<computeServerId>com.carrotgarden.aws.compute</computeServerId>
 
 					<sshKeyFile>${user.home}/.amazon/carrotgarden/keys/carrotgarden.pem</sshKeyFile>
+					<sshHost>builder.carrotgarden.com</sshHost>
 
 				</configuration>
 
