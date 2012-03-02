@@ -3,6 +3,7 @@
 
 [carrot-maven-scr-plugin](http://carrot-garden.github.com/carrot-maven/site/carrot-maven-scr-plugin/)
 
+## info
 
  CarrotGarden M2E SCR provides OSGI Service-Component descriptor generator
  according to a proposal described in RFC 0172 Declarative Services Annotations:
@@ -20,4 +21,3 @@
  for related maven plugin:
  https://github.com/carrot-garden/carrot-maven
 
- 
