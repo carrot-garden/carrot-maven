@@ -22,10 +22,12 @@ eclipse update site
  in eclipse which will be compatible with your non-interactive jenkins maven builds.
 
  Sources and Examples,
+
+ for annotations:
+ https://github.com/carrot-garden/carrot-osgi
  
- for m2e connnector:
- https://github.com/carrot-garden/carrot-eclipse
- 
- for related maven plugin:
+ for maven plugin:
  https://github.com/carrot-garden/carrot-maven
 
+ for m2e connnector:
+ https://github.com/carrot-garden/carrot-eclipse
