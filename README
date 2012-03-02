@@ -1,2 +1,8 @@
 
-http://carrot-garden.github.com/carrot-maven/site/carrot-maven-aws-plugin/
+pluging sites:
+
+<a
+href="http://carrot-garden.github.com/carrot-maven/site/carrot-maven-aws-plugin/" 
+>
+carrot-maven-aws-plugin
+</a>
