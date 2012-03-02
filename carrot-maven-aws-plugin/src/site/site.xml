@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="${project.name}">
 
-  <bannerRight>
+  <bannerLeft>
     <name>${project.name}</name>
-    <href>index.html</href>
-  </bannerRight>
+  </bannerLeft>
   
+  <bannerRight>
+    <name>${project.description}</name>
+  </bannerRight>
+
   <body>
   
     <menu name="Main">
       <item name="Index" href="./index.html"/>
-	  <item name="Plugin Info" href="./plugin-info.html"/>
+	  <item name="Plugin Goals" href="./plugin-info.html"/>
     </menu>
     
     <menu name="Examples">
       <item name="Image Build" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-aws-plugin-test-1"/>
     </menu>
         
+    <menu ref="reports"/>
+        
   </body>
 
-  <poweredBy>
-    <logo name="Built By Maven" href="http://maven.apache.org"
-          img="http://maven.apache.org/images/logos/maven-feather.png" />
-  </poweredBy>
-  
 </project>
-

@@ -19,19 +19,7 @@
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
 	</scm>
 
-	<description>
-<![CDATA[
-
-carrot-maven-aws-plugin provides few functions for aws:
-
-* create/delete of cloud formation stacks
-
-* publish/execute ssh scripts on ec2 instances
-
-* image register for ami image creation    
-
-]]>	
-	</description>
+	<description>${project.organization.name} AWS Maven Plugin</description>
 
 	<prerequisites>
 		<maven>${carrotMavenVersion}</maven>
