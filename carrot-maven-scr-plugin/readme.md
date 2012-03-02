@@ -12,7 +12,7 @@ plugin howto:
 
 ### repo
 
-get
+use
 [latest version of the plugin]
 ( http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22carrot-maven-scr-plugin%22)
 from maven central
