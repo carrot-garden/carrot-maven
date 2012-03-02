@@ -31,6 +31,8 @@
 
 		<carrotMavenVersion>3.0.4</carrotMavenVersion>
 
+		<carrotGitHubProject>${project.scm.url}/tree/master/${project.artifactId}</carrotGitHubProject>
+
 	</properties>
 
 	<reporting>
