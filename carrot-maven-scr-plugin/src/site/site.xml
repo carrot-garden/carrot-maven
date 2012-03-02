@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name}">
+
+  <bannerLeft>
+    <name>${project.name}</name>
+    <href>${project.scm.url}</href>
+  </bannerLeft>
+  
+  <bannerRight>
+    <name>${project.description}</name>
+  </bannerRight>
+
+  <body>
+  
+    <menu name="Main">
+      <item name="Index" href="./index.html"/>
+	  <item name="Plugin Goals" href="./plugin-info.html"/>
+    </menu>
+    
+    <menu name="Examples">
+      <item name="Components" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-1"/>
+      <item name="Skip pom.xml" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-2"/>
+    </menu>
+        
+    <menu ref="reports"/>
+        
+  </body>
+
+</project>
