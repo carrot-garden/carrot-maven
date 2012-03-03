@@ -1,6 +1,20 @@
 
 About
 
+* Context
+
+	OSGI
+	{{{http://www.osgi.org/download/r4v42/r4.cmpn.pdf}Declarative Sevices (p 297)}} 
+	is 
+	{{{http://felix.apache.org/site/apache-felix-service-component-runtime.html}good}}
+	,
+	{{{http://www.eclipsezone.com/eclipse/forums/t97690.rhtml}old}}
+	, and
+	{{{http://www.slideshare.net/fmeschbe/declarative-services-dependency-injection-osgi-style}tried}}
+	technology, now getting a
+	{{{http://www.osgi.org/download/osgi-early-draft-2011-09.pdf}face lift (p 187)}}
+	.
+
 * Purpose
 
    this plugin replaces popular 
@@ -8,7 +22,11 @@ About
    components, 
    
    including
-   {{{http://search.maven.org/#search%7Cga%7C1%7Corg.apache.felix.scr}osgi annotations, annotations processor, annotations maven plugin}}
+   {{{http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22org.apache.felix.scr.annotations%22}osgi annotations}}
+   ,
+   {{{http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22org.apache.felix.scr.generator%22}annotations processor}}
+   ,
+   {{{http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22maven-scr-plugin%22}annotations maven plugin}}
    
    with new OSGI 
    {{{http://www.osgi.org/download/osgi-early-draft-2011-09.pdf}specification compliant (p 187)}}
@@ -19,13 +37,13 @@ About
 	felix scr annotations framework does not integrate well with eclipse 
 	interactive development mode:
 	
-	* slow
+	* very slow
 	
 	* batch mode only
 	
 	* no incremental build
 	
-	* builds single monolititc descriptor file
+	* generates single monolititc descriptor file
 
 * Repository
 
