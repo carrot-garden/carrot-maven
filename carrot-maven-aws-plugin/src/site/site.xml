@@ -29,7 +29,7 @@
   <body>
 
 	<links>
-      <item name="Summary" href="https://github.com/carrot-garden/carrot-garden.github.com/blob/master/carrot-garden-scr.md" />
+      <item name="Summary" href="" />
     </links>
       
     <menu name="Main">
@@ -38,8 +38,7 @@
     </menu>
     
     <menu name="Examples">
-      <item name="Components" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-1"/>
-      <item name="Skip pom.xml" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-2"/>
+      <item name="Image Build" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build"/>
     </menu>
         
     <menu ref="reports"/>
