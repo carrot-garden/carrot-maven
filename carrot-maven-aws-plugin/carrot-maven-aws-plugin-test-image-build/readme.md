@@ -20,10 +20,13 @@ to try it for yourself, you need:
 (https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
 
-* select 
+* select
+
 carrot-maven > carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-build
+
 [and run]
-(http://www.sonatype.com/books/m2eclipse-book/reference/creating-sect-importing-projects.html) 
+(http://www.sonatype.com/books/m2eclipse-book/reference/creating-sect-importing-projects.html)
+ 
 Eclipse -> Import -> Existing Maven Projects 
 
 * replace your
