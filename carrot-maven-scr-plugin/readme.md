@@ -27,8 +27,8 @@ maven central has
 
 clone these projects via eclipse egit to see for yourself:
 
-[carrot-maven-scr-plugin-test-1]
-(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-1)
+[carrot-maven-scr-plugin-test-comp-load]
+(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-comp-load)
 
-[carrot-maven-scr-plugin-test-2]
-(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-2)
+[carrot-maven-scr-plugin-test-skip-pom]
+(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-skip-pom)
