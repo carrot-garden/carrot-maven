@@ -11,7 +11,7 @@
     <fluidoSkin>
       <gitHub>
         <projectId>carrot-garden/carrot-maven</projectId>
-        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonOrientation>left</ribbonOrientation>
         <ribbonColor>orange</ribbonColor>
       </gitHub>
     </fluidoSkin>
