@@ -22,5 +22,4 @@ maven central has
 clone these projects via eclipse egit to see for yourself:
 
 [carrot-maven-aws-plugin-test-image-build]
-(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-1)
-
+(https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build)
