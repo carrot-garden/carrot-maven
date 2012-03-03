@@ -19,6 +19,8 @@ About
 	felix scr annotations framework does not integrate well with eclipse 
 	interactive development mode:
 	
+	* slow
+	
 	* batch mode only
 	
 	* no incremental build
@@ -41,3 +43,15 @@ About
 	Eclipse -> Project -> Properties -> Maven -> Lifecycle Mapping
 	
 [images/carrot-garden-scr-m2e-lifecycle-mapping.png] Lifecycle Mapping	
+
+* Eclipse Maven Console
+
+	to verify incremental build in eclipse, you can activate 
+
+	Eclipse -> Window -> Show View -> Console -> Maven Console
+	
+	then make changes and save java class file with @Component annotation;
+	
+	now you should see scr xml descriptor displayed in the maven console: 
+	
+[images/carrot-garden-scr-m2e-maven-console.png] Eclipse Maven Console	
