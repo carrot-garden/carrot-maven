@@ -26,6 +26,12 @@ About
 	* no incremental build
 	
 	* builds single monolititc descriptor file
+
+* Repository
+
+	maven central has
+	{{{http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22carrot-maven-scr-plugin%22}latest version}}
+	of the plugin
 	
 * M2E Integration
 
@@ -43,7 +49,6 @@ About
 	Eclipse -> Project -> Properties -> Maven -> Lifecycle Mapping
 	
 [images/carrot-garden-scr-m2e-lifecycle-mapping.png] Lifecycle Mapping	
-
 
 * Eclipse Maven Console
 
