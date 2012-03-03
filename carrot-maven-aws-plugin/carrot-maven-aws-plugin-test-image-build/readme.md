@@ -54,4 +54,7 @@ in
 from eclipse, and watch in
 [amazon console]
 (http://aws.amazon.com/console/)
-as various aws resources come and go
+as various aws resources come and go;
+
+this particular image-build takes some 5 ... 15 minutes,
+depending on how amazon feels today.
