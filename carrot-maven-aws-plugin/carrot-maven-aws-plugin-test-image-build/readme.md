@@ -15,7 +15,7 @@ shows automated ami image creation:
 
 to try it for yourself, you should:
 
-* clone in eclipse the
+* fork/clone in eclipse the
 [carrot-maven]
 (https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
