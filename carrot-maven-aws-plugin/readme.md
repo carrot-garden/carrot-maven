@@ -1,6 +1,6 @@
 ### info
 
-this a maven plugin that replaces
+this is a maven plugin that replaces
 [puppet for amazon]
 (http://puppetlabs.com/)
 with a single pom :-) 
