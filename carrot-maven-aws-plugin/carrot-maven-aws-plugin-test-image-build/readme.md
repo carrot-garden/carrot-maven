@@ -28,10 +28,10 @@ and do the
 Eclipse -> Import -> Existing Maven Projects 
 
 * study
-[mojo]
+[the mojo]
 (http://carrot-garden.github.com/carrot-maven/site/carrot-maven-aws-plugin/plugin-info.html)
 and
-[pom.xml]
+[the pom]
 (https://github.com/carrot-garden/carrot-maven/blob/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build/pom.xml) 
 
 * replace your
