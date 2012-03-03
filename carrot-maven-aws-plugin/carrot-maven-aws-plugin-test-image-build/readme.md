@@ -20,8 +20,8 @@ to try it for yourself, you should:
 (https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
 
-* select this project   
-carrot-maven > carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-build   
+* select this project in your clone   
+carrot-maven -> carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-build   
 and do the
 [project import]
 (http://www.sonatype.com/books/m2eclipse-book/reference/creating-sect-importing-projects.html)   
