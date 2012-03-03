@@ -58,7 +58,7 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 	 * by previous cloud formation invocation; must include InstanceId property;
 	 * 
 	 * @required
-	 * @parameter default-value="./target/formation/formation.properties"
+	 * @parameter default-value="./target/formation/formation-output.properties"
 	 */
 	protected File imagePropertiesInputFile;
 

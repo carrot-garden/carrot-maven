@@ -16,7 +16,38 @@ import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
 
 /**
- * create new cloud formation stack based on: name, template, parameters
+ * cloud formation:
+ * 
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html"
+ * >create stack</a></b>
+ * 
+ * based on:
+ * 
+ * <b>stack name</b>,
+ * 
+ * <b><a href=
+ * "http://aws.amazon.com/cloudformation/aws-cloudformation-templates" >stack
+ * template</a></b>
+ * 
+ * ({@link #stackTemplateFile}),
+ * 
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+ * >stack parameters</a></b>
+ * 
+ * ({@link #stackInputParams} + {@link #stackPropertiesInputFile}),
+ * 
+ * and produce a
+ * 
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html"
+ * >stack output</a></b>
+ * 
+ * ({@link #stackPropertiesOutputFile})
+ * 
+ * ; wait for completion or fail ({@link #stackTimeout})
+ * 
  * 
  * @goal cloud-formation-create
  * 
@@ -30,10 +61,30 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
 public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 	/**
-	 * AWS CloudFormation stack create execution result output properties file
+	 * AWS CloudFormation stack create execution
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+	 * >Parameters Declaration</a>
+	 * 
+	 * input properties file
 	 * 
 	 * @required
-	 * @parameter default-value="./target/formation/formation.properties"
+	 * @parameter default-value="./target/formation/formation-input.properties"
+	 */
+	protected File stackPropertiesInputFile;
+
+	/**
+	 * AWS CloudFormation stack create execution result
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html"
+	 * >Outputs Section</a>
+	 * 
+	 * output properties file
+	 * 
+	 * @required
+	 * @parameter default-value="./target/formation/formation-output.properties"
 	 */
 	protected File stackPropertiesOutputFile;
 

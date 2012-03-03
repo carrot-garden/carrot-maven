@@ -9,7 +9,17 @@ import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
 
 /**
- * delete existing cloud formation stack by: stack name
+ * cloud formation:
+ * 
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_DeleteStack.html"
+ * >delete stack</a></b>
+ * 
+ * based on:
+ * 
+ * <b>stack name</b>;
+ * 
+ * ; wait for completion or fail ({@link #stackTimeout})
  * 
  * @goal cloud-formation-delete
  * 

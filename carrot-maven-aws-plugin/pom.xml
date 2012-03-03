@@ -82,4 +82,42 @@
 
 	</dependencies>
 
+	<profiles>
+
+		<profile>
+			<id>licence</id>
+			<build>
+
+				<plugins>
+
+					<plugin>
+						<groupId>com.mycila.maven-license-plugin</groupId>
+						<artifactId>maven-license-plugin</artifactId>
+						<configuration>
+							<header>src/etc/license-bsd.txt</header>
+							<strictCheck>true</strictCheck>
+							<properties>
+								<year>${project.inceptionYear}</year>
+								<name>Andrei Pozolotin</name>
+								<mail>Andrei.Pozolotin@gmail.com</mail>
+							</properties>
+						</configuration>
+						<executions>
+							<execution>
+								<id>format</id>
+								<phase>process-sources</phase>
+								<goals>
+									<goal>format</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+
+			</build>
+		</profile>
+
+	</profiles>
+
 </project>

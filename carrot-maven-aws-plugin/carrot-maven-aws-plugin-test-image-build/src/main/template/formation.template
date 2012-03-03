@@ -1,6 +1,28 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "builder instance",
+    "Description": "builder instance : ${project.artifactId}",
+    "Parameters": {
+        "KeyName": {
+            "Type": "String",
+            "Default": "carrotgarden",
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance"
+        },
+        "InstanceType": {
+            "Type": "String",
+            "Default": "t1.micro",
+            "Description": "EC2 instance type, e.g. t1.micro, m1.small, m1.large, etc."
+        },
+        "DNSZoneName": {
+            "Type": "String",
+            "Default": "carrotgarden.com.",
+            "Description": "Route 53 zone name which will contain the instance"
+        },
+        "DNSHostName": {
+            "Type": "String",
+            "Default": "builder.carrotgarden.com.",
+            "Description": "Route 53 host name which will be assigned to the instance"
+        }
+    },
     "Mappings": {
         "RegionMap": {
             "us-east-1": {
@@ -30,7 +52,12 @@
         "BuilderInstance": {
             "Type": "AWS::EC2::Instance",
             "Properties": {
-                "KeyName": "carrotgarden",
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "InstanceType": {
+                    "Ref": "InstanceType"
+                },
                 "ImageId": {
                     "Fn::FindInMap": [
                         "RegionMap",
@@ -40,7 +67,6 @@
                         "AMI"
                     ]
                 },
-                "InstanceType": "t1.micro",
                 "UserData": {
                     "Fn::Base64": "user data"
                 },
@@ -55,9 +81,13 @@
         "BuilderInstanceDNS": {
             "Type": "AWS::Route53::RecordSet",
             "Properties": {
-                "HostedZoneName": "carrotgarden.com.",
+                "HostedZoneName": {
+                    "Ref": "DNSZoneName"
+                },
+                "Name": {
+                    "Ref": "DNSHostName"
+                },
                 "Comment": "CNAME for builder",
-                "Name": "builder.carrotgarden.com.",
                 "Type": "CNAME",
                 "TTL": "60",
                 "ResourceRecords": [

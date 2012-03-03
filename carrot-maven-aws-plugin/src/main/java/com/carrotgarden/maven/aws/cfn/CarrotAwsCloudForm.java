@@ -19,13 +19,16 @@ import com.carrotgarden.maven.aws.CarrotAws;
 public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	/**
-	 * AWS CloudFormation template file
+	 * AWS CloudFormation
 	 * 
-	 * {@link http
-	 * ://aws.amazon.com/cloudformation/aws-cloudformation-templates/}
+	 * <a href=
+	 * "http://aws.amazon.com/cloudformation/aws-cloudformation-templates"
+	 * >template</a>
+	 * 
+	 * file
 	 * 
 	 * @required
-	 * @parameter default-value="./src/main/resources/formation.template"
+	 * @parameter default-value="./target/formation/formation.template"
 	 */
 	protected File stackTemplateFile;
 
@@ -38,23 +41,41 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	protected Long stackTimeout;
 
 	/**
-	 * AWS CloudFormation stack name
+	 * AWS CloudFormation stack name; must be unique under your aws account
 	 * 
 	 * @required
-	 * @parameter default-value="amazon-tester"
+	 * @parameter default-value="amazon-builder"
 	 */
 	protected String stackName;
 
 	/**
-	 * AWS CloudFormation stack input parameters
+	 * AWS CloudFormation
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+	 * >Parameters Declaration</a>
+	 * 
+	 * stack input parameters; optional
 	 * 
 	 * @parameter
 	 */
 	protected Map<String, String> stackInputParams = new HashMap<String, String>();
 
 	/**
-	 * AWS CloudFormation login credentials stored in settings.xml under server
-	 * id entry; username="aws key id", password="aws secret key";
+	 * AWS CloudFormation
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html"
+	 * >amazon security credentials</a>
+	 * 
+	 * stored in
+	 * 
+	 * <a href=
+	 * "http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html"
+	 * >maven settings.xml</a>
+	 * 
+	 * under server id entry; username="Access Key ID",
+	 * password="Secret Access Key";
 	 * 
 	 * @required
 	 * @parameter default-value="com.example.aws.stack"
