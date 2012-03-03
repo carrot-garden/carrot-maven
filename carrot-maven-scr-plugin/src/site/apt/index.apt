@@ -6,13 +6,13 @@ About
 	OSGI
 	{{{http://www.osgi.org/download/r4v42/r4.cmpn.pdf}Declarative Sevices (p 297)}} 
 	is 
-	{{{http://felix.apache.org/site/apache-felix-service-component-runtime.html}good}}
+	{{{http://felix.apache.org/site/apache-felix-service-component-runtime.html}old}}
 	,
-	{{{http://www.eclipsezone.com/eclipse/forums/t97690.rhtml}old}}
+	{{{http://www.eclipsezone.com/eclipse/forums/t97690.rhtml}tried}}
 	, and
-	{{{http://www.slideshare.net/fmeschbe/declarative-services-dependency-injection-osgi-style}tried}}
-	technology, now getting a
-	{{{http://www.osgi.org/download/osgi-early-draft-2011-09.pdf}face lift (p 187)}}
+	{{{http://www.slideshare.net/fmeschbe/declarative-services-dependency-injection-osgi-style}proven}}
+	technology, now getting
+	{{{http://www.osgi.org/download/osgi-early-draft-2011-09.pdf}a fresh life (p 187)}}
 	.
 
 * Purpose
@@ -44,6 +44,22 @@ About
 	* no incremental build
 	
 	* generates single monolititc descriptor file
+	
+	* obscure / buggy component inheritance
+
+* Solution   
+
+	carrrot scr annotations framework resolves these issues as follows: 
+	
+	* does it fast
+	
+	* support both batch & incremental mode 
+	
+	* provide incremental/interactive build in eclipse
+	
+	* generates individual per component  descriptor files
+	
+	* features transparent component attributes inheritance
 
 * Repository
 
