@@ -1,6 +1,6 @@
 ## info
 
-varous maven related projects
+various Maven related projects
 
 ## site
 
