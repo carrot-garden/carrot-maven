@@ -18,7 +18,7 @@ maven central has
 
 ### demo
 
-clone these projects to see for yourself
+clone these projects via eclipse egit to see for yourself:
 
 [carrot-maven-scr-plugin-test-1]
 (https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin-test-1)
