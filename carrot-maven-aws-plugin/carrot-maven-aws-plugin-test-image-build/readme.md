@@ -43,7 +43,7 @@ and
 * replace your 
 [amazon credentials]
 (http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html)
-settings.xml/servers/server/id
+in settings.xml/servers/server/id
 
 * run the 
 [ant build]
