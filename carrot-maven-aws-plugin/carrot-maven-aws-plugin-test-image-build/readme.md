@@ -42,8 +42,10 @@ and
 
 * replace your 
 [amazon credentials]
+(http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html)
+in 
+[settings.xml/servers/server/id]
 (http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html)
-in settings.xml/servers/server/id
 
 * run the 
 [ant build]
