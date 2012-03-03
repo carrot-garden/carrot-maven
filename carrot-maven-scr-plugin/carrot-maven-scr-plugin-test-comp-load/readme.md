@@ -1,6 +1,6 @@
 ### info
 
-this a maven plugin test project that 
+this is a maven plugin test project that 
 shows basic OSGi Service-Component
 annotation-based descriptor generation:
 

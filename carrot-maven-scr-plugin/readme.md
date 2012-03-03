@@ -1,6 +1,6 @@
 ### info
 
-this a maven plugin to produce 
+this is a maven plugin to produce 
 [OSGI Declarative Services (chapter 112, page 297)]
 (http://www.osgi.org/download/r4v42/r4.cmpn.pdf)
 component descriptors

@@ -1,6 +1,6 @@
 ### info
 
-this a maven plugin test project that 
+this is a maven plugin test project that 
 shows automated ami image creation:
 
 * create ec2 instance via cloud formation template
