@@ -6,7 +6,17 @@
     <artifactId>maven-fluido-skin</artifactId>
     <version>1.1</version>
   </skin>
-  
+
+  <custom>
+    <fluidoSkin>
+      <gitHub>
+        <projectId>carrot-garden/carrot-maven</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
+    </fluidoSkin>
+  </custom>
+    
   <bannerLeft>
     <name>${project.name}</name>
     <href>${carrotGitHubProject}</href>
