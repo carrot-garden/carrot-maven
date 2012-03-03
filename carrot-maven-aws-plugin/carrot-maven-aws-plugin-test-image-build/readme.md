@@ -35,7 +35,7 @@ and
 
 * replace your 
 [amazon credentials]
-{http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html}
+(http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html)
 
 * run the 
 [ant build]
