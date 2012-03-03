@@ -11,7 +11,7 @@ About
 	stacks
 	
 	* publish/execute ssh scripts on
-	{{{http://aws.amazon.com/ec2/}ec2}} 
+	{{{http://aws.amazon.com/ec2/}elastic compute}} 
 	instances
 	
 	* image register/unregister for
