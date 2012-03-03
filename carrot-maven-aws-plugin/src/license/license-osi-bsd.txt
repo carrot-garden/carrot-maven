@@ -1,7 +1,5 @@
 Copyright (C) ${year} ${name} <${mail}>
 
-All rights reserved.
-
-Licensed under the BSD License.
+All rights reserved. Licensed under the OSI BSD License.
 
 http://www.opensource.org/licenses/bsd-license.php
