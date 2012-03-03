@@ -2,12 +2,20 @@ About
 
 * Purpose
 
-	this plugin provides few functions for aws:
+	this plugin provides few functions for
+	{{{http://aws.amazon.com/}aws}} 
+	:
 	
-	* create/delete of cloud formation stacks
+	* create/delete of
+	{{{http://aws.amazon.com/cloudformation/}cloud formation}} 
+	stacks
 	
-	* publish/execute ssh scripts on ec2 instances
+	* publish/execute ssh scripts on
+	{{{http://aws.amazon.com/ec2/}ec2}} 
+	instances
 	
-	* image register/unregister for ami image management    
+	* image register/unregister for
+	{{{http://aws.amazon.com/amis}ami image}} 
+	management    
 
 	
