@@ -17,7 +17,7 @@ to try it for yourself, you need:
 
 * clone in eclipse the
 [carrot-maven]
-(git@github.com:carrot-garden/carrot-maven.git)
+(https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
 
 * select 
