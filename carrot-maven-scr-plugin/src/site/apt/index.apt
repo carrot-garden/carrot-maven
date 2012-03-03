@@ -44,6 +44,7 @@ About
 	
 [images/carrot-garden-scr-m2e-lifecycle-mapping.png] Lifecycle Mapping	
 
+
 * Eclipse Maven Console
 
 	to verify incremental build in eclipse, you can activate 
