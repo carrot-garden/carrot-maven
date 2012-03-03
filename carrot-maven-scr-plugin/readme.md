@@ -1,5 +1,10 @@
 ### info
 
+this a maven plugin to produce 
+OSGI Declarative Services component descriptors
+
+### more
+
 learn more:
 [CarrotGarden SCR]
 (https://github.com/carrot-garden/carrot-garden.github.com/blob/master/carrot-garden-scr.md)
