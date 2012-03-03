@@ -13,7 +13,7 @@ shows automated ami image creation:
 
 ### demo
 
-to try it for yourself, you need:
+to try it for yourself, you should:
 
 * clone in eclipse the
 [carrot-maven]
