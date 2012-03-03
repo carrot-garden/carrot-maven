@@ -1,7 +1,13 @@
-this plugin provides few functions for aws:
+About
 
-* create/delete of cloud formation stacks
+* Purpose
 
-* publish/execute ssh scripts on ec2 instances
+	this plugin provides few functions for aws:
+	
+	* create/delete of cloud formation stacks
+	
+	* publish/execute ssh scripts on ec2 instances
+	
+	* image register/unregister for ami image management    
 
-* image register/unregister for ami image management    
+	
