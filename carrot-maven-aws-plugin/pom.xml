@@ -84,50 +84,6 @@
 
 	<profiles>
 
-		<profile>
-			<id>licence</id>
-			<build>
-
-				<plugins>
-
-					<plugin>
-						<groupId>com.mycila.maven-license-plugin</groupId>
-						<artifactId>maven-license-plugin</artifactId>
-						<configuration>
-							<header>src/license/license-osi-bsd.txt</header>
-							<strictCheck>true</strictCheck>
-							<properties>
-								<year>${project.inceptionYear}</year>
-								<name>Andrei Pozolotin</name>
-								<mail>Andrei.Pozolotin@gmail.com</mail>
-							</properties>
-							<mapping>
-								<md>XML_STYLE</md>
-								<ant>XML_STYLE</ant>
-								<scala>JAVADOC_STYLE</scala>
-							</mapping>
-							<excludes>
-								<entry>src/license/**</entry>
-								<entry>**/*.template</entry>
-								<entry>**/*.json</entry>
-							</excludes>
-						</configuration>
-						<executions>
-							<execution>
-								<id>format</id>
-								<phase>process-resources</phase>
-								<goals>
-									<goal>format</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-				</plugins>
-
-			</build>
-		</profile>
-
 	</profiles>
 
 </project>
