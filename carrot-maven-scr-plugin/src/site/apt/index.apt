@@ -69,6 +69,10 @@ About
 	
 * M2E Integration
 
+	the foregoing assumes that you are already using
+	{{{https://repository.sonatype.org/content/repositories/forge-sites/m2e/1.1.0/N/LATEST/}latest m2e 1.1.0}}
+	maven integration in your eclipse profile
+
 	this plugin comes with a companion m2e
 	{{{https://github.com/carrot-garden/carrot-eclipse/tree/master/com.carrotgarden.m2e/com.carrotgarden.m2e.scr}maven/eclipse connector}} 
  	plugin
