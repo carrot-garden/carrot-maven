@@ -20,7 +20,7 @@ to try it for yourself, you should:
 (https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
 
-* select the project   
+* select this project   
 carrot-maven > carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-build   
 and do the
 [project import]
