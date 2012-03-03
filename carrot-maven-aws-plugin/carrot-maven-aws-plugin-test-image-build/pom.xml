@@ -17,7 +17,7 @@
 
 		<carrotJavaVersion>1.6</carrotJavaVersion>
 
-		<stackName>stack-build</stackName>
+		<stackName>image-build</stackName>
 
 		<publishSource>${basedir}/target/publish</publishSource>
 		<publishTarget>/tmp/publish_${carrotTimeFile}</publishTarget>
