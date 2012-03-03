@@ -1,7 +1,9 @@
 ### info
 
 this a maven plugin to produce 
-OSGI Declarative Services component descriptors
+[OSGI Declarative Services (p 297)]
+(http://www.osgi.org/download/r4v42/r4.cmpn.pdf)
+component descriptors
 
 ### more
 
