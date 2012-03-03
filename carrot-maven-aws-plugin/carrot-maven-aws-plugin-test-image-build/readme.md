@@ -20,9 +20,9 @@ to try it for yourself, you need:
 (https://carrot-garden@github.com/carrot-garden/carrot-maven.git)
 project
 
-* select   
+* select the project   
 carrot-maven > carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-build   
-[and run]
+[and do the project import]
 (http://www.sonatype.com/books/m2eclipse-book/reference/creating-sect-importing-projects.html)   
 Eclipse -> Import -> Existing Maven Projects 
 
@@ -43,9 +43,12 @@ and
 * replace your 
 [amazon credentials]
 (http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html)
-servers/server/id
+settings.xml/servers/server/id
 
 * run the 
 [ant build]
 (https://github.com/carrot-garden/carrot-maven/blob/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build/build/maven-package.ant) 
-from eclipse
+from eclipse, and watch in
+[amazon console]
+(http://aws.amazon.com/console/)
+as various aws resources come and go
