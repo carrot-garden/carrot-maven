@@ -26,6 +26,13 @@ carrot-maven > carrot-maven-aws-plugin -> carrot-maven-aws-plugin-test-image-bui
 (http://www.sonatype.com/books/m2eclipse-book/reference/creating-sect-importing-projects.html)   
 Eclipse -> Import -> Existing Maven Projects 
 
+* study
+[mojo]
+(http://carrot-garden.github.com/carrot-maven/site/carrot-maven-aws-plugin/plugin-info.html)
+and
+[pom.xml]
+(https://github.com/carrot-garden/carrot-maven/blob/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build/pom.xml) 
+
 * replace your
 [install.sh]
 (https://github.com/carrot-garden/carrot-maven/blob/master/carrot-maven-aws-plugin/carrot-maven-aws-plugin-test-image-build/src/main/script/install.sh)
@@ -36,7 +43,7 @@ and
 * replace your 
 [amazon credentials]
 (http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html)
-servers/server/Id
+servers/server/id
 
 * run the 
 [ant build]
