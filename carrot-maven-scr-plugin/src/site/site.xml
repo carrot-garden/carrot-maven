@@ -11,9 +11,13 @@
   </bannerRight>
 
   <body>
-  
+
+	<links>
+      <item name="Summary" href="https://github.com/carrot-garden/carrot-garden.github.com/blob/master/carrot-garden-scr.md" />
+    </links>
+      
     <menu name="Main">
-      <item name="Index" href="./index.html"/>
+      <item name="About" href="./index.html"/>
 	  <item name="Plugin Goals" href="./plugin-info.html"/>
     </menu>
     

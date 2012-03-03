@@ -1,16 +1,43 @@
 
- CarrotGarden M2E SCR provides OSGI Service-Component descriptor generator
- according to a proposal described in RFC 0172 Declarative Services Annotations:
- http://www.osgi.org/download/osgi-early-draft-2011-09.pdf
+About
 
- CarrotGarden M2E SCR is an m2e connector for a corresponding maven plugin:
- http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22carrot-maven-scr-plugin%22
+* Purpose
 
- CarrotGarden M2E SCR allows for interactive SCR component descriptor updates
- in eclipse which will be compatible with your non-interactive jenkins maven builds.
+   this plugin replaces popular 
+   {{{http://felix.apache.org/site/scr-annotations.html}felix scr annotations framework}}
+   components, 
+   
+   including
+   {{{http://search.maven.org/#search%7Cga%7C1%7Corg.apache.felix.scr}osgi annotations, annotations processor, annotations maven plugin}}
+   
+   with new OSGI 
+   {{{http://www.osgi.org/download/osgi-early-draft-2011-09.pdf}specification compliant (p 187)}}
+   counterparts.
+   
+* Motivation   
 
- Sources and Examples,
- for m2e connnector:
- https://github.com/carrot-garden/carrot-eclipse
- for related maven plugin:
- https://github.com/carrot-garden/carrot-maven
+	felix scr annotations framework does not integrate well with eclipse 
+	interactive development mode:
+	
+	* batch mode only
+	
+	* no incremental build
+	
+	* builds single monolititc descriptor file
+	
+* M2E Integration
+
+	this plugin comes with a companion m2e
+	{{{https://github.com/carrot-garden/carrot-eclipse/tree/master/com.carrotgarden.m2e/com.carrotgarden.m2e.scr}maven/eclipse connector}} 
+ 	plugin
+ 	   
+	available form the following
+	{{{http://carrot-garden.github.com/carrot-eclipse/repository/com.carrotgarden.m2e.scr-LATEST/}update site}}
+	location
+	
+	when both maven plugin and eclipse plugin are properly installed,
+	you should see the following picture in 
+	
+	Eclipse -> Project -> Properties -> Maven -> Lifecycle Mapping
+	
+[images/carrot-garden-scr-m2e-lifecycle-mapping.png] Lifecycle Mapping	
