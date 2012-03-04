@@ -149,6 +149,8 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 				throw new IllegalStateException("stack create failed");
 			}
 
+			getLog().info("stack create stack=\n" + stack);
+
 			getLog().info("stack create output:");
 
 			final List<Output> outputList = stack.getOutputs();

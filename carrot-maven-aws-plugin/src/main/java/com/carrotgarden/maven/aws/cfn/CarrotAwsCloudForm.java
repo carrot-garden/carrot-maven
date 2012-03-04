@@ -71,14 +71,14 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		final Map<String, String> stackParams = new HashMap<String, String>();
 
 		/** from properties file */
-		stackParams.putAll(toMap(inputProps));
+		stackParams.putAll(safeMap(inputProps));
 
 		/** from maven pom.xml */
-		stackParams.putAll(inputParams);
+		stackParams.putAll(safeMap(inputParams));
 
 		/** */
 
-		final String stackTemplate = read(templateFile);
+		final String stackTemplate = safeTemplate(templateFile);
 
 		/** */
 
@@ -106,7 +106,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	}
 
-	protected String read(final File templateFile) throws Exception {
+	protected String safeTemplate(final File templateFile) throws Exception {
 		if (templateFile == null || !templateFile.exists()) {
 			return "{}";
 		} else {

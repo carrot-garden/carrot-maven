@@ -73,7 +73,7 @@ public abstract class CarrotAws extends AbstractMojo {
 
 	}
 
-	protected Map<String, String> toMap(final Properties props) {
+	protected Map<String, String> safeMap(final Properties props) {
 
 		final Map<String, String> map = new HashMap<String, String>();
 
@@ -88,6 +88,18 @@ public abstract class CarrotAws extends AbstractMojo {
 		}
 
 		return map;
+
+	}
+
+	protected Map<String, String> safeMap(final Map<String, String> props) {
+
+		final Map<String, String> map = new HashMap<String, String>();
+
+		if (props == null) {
+			return map;
+		}
+
+		return props;
 
 	}
 

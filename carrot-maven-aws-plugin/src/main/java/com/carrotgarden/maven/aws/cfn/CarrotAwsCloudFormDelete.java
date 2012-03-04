@@ -60,6 +60,8 @@ public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
 				throw new IllegalStateException("stack delete failed");
 			}
 
+			getLog().info("stack delete stack=\n" + stack);
+
 			getLog().info("stack delete done [" + stackName + "]");
 
 		} catch (final Exception e) {
