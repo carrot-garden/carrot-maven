@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (C) 2010 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
 
     All rights reserved. Licensed under the OSI BSD License.
 
@@ -14,9 +14,7 @@
 	<target name="maven">
 		<exec executable="mvn">
 			<arg value="clean" />
-			<arg value="process-resources" />
-			<arg value="--activate-profiles" />
-			<arg value="licence" />
+			<arg value="deploy" />
 		</exec>
 	</target>
 

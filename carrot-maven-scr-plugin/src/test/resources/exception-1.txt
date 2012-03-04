@@ -1,3 +1,11 @@
+====
+    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+
+    All rights reserved. Licensed under the OSI BSD License.
+
+    http://www.opensource.org/licenses/bsd-license.php
+====
+
 java.lang.ExceptionInInitializerError
 	at org.apache.pivot.wtk.Component.installSkin(Component.java:806)
 	at org.apache.pivot.wtk.BoxPane.<init>(BoxPane.java:68)

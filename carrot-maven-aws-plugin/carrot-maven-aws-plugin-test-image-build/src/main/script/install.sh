@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (C) 2010 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+# Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
 #
 # All rights reserved. Licensed under the OSI BSD License.
 #

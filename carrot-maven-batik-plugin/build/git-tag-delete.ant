@@ -1,8 +1,17 @@
+<!--
+
+    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+
+    All rights reserved. Licensed under the OSI BSD License.
+
+    http://www.opensource.org/licenses/bsd-license.php
+
+-->
 <project default="git" basedir="./..">
 
 	<echo message="basedir : ${basedir}" />
 
-	<property name="tag" value="carrot-maven-image4j-plugin-1.1.1" />
+	<property name="tag" value="carrot-maven-1.1.0" />
 
 	<target name="git">
 		<exec executable="git">
