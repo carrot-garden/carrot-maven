@@ -113,8 +113,13 @@
       <p><b>Full name</b>:</p>
       <p>com.carrotgarden.maven:carrot-maven-aws-plugin:1.1.0-SNAPSHOT:cloud-formation-create</p>
       <p><b>Description</b>:</p>
-      <div>create new cloud formation stack based on: name, template,
-parameters</div>
+      <div>cloud formation: <b><a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_CreateStack.html">create
+stack</a></b> based on: <b>stack name</b>, <b><a class="externalLink" href="http://aws.amazon.com/cloudformation/aws-cloudformation-templates">stack
+template</a></b> (<tt>stackTemplateFile</tt>), <b><a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">stack
+parameters</a></b> (<tt>stackInputParams</tt> +
+<tt>stackPropertiesInputFile</tt>), and produce a <b><a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html">stack
+output</a></b> (<tt>stackPropertiesOutputFile</tt>) ; wait for
+completion or fail (<tt>stackTimeout</tt>)</div>
       <p><b>Attributes</b>:</p>
       <ul>
         <li>Requires a Maven project to be executed.</li>
@@ -133,30 +138,40 @@ parameters</div>
             <td><b><a href="#stackName">stackName</a></b></td>
             <td><tt>String</tt></td>
             <td><tt>-</tt></td>
-            <td>AWS CloudFormation stack name<br /><b>Default value is</b>: <tt>amazon-tester</tt>.</td>
+            <td>AWS CloudFormation stack name; must be unique under your aws
+account<br /><b>Default value is</b>: <tt>amazon-builder</tt>.</td>
           </tr>
           <tr class="a">
+            <td><b><a href="#stackPropertiesInputFile">stackPropertiesInputFile</a></b></td>
+            <td><tt>File</tt></td>
+            <td><tt>-</tt></td>
+            <td>AWS CloudFormation stack create execution <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">Parameters
+Declaration</a> input properties file<br /><b>Default value is</b>: <tt>./target/formation/formation-input.properties</tt>.</td>
+          </tr>
+          <tr class="b">
             <td><b><a href="#stackPropertiesOutputFile">stackPropertiesOutputFile</a></b></td>
             <td><tt>File</tt></td>
             <td><tt>-</tt></td>
-            <td>AWS CloudFormation stack create execution result output properties
-file<br /><b>Default value is</b>: <tt>./target/formation/formation.properties</tt>.</td>
+            <td>AWS CloudFormation stack create execution result <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html">Outputs
+Section</a> output properties file<br /><b>Default value is</b>: <tt>./target/formation/formation-output.properties</tt>.</td>
           </tr>
-          <tr class="b">
+          <tr class="a">
             <td><b><a href="#stackServerId">stackServerId</a></b></td>
             <td><tt>String</tt></td>
             <td><tt>-</tt></td>
-            <td>AWS CloudFormation login credentials stored in settings.xml under
-server id entry; username=&quot;aws key id&quot;, password=&quot;aws secret key&quot;;<br /><b>Default value is</b>: <tt>com.example.aws.stack</tt>.</td>
+            <td>AWS CloudFormation <a class="externalLink" href="http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html">amazon
+security credentials</a> stored in <a class="externalLink" href="http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html">maven
+settings.xml</a> under server id entry; username=&quot;Access Key ID&quot;,
+password=&quot;Secret Access Key&quot;;<br /><b>Default value is</b>: <tt>com.example.aws.stack</tt>.</td>
           </tr>
-          <tr class="a">
+          <tr class="b">
             <td><b><a href="#stackTemplateFile">stackTemplateFile</a></b></td>
             <td><tt>File</tt></td>
             <td><tt>-</tt></td>
-            <td>AWS CloudFormation template file <tt>http
-://aws.amazon.com/cloudformation/aws-cloudformation-templates/</tt><br /><b>Default value is</b>: <tt>./src/main/resources/formation.template</tt>.</td>
+            <td>AWS CloudFormation <a class="externalLink" href="http://aws.amazon.com/cloudformation/aws-cloudformation-templates">template</a>
+file<br /><b>Default value is</b>: <tt>./target/formation/formation.template</tt>.</td>
           </tr>
-          <tr class="b">
+          <tr class="a">
             <td><b><a href="#stackTimeout">stackTimeout</a></b></td>
             <td><tt>Long</tt></td>
             <td><tt>-</tt></td>
@@ -176,43 +191,55 @@ server id entry; username=&quot;aws key id&quot;, password=&quot;aws secret key&
             <td><b><a href="#stackInputParams">stackInputParams</a></b></td>
             <td><tt>Map</tt></td>
             <td><tt>-</tt></td>
-            <td>AWS CloudFormation stack input parameters<br /></td>
+            <td>AWS CloudFormation <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">Parameters
+Declaration</a> stack input parameters; optional<br /></td>
           </tr>
         </table>
       </div>
       <div class="section"><h3>Parameter Details<a name="Parameter_Details"></a></h3>
         <p><b><a name="stackInputParams">stackInputParams</a>:</b></p>
-        <div>AWS CloudFormation stack input parameters</div>
+        <div>AWS CloudFormation <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">Parameters
+Declaration</a> stack input parameters; optional</div>
         <ul>
           <li><b>Type</b>: <tt>java.util.Map</tt></li>
           <li><b>Required</b>: <tt>No</tt></li>
         </ul><hr /><p><b><a name="stackName">stackName</a>:</b></p>
-        <div>AWS CloudFormation stack name</div>
+        <div>AWS CloudFormation stack name; must be unique under your aws
+account</div>
         <ul>
           <li><b>Type</b>: <tt>java.lang.String</tt></li>
           <li><b>Required</b>: <tt>Yes</tt></li>
-          <li><b>Default</b>: <tt>amazon-tester</tt></li>
-        </ul><hr /><p><b><a name="stackPropertiesOutputFile">stackPropertiesOutputFile</a>:</b></p>
-        <div>AWS CloudFormation stack create execution result output properties
-file</div>
+          <li><b>Default</b>: <tt>amazon-builder</tt></li>
+        </ul><hr /><p><b><a name="stackPropertiesInputFile">stackPropertiesInputFile</a>:</b></p>
+        <div>AWS CloudFormation stack create execution <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html">Parameters
+Declaration</a> input properties file</div>
         <ul>
           <li><b>Type</b>: <tt>java.io.File</tt></li>
           <li><b>Required</b>: <tt>Yes</tt></li>
-          <li><b>Default</b>: <tt>./target/formation/formation.properties</tt></li>
+          <li><b>Default</b>: <tt>./target/formation/formation-input.properties</tt></li>
+        </ul><hr /><p><b><a name="stackPropertiesOutputFile">stackPropertiesOutputFile</a>:</b></p>
+        <div>AWS CloudFormation stack create execution result <a class="externalLink" href="http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html">Outputs
+Section</a> output properties file</div>
+        <ul>
+          <li><b>Type</b>: <tt>java.io.File</tt></li>
+          <li><b>Required</b>: <tt>Yes</tt></li>
+          <li><b>Default</b>: <tt>./target/formation/formation-output.properties</tt></li>
         </ul><hr /><p><b><a name="stackServerId">stackServerId</a>:</b></p>
-        <div>AWS CloudFormation login credentials stored in settings.xml under
-server id entry; username=&quot;aws key id&quot;, password=&quot;aws secret key&quot;;</div>
+        <div>AWS CloudFormation <a class="externalLink" href="http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html">amazon
+security credentials</a> stored in <a class="externalLink" href="http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html">maven
+settings.xml</a> under server id entry; username=&quot;Access Key ID&quot;,
+password=&quot;Secret Access Key&quot;;</div>
         <ul>
           <li><b>Type</b>: <tt>java.lang.String</tt></li>
           <li><b>Required</b>: <tt>Yes</tt></li>
           <li><b>Default</b>: <tt>com.example.aws.stack</tt></li>
         </ul><hr /><p><b><a name="stackTemplateFile">stackTemplateFile</a>:</b></p>
-        <div>AWS CloudFormation template file <tt>http
-://aws.amazon.com/cloudformation/aws-cloudformation-templates/</tt></div>
+        <div>AWS CloudFormation <a class="externalLink" href="http://aws.amazon.com/cloudformation/aws-cloudformation-templates">template</a>
+file</div>
         <ul>
           <li><b>Type</b>: <tt>java.io.File</tt></li>
           <li><b>Required</b>: <tt>Yes</tt></li>
-          <li><b>Default</b>: <tt>./src/main/resources/formation.template</tt></li>
+          <li><b>Default</b>: <tt>./target/formation/formation.template</tt></li>
         </ul><hr /><p><b><a name="stackTimeout">stackTimeout</a>:</b></p>
         <div>AWS CloudFormation operation timeout; seconds</div>
         <ul>

@@ -159,7 +159,7 @@ server id entry; username=&quot;aws key id&quot;, password=&quot;aws secret key&
             <td><tt>-</tt></td>
             <td>AWS ElasticCompute image create input properties file; normally
 created by previous cloud formation invocation; must include
-InstanceId property;<br /><b>Default value is</b>: <tt>./target/formation/formation.properties</tt>.</td>
+InstanceId property;<br /><b>Default value is</b>: <tt>./target/formation/formation-output.properties</tt>.</td>
           </tr>
           <tr class="a">
             <td><b><a href="#imagePropertyInstanceId">imagePropertyInstanceId</a></b></td>
@@ -230,7 +230,7 @@ InstanceId property;</div>
         <ul>
           <li><b>Type</b>: <tt>java.io.File</tt></li>
           <li><b>Required</b>: <tt>Yes</tt></li>
-          <li><b>Default</b>: <tt>./target/formation/formation.properties</tt></li>
+          <li><b>Default</b>: <tt>./target/formation/formation-output.properties</tt></li>
         </ul><hr /><p><b><a name="imagePropertyInstanceId">imagePropertyInstanceId</a>:</b></p>
         <div>name of the property in input properties file that will be used to
 discover InstanceId to use as basis for image create operation</div>
