@@ -7,9 +7,6 @@
  */
 package com.carrotgarden.maven.aws.ecc;
 
-/**
- */
-
 import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
@@ -21,8 +18,20 @@ import com.carrotgarden.maven.aws.CarrotAws;
 public abstract class CarrotAwsElasComp extends CarrotAws {
 
 	/**
-	 * AWS ElasticCompute login credentials stored in settings.xml under server
-	 * id entry; username="aws key id", password="aws secret key";
+	 * AWS ElasticCompute
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSSecurityCredentials/1.0/AboutAWSCredentials.html"
+	 * >amazon security credentials</a>
+	 * 
+	 * stored in
+	 * 
+	 * <a href=
+	 * "http://www.sonatype.com/books/mvnref-book/reference/appendix-settings-sect-details.html"
+	 * >maven settings.xml</a>
+	 * 
+	 * under server id entry; username="Access Key ID",
+	 * password="Secret Access Key";
 	 * 
 	 * @required
 	 * @parameter default-value="com.example.aws.compute"
@@ -52,8 +61,8 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 
 		final Logger logger = getLogger(ElasticCompute.class);
 
-		final ElasticCompute compute = new ElasticCompute(logger, null, null,
-				null, computeTimeout, username, password);
+		final ElasticCompute compute = new ElasticCompute(logger, computeTimeout, username,
+				password);
 
 		return compute;
 

@@ -7,13 +7,8 @@
  */
 package com.carrotgarden.maven.aws.ecc;
 
-/**
- * 
- */
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -43,10 +38,8 @@ public class ElasticCompute {
 	private final long timeout;
 	private final long waitBetweenAttempts;
 
-	public ElasticCompute(final Logger logger, final String stackName,
-			final String stackTemplate, final Map<String, String> stackParams,
-			final long timeout, final String awsAccessKey,
-			final String awsSecretKey) {
+	public ElasticCompute(final Logger logger, final long timeout,
+			final String awsAccessKey, final String awsSecretKey) {
 
 		this.logger = logger;
 

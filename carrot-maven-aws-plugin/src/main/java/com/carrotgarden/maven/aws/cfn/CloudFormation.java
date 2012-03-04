@@ -7,10 +7,6 @@
  */
 package com.carrotgarden.maven.aws.cfn;
 
-/**
- * 
- */
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +32,9 @@ import com.google.common.collect.Lists;
 /**
  * 
  * @author Andrei Pozolotin
+ * 
  * @author Erick Dovale
  *         https://github.com/Syncapse/jenkins-cloudformation-plugin
- * 
  */
 public class CloudFormation {
 

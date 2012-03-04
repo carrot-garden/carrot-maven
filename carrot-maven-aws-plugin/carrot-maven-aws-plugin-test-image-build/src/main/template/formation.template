@@ -4,22 +4,18 @@
     "Parameters": {
         "KeyName": {
             "Type": "String",
-            "Default": "carrotgarden",
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance"
         },
         "InstanceType": {
             "Type": "String",
-            "Default": "t1.micro",
             "Description": "EC2 instance type, e.g. t1.micro, m1.small, m1.large, etc."
         },
         "DNSZoneName": {
             "Type": "String",
-            "Default": "carrotgarden.com.",
             "Description": "Route 53 zone name which will contain the instance"
         },
         "DNSHostName": {
             "Type": "String",
-            "Default": "builder.carrotgarden.com.",
             "Description": "Route 53 host name which will be assigned to the instance"
         }
     },

@@ -7,9 +7,6 @@
  */
 package com.carrotgarden.maven.aws.ecc;
 
-/**
- */
-
 import org.apache.maven.plugin.MojoFailureException;
 
 /**

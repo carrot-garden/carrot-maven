@@ -7,10 +7,14 @@
  */
 package com.carrotgarden.maven.aws;
 
-/**
- */
-
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
@@ -43,7 +47,7 @@ public abstract class CarrotAws extends AbstractMojo {
 
 	//
 
-	protected static boolean isValidDirectory(final File file) {
+	protected boolean isValidDirectory(final File file) {
 
 		if (file == null) {
 			return false;
@@ -69,4 +73,58 @@ public abstract class CarrotAws extends AbstractMojo {
 
 	}
 
+	protected Map<String, String> toMap(final Properties props) {
+
+		final Map<String, String> map = new HashMap<String, String>();
+
+		if (props == null) {
+			return map;
+		}
+
+		for (final Map.Entry<Object, Object> entry : props.entrySet()) {
+			final String key = entry.getKey().toString();
+			final String value = entry.getValue().toString();
+			map.put(key, value);
+		}
+
+		return map;
+
+	}
+
+	protected Properties load(final File file) throws Exception {
+
+		final Properties props = new Properties();
+
+		if (file == null || !file.exists()) {
+			getLog().debug("file == null || !file.exists()");
+			return props;
+		}
+
+		final Reader reader = new FileReader(file);
+
+		props.load(reader);
+
+		return props;
+
+	}
+
+	protected void save(final Properties props, final File file)
+			throws Exception {
+
+		if (props == null || file == null) {
+			getLog().debug("props == null || file == null");
+			return;
+		}
+
+		final File folder = file.getParentFile();
+
+		if (!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		final Writer writer = new FileWriter(file);
+
+		props.store(writer, null);
+
+	}
 }

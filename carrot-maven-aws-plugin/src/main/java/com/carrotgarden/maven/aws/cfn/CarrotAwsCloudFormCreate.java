@@ -7,13 +7,10 @@
  */
 package com.carrotgarden.maven.aws.cfn;
 
-/**
- */
-
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.plugin.MojoFailureException;
@@ -43,7 +40,7 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
  * >stack parameters</a></b>
  * 
- * ({@link #stackInputParams} + {@link #stackPropertiesInputFile}),
+ * ({@link #stackPropertiesInputFile} + {@link #stackInputParams}),
  * 
  * and produce a
  * 
@@ -68,13 +65,43 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
 public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 	/**
+	 * AWS CloudFormation
+	 * 
+	 * <a href=
+	 * "http://aws.amazon.com/cloudformation/aws-cloudformation-templates"
+	 * >template</a>
+	 * 
+	 * file
+	 * 
+	 * @required
+	 * @parameter default-value="./target/formation/formation.template"
+	 */
+	protected File stackTemplateFile;
+
+	/**
+	 * AWS CloudFormation
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+	 * >Parameters Declaration</a>
+	 * 
+	 * stack template input parameters; optional; overrides settings from
+	 * #stackPropertiesInputFile
+	 * 
+	 * @parameter
+	 */
+	protected Map<String, String> stackInputParams = new HashMap<String, String>();
+
+	/**
 	 * AWS CloudFormation stack create execution
 	 * 
 	 * <a href=
 	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
 	 * >Parameters Declaration</a>
 	 * 
-	 * input properties file
+	 * input properties file;
+	 * 
+	 * will be overridden by #stackInputParams if any
 	 * 
 	 * @required
 	 * @parameter default-value="./target/formation/formation-input.properties"
@@ -103,9 +130,12 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("stack create init");
+			getLog().info("stack create init [" + stackName + "]");
 
-			final CloudFormation formation = getCloudFormation();
+			final Properties stackInputProps = load(stackPropertiesInputFile);
+
+			final CloudFormation formation = getCloudFormation(
+					stackTemplateFile, stackInputProps, stackInputParams);
 
 			final Stack stack = formation.stackCreate();
 
@@ -116,29 +146,29 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 			case CREATE_COMPLETE:
 				break;
 			default:
-				throw new IllegalStateException("create format failed");
+				throw new IllegalStateException("stack create failed");
 			}
 
 			getLog().info("stack create output:");
 
 			final List<Output> outputList = stack.getOutputs();
 
-			final Properties props = new Properties();
+			final Properties outputProps = new Properties();
 
 			for (final Output output : outputList) {
 
 				final String key = output.getOutputKey();
 				final String value = output.getOutputValue();
 
-				props.put(key, value);
+				outputProps.put(key, value);
 
 				getLog().info("\t" + key + "=" + value);
 
 			}
 
-			save(props);
+			save(outputProps, stackPropertiesOutputFile);
 
-			getLog().info("stack create done");
+			getLog().info("stack create done [" + stackName + "]");
 
 		} catch (final Exception e) {
 
@@ -147,23 +177,4 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 		}
 
 	}
-
-	protected void save(final Properties props) throws Exception {
-
-		getLog().info("stack create output : " + stackPropertiesOutputFile);
-
-		final File folder = stackPropertiesOutputFile.getParentFile();
-
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-
-		final Writer writer = new FileWriter(stackPropertiesOutputFile);
-
-		final String comments = "stack name : " + stackName;
-
-		props.store(writer, comments);
-
-	}
-
 }
