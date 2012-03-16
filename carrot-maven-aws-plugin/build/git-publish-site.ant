@@ -18,7 +18,6 @@
 	<property name="source" value="${basedir}/target/site" />
 	<property name="target" value="${sitedir}/${project}" />
 
-
 	<echo message="project : ${project}" />
 
 	<echo message="basedir : ${basedir}" />
