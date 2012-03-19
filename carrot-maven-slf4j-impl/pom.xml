@@ -28,7 +28,7 @@
 
 	<dependencies>
 
-		<!-- maven api and impl -->
+		<!-- slf4j api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
