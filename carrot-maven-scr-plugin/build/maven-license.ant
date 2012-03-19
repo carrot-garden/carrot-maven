@@ -12,11 +12,22 @@
 	<echo message="basedir : ${basedir}" />
 
 	<target name="maven">
-		<exec executable="mvn">
+
+		<condition property="executable" value="mvn">
+			<os family="unix" />
+		</condition>
+		<condition property="executable" value="mvn.bat">
+			<os family="windows" />
+		</condition>
+
+		<exec executable="${executable}">
+			
 			<arg value="clean" />
 			<arg value="process-resources" />
+			
 			<arg value="--activate-profiles" />
 			<arg value="license" />
+			
 		</exec>
 	</target>
 

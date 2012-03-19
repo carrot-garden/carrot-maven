@@ -39,12 +39,6 @@
 			<arg value="master" />
 		</exec>
 
-		<echo message="make site" />
-		<exec executable="mvn">
-			<arg value="clean" />
-			<arg value="site" />
-		</exec>
-
 		<echo message="copy site" />
 		<copy todir="${tempdir}" overwrite="true" verbose="true">
 			<fileset dir="${source}" />
