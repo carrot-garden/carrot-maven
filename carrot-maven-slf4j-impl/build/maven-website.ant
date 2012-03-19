@@ -21,13 +21,11 @@
 		</condition>
 
 		<exec executable="${executable}">
-			
+
+			<arg value="validate" />
 			<arg value="clean" />
-			<arg value="process-resources" />
-			
-			<arg value="--activate-profiles" />
-			<arg value="license" />
-			
+			<arg value="site" />
+
 		</exec>
 	</target>
 
