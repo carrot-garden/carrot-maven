@@ -11,6 +11,9 @@ package com.carrotgarden.maven.aws.ssh;
  */
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -54,6 +57,35 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @parameter
 	 */
 	protected Set<Integer> sshStatusSuccess;
+	
+	/**
+	 * AWS CloudFormation stack create execution result
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html"
+	 * >Outputs Section</a>
+	 * 
+	 * output properties file - used to substitute ssHost
+	 * 
+	 * @required
+	 * @parameter default-value="./target/formation/formation-output.properties"
+	 */
+	protected File stackPropertiesOutputFile;
+	/**
+	 * How many times to attempt to retry ssh connection before giving up
+	 * 
+	 * @required
+	 * @parameter default-value="5"
+	 */
+	protected int maxRetries;
+	/**
+	 * How long (in seconds) to wait if a ssh connection fails before retrying
+	 * 
+	 * @required
+	 * @parameter default-value="10"
+	 */
+	protected int timeOut;
+	
 
 	//
 
@@ -74,12 +106,35 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	protected SecureShell getSecureShell() throws Exception {
 
 		final Logger logger = getLogger(CloudFormation.class);
+		
+		final String sshHostConverted = getSSHHost();
 
 		final SecureShell ssh = new SecureShell(logger, sshKeyFile, sshUser,
-				sshHost);
+				sshHostConverted,maxRetries,timeOut);
 
 		return ssh;
 
+	}
+
+	private String getSSHHost() {
+		if (stackPropertiesOutputFile.exists()) {
+			getLog().info("Attempt to property substitute sshHost "+sshHost);
+			Properties props = new Properties();
+			
+			try {
+				FileReader fr = new FileReader(stackPropertiesOutputFile);
+				props.load(fr);
+			} catch (IOException e) {
+				// Ignore exception
+				getLog().warn("Failed to read properties from "+stackPropertiesOutputFile);
+				return sshHost;
+			}
+			
+			String sshHostConverted = props.getProperty(sshHost, sshHost);
+			getLog().debug("Return sshHost as "+sshHostConverted);
+			return sshHostConverted;
+		}
+		return sshHost;
 	}
 
 }

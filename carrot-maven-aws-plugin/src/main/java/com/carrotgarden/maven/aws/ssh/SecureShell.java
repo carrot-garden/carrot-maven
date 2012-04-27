@@ -20,6 +20,7 @@ import com.carrotgarden.maven.aws.ssh.PathMaker.Entry;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
 
@@ -27,6 +28,10 @@ import com.jcraft.jsch.SftpProgressMonitor;
  * @author Andrei Pozolotin
  */
 public class SecureShell {
+
+	private final int maxretries;
+
+	private final long timeout; // 10 seconds
 
 	private final Logger logger;
 
@@ -37,7 +42,7 @@ public class SecureShell {
 	private final int port;
 
 	public SecureShell(final Logger logger, final File keyFile,
-			final String user, final String host) {
+			final String user, final String host,int maxretries,int timeout) {
 
 		this.logger = logger;
 
@@ -46,10 +51,17 @@ public class SecureShell {
 		this.user = user;
 		this.host = host;
 		this.port = 22;
+		this.maxretries = maxretries;
+		this.timeout = (long)timeout*1000;
+		
+		
 
 	}
 
 	private Session getSession() throws Exception {
+
+		logger.debug("exec getSession: on " + host + " : " + port + " user "
+				+ user);
 
 		final JSch jsch = new JSch();
 
@@ -59,21 +71,49 @@ public class SecureShell {
 
 		session.setConfig("StrictHostKeyChecking", "no");
 
+		sessionConnectRetry(session);
+
 		return session;
+
+	}
+
+	private void sessionConnectRetry(Session session) throws JSchException {
+		int count = 0;
+		while (true) {
+			try {
+				session.connect();
+				return;
+			} catch (JSchException j) {
+				// assume sshd isnt running yet, wait and retry
+				logger.debug("sessionConnect Attempt "+count);
+				if (count++ < maxretries) {
+					synchronized (this) {
+						try {
+							this.wait(timeout);
+						} catch (InterruptedException e) {
+							// Ignore and try again
+						}
+					}
+				} else {
+					throw j;
+				}
+			}
+
+		}
 
 	}
 
 	public int execute(final String command) throws Exception {
 
-		logger.info("exec command: " + command);
+		logger.info("exec command: " + command + " on " + host);
 
 		final Session session = getSession();
-
-		session.connect();
 
 		final ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
 		channel.setCommand(command);
+		
+		channel.setPty(true);
 
 		channel.connect();
 
@@ -158,6 +198,7 @@ public class SecureShell {
 				logger.debug("sftp present: " + next);
 			} else {
 				/** relative to root */
+				logger.debug("sftp creating: " + next + " path " + path);
 				channel.mkdir(path);
 				logger.debug("sftp created: " + next);
 			}
@@ -171,12 +212,11 @@ public class SecureShell {
 	public int publish(final String source, final String target)
 			throws Exception {
 
+		logger.info("publish :  on " + host);
 		logger.info("sftp source: " + source);
 		logger.info("sftp target: " + target);
 
 		final Session session = getSession();
-
-		session.connect();
 
 		final ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
 
