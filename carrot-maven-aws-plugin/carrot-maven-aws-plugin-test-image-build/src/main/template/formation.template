@@ -22,25 +22,25 @@
     "Mappings": {
         "RegionMap": {
             "ap-northeast-1": {
-                "AMI": "ami-42328343"
+                "AMI": "ami-ee50e0ef"
             },
             "ap-southeast-1": {
-                "AMI": "ami-886027da"
+                "AMI": "ami-ce2f699c"
             },
             "eu-west-1": {
-                "AMI": "ami-87c5fdf3"
+                "AMI": "ami-ad350fd9"
             },
             "sa-east-1": {
-                "AMI": "ami-36b56b2b"
+                "AMI": "ami-dafd23c7"
             },
             "us-east-1": {
-                "AMI": "ami-4bad7422"
+                "AMI": "ami-a472d6cd"
             },
             "us-west-1": {
-                "AMI": "ami-17c59d52"
+                "AMI": "ami-3ff1aa7a"
             },
             "us-west-2": {
-                "AMI": "ami-a6ec6096"
+                "AMI": "ami-6ab5395a"
             }
         }
     },

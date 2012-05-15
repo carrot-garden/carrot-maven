@@ -57,7 +57,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @parameter
 	 */
 	protected Set<Integer> sshStatusSuccess;
-	
+
 	/**
 	 * AWS CloudFormation stack create execution result
 	 * 
@@ -71,21 +71,22 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @parameter default-value="./target/formation/formation-output.properties"
 	 */
 	protected File stackPropertiesOutputFile;
+
 	/**
 	 * How many times to attempt to retry ssh connection before giving up
 	 * 
 	 * @required
 	 * @parameter default-value="5"
 	 */
-	protected int maxRetries;
+	protected int sshConnectRetries;
+
 	/**
 	 * How long (in seconds) to wait if a ssh connection fails before retrying
 	 * 
 	 * @required
 	 * @parameter default-value="10"
 	 */
-	protected int timeOut;
-	
+	protected int sshConnectTimeout;
 
 	//
 
@@ -106,11 +107,11 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	protected SecureShell getSecureShell() throws Exception {
 
 		final Logger logger = getLogger(CloudFormation.class);
-		
+
 		final String sshHostConverted = getSSHHost();
 
 		final SecureShell ssh = new SecureShell(logger, sshKeyFile, sshUser,
-				sshHostConverted,maxRetries,timeOut);
+				sshHostConverted, sshConnectRetries, sshConnectTimeout);
 
 		return ssh;
 
@@ -118,20 +119,22 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 
 	private String getSSHHost() {
 		if (stackPropertiesOutputFile.exists()) {
-			getLog().info("Attempt to property substitute sshHost "+sshHost);
-			Properties props = new Properties();
-			
+			getLog().info("Attempt to property substitute sshHost " + sshHost);
+			final Properties props = new Properties();
+
 			try {
-				FileReader fr = new FileReader(stackPropertiesOutputFile);
+				final FileReader fr = new FileReader(stackPropertiesOutputFile);
 				props.load(fr);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				// Ignore exception
-				getLog().warn("Failed to read properties from "+stackPropertiesOutputFile);
+				getLog().warn(
+						"Failed to read properties from "
+								+ stackPropertiesOutputFile);
 				return sshHost;
 			}
-			
-			String sshHostConverted = props.getProperty(sshHost, sshHost);
-			getLog().debug("Return sshHost as "+sshHostConverted);
+
+			final String sshHostConverted = props.getProperty(sshHost, sshHost);
+			getLog().debug("Return sshHost as " + sshHostConverted);
 			return sshHostConverted;
 		}
 		return sshHost;

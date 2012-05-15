@@ -20,7 +20,6 @@ import com.carrotgarden.maven.aws.ssh.PathMaker.Entry;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpProgressMonitor;
 
@@ -29,9 +28,11 @@ import com.jcraft.jsch.SftpProgressMonitor;
  */
 public class SecureShell {
 
-	private final int maxretries;
+	/** session connect retry, count */
+	private final int connectRetries;
 
-	private final long timeout; // 10 seconds
+	/** session connect retry, milliseconds */
+	private final long connectTimeout;
 
 	private final Logger logger;
 
@@ -42,7 +43,8 @@ public class SecureShell {
 	private final int port;
 
 	public SecureShell(final Logger logger, final File keyFile,
-			final String user, final String host,int maxretries,int timeout) {
+			final String user, final String host, final int retries,
+			final long timeout) {
 
 		this.logger = logger;
 
@@ -51,10 +53,9 @@ public class SecureShell {
 		this.user = user;
 		this.host = host;
 		this.port = 22;
-		this.maxretries = maxretries;
-		this.timeout = (long)timeout*1000;
-		
-		
+
+		this.connectRetries = retries;
+		this.connectTimeout = timeout * 1000;
 
 	}
 
@@ -71,34 +72,44 @@ public class SecureShell {
 
 		session.setConfig("StrictHostKeyChecking", "no");
 
-		sessionConnectRetry(session);
+		sessionConnectWithRetry(session);
 
 		return session;
 
 	}
 
-	private void sessionConnectRetry(Session session) throws JSchException {
-		int count = 0;
-		while (true) {
+	/** assume sshd isnt running yet, wait and retry */
+	private void sessionConnectWithRetry(final Session session)
+			throws Exception {
+
+		Exception cause = null;
+
+		for (int count = 0; count < connectRetries; count++) {
+
 			try {
+
 				session.connect();
+
+				logger.debug("session connect success");
+
 				return;
-			} catch (JSchException j) {
-				// assume sshd isnt running yet, wait and retry
-				logger.debug("sessionConnect Attempt "+count);
-				if (count++ < maxretries) {
-					synchronized (this) {
-						try {
-							this.wait(timeout);
-						} catch (InterruptedException e) {
-							// Ignore and try again
-						}
-					}
-				} else {
-					throw j;
-				}
+
+			} catch (final Exception e) {
+
+				cause = e;
+
 			}
 
+			logger.debug("session connect attempt : {}", count);
+
+			Thread.sleep(connectTimeout);
+
+		}
+
+		if (cause == null) {
+			throw new IllegalStateException("unexpected");
+		} else {
+			throw cause;
 		}
 
 	}
@@ -112,7 +123,7 @@ public class SecureShell {
 		final ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
 		channel.setCommand(command);
-		
+
 		channel.setPty(true);
 
 		channel.connect();
@@ -212,7 +223,7 @@ public class SecureShell {
 	public int publish(final String source, final String target)
 			throws Exception {
 
-		logger.info("publish :  on " + host);
+		logger.info("sftp host  : " + host);
 		logger.info("sftp source: " + source);
 		logger.info("sftp target: " + target);
 
