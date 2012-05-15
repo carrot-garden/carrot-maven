@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.carrotgarden.base</groupId>
 		<artifactId>carrot-archon</artifactId>
-		<version>1.1.5</version>
+		<version>1.2.0</version>
 	</parent>
 
 	<artifactId>carrot-maven-aws-plugin-test-image-build</artifactId>
@@ -17,8 +17,6 @@
 
 		<carrotJavaVersion>1.6</carrotJavaVersion>
 
-		<stackName>image-build</stackName>
-
 		<publishSource>${basedir}/target/publish</publishSource>
 		<publishTarget>/tmp/publish_${carrotTimeFile}</publishTarget>
 
@@ -26,132 +24,140 @@
 
 	</properties>
 
-	<dependencies>
 
-	</dependencies>
+	<profiles>
 
-	<build>
+		<profile>
 
-		<plugins>
+			<id>image-build</id>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>publish-prepare</id>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<phase>package</phase>
+			<build>
+
+				<plugins>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>publish-prepare</id>
+								<goals>
+									<goal>copy-resources</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<resources>
+										<resource>
+											<directory>src/main/script</directory>
+											<filtering>true</filtering>
+										</resource>
+										<resource>
+											<directory>src/main/template</directory>
+											<filtering>true</filtering>
+										</resource>
+									</resources>
+									<outputDirectory>${publishSource}</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
+
+						<groupId>com.carrotgarden.maven</groupId>
+						<artifactId>carrot-maven-aws-plugin</artifactId>
+						<version>1.1.2-SNAPSHOT</version>
+
 						<configuration>
-							<resources>
-								<resource>
-									<directory>src/main/script</directory>
-									<filtering>true</filtering>
-								</resource>
-								<resource>
-									<directory>src/main/template</directory>
-									<filtering>true</filtering>
-								</resource>
-							</resources>
-							<outputDirectory>${publishSource}</outputDirectory>
+
+							<!-- used by cloud formation goals -->
+							<stackServerId>com.carrotgarden.aws.stack</stackServerId>
+							<stackName>image-build</stackName>
+							<stackTemplateFile>${publishSource}/formation.template</stackTemplateFile>
+							<stackPropertiesInputFile>${publishSource}/formation.properties</stackPropertiesInputFile>
+
+							<!-- used by ssh publish and execute goals -->
+							<sshHost>builder.carrotgarden.com</sshHost>
+							<sshKeyFile>${user.home}/.amazon/carrotgarden/keys/carrotgarden.pem</sshKeyFile>
+
+							<!-- used by elastic compute goals -->
+							<computeServerId>com.carrotgarden.aws.compute</computeServerId>
+							<imageName>java-7-karaf</imageName>
+							<imageDescription>java 7 for karaf</imageDescription>
+
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
-			<plugin>
+						<executions>
 
-				<groupId>com.carrotgarden.maven</groupId>
-				<artifactId>carrot-maven-aws-plugin</artifactId>
-				<version>1.1.2-SNAPSHOT</version>
+							<execution>
+								<id>stack-create</id>
+								<phase>package</phase>
+								<goals>
+									<goal>cloud-formation-create</goal>
+								</goals>
+							</execution>
 
-				<configuration>
+							<execution>
+								<id>script-publish</id>
+								<phase>package</phase>
+								<goals>
+									<goal>secure-shell-publish</goal>
+								</goals>
+								<configuration>
+									<sshSource>${publishSource}</sshSource>
+									<sshTarget>${publishTarget}</sshTarget>
+									<sshStatusSuccess>
+										<status>-1</status>
+									</sshStatusSuccess>
+								</configuration>
+							</execution>
 
-					<!-- used by cloud formation goals -->
-					<stackServerId>com.carrotgarden.aws.stack</stackServerId>
-					<stackName>${stackName}</stackName>
-					<stackTemplateFile>${publishSource}/formation.template</stackTemplateFile>
-					<stackPropertiesInputFile>${publishSource}/formation.properties</stackPropertiesInputFile>
-
-					<!-- used by ssh publish and execute goals -->
-					<sshHost>builder.carrotgarden.com</sshHost>
-					<sshKeyFile>${user.home}/.amazon/carrotgarden/keys/carrotgarden.pem</sshKeyFile>
-
-					<!-- used by elastic compute goals -->
-					<computeServerId>com.carrotgarden.aws.compute</computeServerId>
-					<imageName>java-7-karaf</imageName>
-					<imageDescription>java 7 for karaf</imageDescription>
-
-				</configuration>
-
-				<executions>
-
-					<execution>
-						<id>stack-create</id>
-						<phase>package</phase>
-						<goals>
-							<goal>cloud-formation-create</goal>
-						</goals>
-					</execution>
-
-					<execution>
-						<id>script-publish</id>
-						<phase>package</phase>
-						<goals>
-							<goal>secure-shell-publish</goal>
-						</goals>
-						<configuration>
-							<sshSource>${publishSource}</sshSource>
-							<sshTarget>${publishTarget}</sshTarget>
-							<sshStatusSuccess>
-								<status>-1</status>
-							</sshStatusSuccess>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>script-execute</id>
-						<phase>package</phase>
-						<goals>
-							<goal>secure-shell-execute</goal>
-						</goals>
-						<configuration>
-							<sshCommand>
+							<execution>
+								<id>script-execute</id>
+								<phase>package</phase>
+								<goals>
+									<goal>secure-shell-execute</goal>
+								</goals>
+								<configuration>
+									<sshCommand>
 							<![CDATA[ echo ;
 								echo "install script : ${publishInstall}" ;
 								chmod u+x ${publishInstall} ;
 								sudo ${publishInstall} ;
 							]]>
-							</sshCommand>
-							<sshStatusSuccess>
-								<status>0</status>
-							</sshStatusSuccess>
-						</configuration>
-					</execution>
+									</sshCommand>
+									<sshStatusSuccess>
+										<status>0</status>
+									</sshStatusSuccess>
+								</configuration>
+							</execution>
 
-					<execution>
-						<id>image-register</id>
-						<phase>package</phase>
-						<goals>
-							<goal>elastic-compute-image-register</goal>
-						</goals>
-					</execution>
+							<execution>
+								<id>image-register</id>
+								<phase>package</phase>
+								<goals>
+									<goal>elastic-compute-image-register</goal>
+								</goals>
+							</execution>
 
-					<execution>
-						<id>stack-delete</id>
-						<phase>package</phase>
-						<goals>
-							<goal>cloud-formation-delete</goal>
-						</goals>
-					</execution>
+							<execution>
+								<id>stack-delete</id>
+								<phase>package</phase>
+								<goals>
+									<goal>cloud-formation-delete</goal>
+								</goals>
+							</execution>
 
-				</executions>
-			</plugin>
+						</executions>
+						
+					</plugin>
 
-		</plugins>
+				</plugins>
 
-	</build>
+			</build>
+
+		</profile>
+
+	</profiles>
 
 </project>

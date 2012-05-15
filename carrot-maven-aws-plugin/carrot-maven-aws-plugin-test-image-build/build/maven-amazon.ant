@@ -25,8 +25,11 @@
 			<arg value="clean" />
 			<arg value="package" />
 
+			<arg value="--activate-profiles" />
+			<arg value="image-build" />
+
 		</exec>
-		
+
 	</target>
 
 </project>

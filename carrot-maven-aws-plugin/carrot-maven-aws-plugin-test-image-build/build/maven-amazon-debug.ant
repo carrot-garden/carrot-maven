@@ -13,13 +13,15 @@
 
 	<target name="maven">
 		<exec executable="mvn" output="mvn.log">
-			
+
 			<arg value="clean" />
-			
 			<arg value="package" />
-			
+
 			<arg value="--debug" />
-			
+
+			<arg value="--activate-profiles" />
+			<arg value="image-build" />
+
 		</exec>
 	</target>
 
