@@ -46,6 +46,29 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 */
 	protected Long computeTimeout;
 
+	/**
+	 * AWS ElasticCompute
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/general/latest/gr/rande.html#ec2_region"
+	 * >optional api end point url</a>
+	 * 
+	 * which controls amazon region selection;
+	 * 
+	 * when omitted, will be constructed from {@link #amazonRegion}
+	 * 
+	 * @parameter
+	 */
+	protected String computeEndpoint;
+
+	protected String getComputeEndpoint() {
+		if (computeEndpoint == null) {
+			return "https://ec2." + amazonRegion + ".amazonaws.com";
+		} else {
+			return computeEndpoint;
+		}
+	}
+
 	protected ElasticCompute getElasticCompute() throws Exception {
 
 		final Server server = settings.getServer(computeServerId);
@@ -61,8 +84,8 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 
 		final Logger logger = getLogger(ElasticCompute.class);
 
-		final ElasticCompute compute = new ElasticCompute(logger, computeTimeout, username,
-				password);
+		final ElasticCompute compute = new ElasticCompute(logger,
+				computeTimeout, username, password, getComputeEndpoint());
 
 		return compute;
 

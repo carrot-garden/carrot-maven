@@ -59,7 +59,7 @@ public class SecureShell {
 
 	}
 
-	private Session getSession() throws Exception {
+	private Session newSession() throws Exception {
 
 		logger.debug("exec getSession: on " + host + " : " + port + " user "
 				+ user);
@@ -118,7 +118,7 @@ public class SecureShell {
 
 		logger.info("exec command: " + command + " on " + host);
 
-		final Session session = getSession();
+		final Session session = newSession();
 
 		final ChannelExec channel = (ChannelExec) session.openChannel("exec");
 
@@ -150,13 +150,32 @@ public class SecureShell {
 
 		//
 
-		channel.disconnect();
+		input.close();
+
+		//
+
+		int count = 50;
+		final int delay = 100;
+
+		while (true) {
+			if (channel.isClosed()) {
+				break;
+			}
+			if (count-- < 0) {
+				break;
+			}
+			Thread.sleep(delay);
+		}
+
+		logger.info("exec channel closed: " + channel.isClosed());
 
 		final int status = channel.getExitStatus();
 
-		session.disconnect();
-
 		logger.info("exec exit status: " + status);
+
+		channel.disconnect();
+
+		session.disconnect();
 
 		return status;
 
@@ -227,7 +246,7 @@ public class SecureShell {
 		logger.info("sftp source: " + source);
 		logger.info("sftp target: " + target);
 
-		final Session session = getSession();
+		final Session session = newSession();
 
 		final ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
 

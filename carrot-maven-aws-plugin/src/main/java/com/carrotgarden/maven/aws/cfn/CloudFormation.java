@@ -53,10 +53,12 @@ public class CloudFormation {
 
 	private final long waitBetweenAttempts;
 
+	private final String endpoint;
+
 	public CloudFormation(final Logger logger, final String stackName,
 			final String stackTemplate, final Map<String, String> stackParams,
 			final long timeout, final String awsAccessKey,
-			final String awsSecretKey) {
+			final String awsSecretKey, final String endpoint) {
 
 		this.logger = logger;
 
@@ -69,9 +71,11 @@ public class CloudFormation {
 
 		this.timeout = timeout;
 
-		this.amazonClient = getClient();
+		this.endpoint = endpoint;
 
 		this.waitBetweenAttempts = 10; // query every 10s
+
+		this.amazonClient = newClient(); // keep last
 
 	}
 
@@ -128,13 +132,17 @@ public class CloudFormation {
 
 	}
 
-	private AmazonCloudFormation getClient() {
+	private AmazonCloudFormation newClient() {
 
 		final AWSCredentials credentials = new BasicAWSCredentials(
 				this.awsAccessKey, this.awsSecretKey);
 
 		final AmazonCloudFormation amazonClient = new AmazonCloudFormationAsyncClient(
 				credentials);
+
+		logger.info("stack endpoint : {}", endpoint);
+
+		amazonClient.setEndpoint(endpoint);
 
 		return amazonClient;
 

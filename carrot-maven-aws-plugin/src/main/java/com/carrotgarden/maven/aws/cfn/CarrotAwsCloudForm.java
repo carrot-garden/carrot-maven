@@ -24,7 +24,8 @@ import com.carrotgarden.maven.aws.CarrotAws;
 public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	/**
-	 * AWS CloudFormation stack name; must be unique under your aws account
+	 * AWS CloudFormation stack name; must be unique under your aws account /
+	 * region
 	 * 
 	 * @required
 	 * @parameter default-value="amazon-builder"
@@ -59,6 +60,29 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * @parameter default-value="600"
 	 */
 	protected Long stackTimeout;
+
+	/**
+	 * AWS CloudFormation
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/general/latest/gr/rande.html#cfn_region"
+	 * >optional api end point url</a>
+	 * 
+	 * which controls amazon region selection;
+	 * 
+	 * when omitted, will be constructed from {@link #amazonRegion}
+	 * 
+	 * @parameter
+	 */
+	protected String stackEndpoint;
+
+	protected String getStackEndpoint() {
+		if (stackEndpoint == null) {
+			return "https://cloudformation." + amazonRegion + ".amazonaws.com";
+		} else {
+			return stackEndpoint;
+		}
+	}
 
 	//
 
@@ -100,7 +124,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		/** */
 
 		final CloudFormation formation = new CloudFormation(logger, stackName,
-				stackTemplate, stackParams, stackTimeout, username, password);
+				stackTemplate, stackParams, stackTimeout, username, password,
+				getStackEndpoint());
 
 		return formation;
 

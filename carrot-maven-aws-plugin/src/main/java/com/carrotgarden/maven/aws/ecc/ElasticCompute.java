@@ -38,8 +38,11 @@ public class ElasticCompute {
 	private final long timeout;
 	private final long waitBetweenAttempts;
 
+	private final String endpoint;
+
 	public ElasticCompute(final Logger logger, final long timeout,
-			final String awsAccessKey, final String awsSecretKey) {
+			final String awsAccessKey, final String awsSecretKey,
+			final String endpoint) {
 
 		this.logger = logger;
 
@@ -48,18 +51,22 @@ public class ElasticCompute {
 		this.awsAccessKey = awsAccessKey;
 		this.awsSecretKey = awsSecretKey;
 
-		this.amazonClient = getClient();
-
 		this.waitBetweenAttempts = 10;
+
+		this.endpoint = endpoint;
+
+		this.amazonClient = newClient(); // keep last
 
 	}
 
-	private AmazonEC2 getClient() {
+	private AmazonEC2 newClient() {
 
 		final AWSCredentials credentials = new BasicAWSCredentials(
 				this.awsAccessKey, this.awsSecretKey);
 
 		final AmazonEC2 amazonClient = new AmazonEC2Client(credentials);
+
+		amazonClient.setEndpoint(endpoint);
 
 		return amazonClient;
 

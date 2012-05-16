@@ -41,7 +41,8 @@ public class TestCloudFormation {
 		//
 
 		final CloudFormation formation = new CloudFormation(logger, stackName,
-				stackTemplate, stackParams, timeout, awsAccessKey, awsSecretKey);
+				stackTemplate, stackParams, timeout, awsAccessKey,
+				awsSecretKey, null);
 
 		formation.stackCreate();
 

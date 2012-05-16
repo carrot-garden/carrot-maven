@@ -45,6 +45,19 @@ public abstract class CarrotAws extends AbstractMojo {
 	 */
 	protected Settings settings;
 
+	/**
+	 * AWS
+	 * 
+	 * <a href= "http://docs.amazonwebservices.com/general/latest/gr/rande.html"
+	 * >region name, such as us-east-1,</a>
+	 * 
+	 * which controls amazon region selection;
+	 * 
+	 * @required
+	 * @parameter default-value="us-east-1"
+	 */
+	protected String amazonRegion;
+
 	//
 
 	protected boolean isValidDirectory(final File file) {
