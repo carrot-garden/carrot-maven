@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "builder instance : ${project.artifactId}",
+    "Description": "project : ${project.artifactId}",
     "Parameters": {
         "KeyName": {
             "Type": "String",

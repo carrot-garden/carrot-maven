@@ -12,20 +12,26 @@
 	<echo message="basedir : ${basedir}" />
 
 	<target name="maven">
-		<exec executable="mvn" output="mvn.log">
+
+		<condition property="executable" value="mvn">
+			<os family="unix" />
+		</condition>
+		<condition property="executable" value="mvn.bat">
+			<os family="windows" />
+		</condition>
+
+		<exec executable="${executable}">
 
 			<arg value="clean" />
 			<arg value="package" />
 
-
-			<arg value="--debug" />
-
 			<arg value="--update-snapshots" />
 
 			<arg value="--activate-profiles" />
-			<arg value="image-build" />
+			<arg value="image-build,eu-west-1" />
 
 		</exec>
+
 	</target>
 
 </project>

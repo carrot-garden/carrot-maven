@@ -28,7 +28,7 @@
 			<arg value="--update-snapshots" />
 
 			<arg value="--activate-profiles" />
-			<arg value="image-build" />
+			<arg value="image-build,us-east-1" />
 
 		</exec>
 

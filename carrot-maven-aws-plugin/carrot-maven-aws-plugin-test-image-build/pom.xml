@@ -71,22 +71,31 @@
 						<configuration>
 
 							<!-- used by cloud formation & elastic compute goals -->
-							<amazonRegion>eu-west-1</amazonRegion>
+							<!-- <amazonRegion>eu-west-1</amazonRegion> -->
+							<!-- <amazonRegion>us-east-1</amazonRegion> -->
+							<amazonRegion>${amazonRegion}</amazonRegion>
 
 							<!-- used by cloud formation goals -->
+							<!-- <stackName>image-build</stackName> -->
+							<stackName>${stackName}</stackName>
 							<stackServerId>com.carrotgarden.aws.stack</stackServerId>
-							<stackName>image-build</stackName>
 							<stackTemplateFile>${publishSource}/formation.template</stackTemplateFile>
-							<stackPropertiesInputFile>${publishSource}/formation.properties</stackPropertiesInputFile>
+							<!-- <stackPropertiesInputFile>${publishSource}/formation.properties</stackPropertiesInputFile> -->
+							<stackInputParams>
+								<KeyName>carrotgarden</KeyName>
+								<InstanceType>t1.micro</InstanceType>
+								<DNSZoneName>carrotgarden.com.</DNSZoneName>
+								<DNSHostName>${DNSHostName}</DNSHostName>
+							</stackInputParams>
 
 							<!-- used by ssh goals -->
-							<sshHost>builder.carrotgarden.com</sshHost>
+							<sshHost>${DNSHostName}</sshHost>
 							<sshKeyFile>${user.home}/.amazon/carrotgarden/keys/carrotgarden.pem</sshKeyFile>
 
 							<!-- used by elastic compute goals -->
 							<computeServerId>com.carrotgarden.aws.compute</computeServerId>
-							<imageName>java-7-karaf</imageName>
-							<imageDescription>java 7 for karaf</imageDescription>
+							<imageName>java-7-karaf_${carrotTimeFile}</imageName>
+							<imageDescription>java 7 for karaf (${carrotTimeFile})</imageDescription>
 
 						</configuration>
 
@@ -153,6 +162,24 @@
 
 			</build>
 
+		</profile>
+
+		<profile>
+			<id>us-east-1</id>
+			<properties>
+				<amazonRegion>us-east-1</amazonRegion>
+				<stackName>builder-us-carrotgarden-com</stackName>
+				<DNSHostName>builder.us.carrotgarden.com.</DNSHostName>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>eu-west-1</id>
+			<properties>
+				<amazonRegion>eu-west-1</amazonRegion>
+				<stackName>builder-eu-carrotgarden-com</stackName>
+				<DNSHostName>builder.eu.carrotgarden.com.</DNSHostName>
+			</properties>
 		</profile>
 
 	</profiles>
