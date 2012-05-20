@@ -1,207 +1,219 @@
-<HTML>
-<BODY BGCOLOR="white">
-<PRE>
-<FONT color="green">001</FONT>    /**<a name="line.1"></a>
-<FONT color="green">002</FONT>     * Copyright (C) 2010-2012 Andrei Pozolotin &lt;Andrei.Pozolotin@gmail.com&gt;<a name="line.2"></a>
-<FONT color="green">003</FONT>     *<a name="line.3"></a>
-<FONT color="green">004</FONT>     * All rights reserved. Licensed under the OSI BSD License.<a name="line.4"></a>
-<FONT color="green">005</FONT>     *<a name="line.5"></a>
-<FONT color="green">006</FONT>     * http://www.opensource.org/licenses/bsd-license.php<a name="line.6"></a>
-<FONT color="green">007</FONT>     */<a name="line.7"></a>
-<FONT color="green">008</FONT>    package com.carrotgarden.maven.aws.ecc;<a name="line.8"></a>
-<FONT color="green">009</FONT>    <a name="line.9"></a>
-<FONT color="green">010</FONT>    import java.util.ArrayList;<a name="line.10"></a>
-<FONT color="green">011</FONT>    import java.util.List;<a name="line.11"></a>
-<FONT color="green">012</FONT>    <a name="line.12"></a>
-<FONT color="green">013</FONT>    import org.slf4j.Logger;<a name="line.13"></a>
-<FONT color="green">014</FONT>    <a name="line.14"></a>
-<FONT color="green">015</FONT>    import com.amazonaws.auth.AWSCredentials;<a name="line.15"></a>
-<FONT color="green">016</FONT>    import com.amazonaws.auth.BasicAWSCredentials;<a name="line.16"></a>
-<FONT color="green">017</FONT>    import com.amazonaws.services.ec2.AmazonEC2;<a name="line.17"></a>
-<FONT color="green">018</FONT>    import com.amazonaws.services.ec2.AmazonEC2Client;<a name="line.18"></a>
-<FONT color="green">019</FONT>    import com.amazonaws.services.ec2.model.CreateImageRequest;<a name="line.19"></a>
-<FONT color="green">020</FONT>    import com.amazonaws.services.ec2.model.CreateImageResult;<a name="line.20"></a>
-<FONT color="green">021</FONT>    import com.amazonaws.services.ec2.model.DescribeImagesRequest;<a name="line.21"></a>
-<FONT color="green">022</FONT>    import com.amazonaws.services.ec2.model.DescribeImagesResult;<a name="line.22"></a>
-<FONT color="green">023</FONT>    import com.amazonaws.services.ec2.model.Image;<a name="line.23"></a>
-<FONT color="green">024</FONT>    import com.amazonaws.services.ec2.model.StateReason;<a name="line.24"></a>
-<FONT color="green">025</FONT>    <a name="line.25"></a>
-<FONT color="green">026</FONT>    /**<a name="line.26"></a>
-<FONT color="green">027</FONT>     * @author Andrei Pozolotin<a name="line.27"></a>
-<FONT color="green">028</FONT>     */<a name="line.28"></a>
-<FONT color="green">029</FONT>    public class ElasticCompute {<a name="line.29"></a>
-<FONT color="green">030</FONT>    <a name="line.30"></a>
-<FONT color="green">031</FONT>            private final Logger logger;<a name="line.31"></a>
-<FONT color="green">032</FONT>    <a name="line.32"></a>
-<FONT color="green">033</FONT>            private final String awsAccessKey;<a name="line.33"></a>
-<FONT color="green">034</FONT>            private final String awsSecretKey;<a name="line.34"></a>
-<FONT color="green">035</FONT>    <a name="line.35"></a>
-<FONT color="green">036</FONT>            private final AmazonEC2 amazonClient;<a name="line.36"></a>
-<FONT color="green">037</FONT>    <a name="line.37"></a>
-<FONT color="green">038</FONT>            private final long timeout;<a name="line.38"></a>
-<FONT color="green">039</FONT>            private final long waitBetweenAttempts;<a name="line.39"></a>
-<FONT color="green">040</FONT>    <a name="line.40"></a>
-<FONT color="green">041</FONT>            public ElasticCompute(final Logger logger, final long timeout,<a name="line.41"></a>
-<FONT color="green">042</FONT>                            final String awsAccessKey, final String awsSecretKey) {<a name="line.42"></a>
-<FONT color="green">043</FONT>    <a name="line.43"></a>
-<FONT color="green">044</FONT>                    this.logger = logger;<a name="line.44"></a>
-<FONT color="green">045</FONT>    <a name="line.45"></a>
-<FONT color="green">046</FONT>                    this.timeout = timeout;<a name="line.46"></a>
-<FONT color="green">047</FONT>    <a name="line.47"></a>
-<FONT color="green">048</FONT>                    this.awsAccessKey = awsAccessKey;<a name="line.48"></a>
-<FONT color="green">049</FONT>                    this.awsSecretKey = awsSecretKey;<a name="line.49"></a>
-<FONT color="green">050</FONT>    <a name="line.50"></a>
-<FONT color="green">051</FONT>                    this.amazonClient = getClient();<a name="line.51"></a>
-<FONT color="green">052</FONT>    <a name="line.52"></a>
-<FONT color="green">053</FONT>                    this.waitBetweenAttempts = 10;<a name="line.53"></a>
-<FONT color="green">054</FONT>    <a name="line.54"></a>
-<FONT color="green">055</FONT>            }<a name="line.55"></a>
-<FONT color="green">056</FONT>    <a name="line.56"></a>
-<FONT color="green">057</FONT>            private AmazonEC2 getClient() {<a name="line.57"></a>
-<FONT color="green">058</FONT>    <a name="line.58"></a>
-<FONT color="green">059</FONT>                    final AWSCredentials credentials = new BasicAWSCredentials(<a name="line.59"></a>
-<FONT color="green">060</FONT>                                    this.awsAccessKey, this.awsSecretKey);<a name="line.60"></a>
-<FONT color="green">061</FONT>    <a name="line.61"></a>
-<FONT color="green">062</FONT>                    final AmazonEC2 amazonClient = new AmazonEC2Client(credentials);<a name="line.62"></a>
-<FONT color="green">063</FONT>    <a name="line.63"></a>
-<FONT color="green">064</FONT>                    return amazonClient;<a name="line.64"></a>
-<FONT color="green">065</FONT>    <a name="line.65"></a>
-<FONT color="green">066</FONT>            }<a name="line.66"></a>
-<FONT color="green">067</FONT>    <a name="line.67"></a>
-<FONT color="green">068</FONT>            public Image imageRegister(final String instanceId, final String name,<a name="line.68"></a>
-<FONT color="green">069</FONT>                            final String description) throws Exception {<a name="line.69"></a>
-<FONT color="green">070</FONT>    <a name="line.70"></a>
-<FONT color="green">071</FONT>                    final CreateImageRequest request = new CreateImageRequest();<a name="line.71"></a>
-<FONT color="green">072</FONT>    <a name="line.72"></a>
-<FONT color="green">073</FONT>                    request.setInstanceId(instanceId);<a name="line.73"></a>
-<FONT color="green">074</FONT>                    request.setName(name);<a name="line.74"></a>
-<FONT color="green">075</FONT>                    request.setDescription(description);<a name="line.75"></a>
-<FONT color="green">076</FONT>    <a name="line.76"></a>
-<FONT color="green">077</FONT>                    final CreateImageResult result = amazonClient.createImage(request);<a name="line.77"></a>
-<FONT color="green">078</FONT>    <a name="line.78"></a>
-<FONT color="green">079</FONT>                    final String imageId = result.getImageId();<a name="line.79"></a>
-<FONT color="green">080</FONT>    <a name="line.80"></a>
-<FONT color="green">081</FONT>                    logger.info("register imageId=" + imageId);<a name="line.81"></a>
-<FONT color="green">082</FONT>    <a name="line.82"></a>
-<FONT color="green">083</FONT>                    final Image image = waitForImage(imageId);<a name="line.83"></a>
-<FONT color="green">084</FONT>    <a name="line.84"></a>
-<FONT color="green">085</FONT>                    return image;<a name="line.85"></a>
-<FONT color="green">086</FONT>    <a name="line.86"></a>
-<FONT color="green">087</FONT>            }<a name="line.87"></a>
-<FONT color="green">088</FONT>    <a name="line.88"></a>
-<FONT color="green">089</FONT>            public static enum State {<a name="line.89"></a>
-<FONT color="green">090</FONT>    <a name="line.90"></a>
-<FONT color="green">091</FONT>                    AVAILABLE("available"), //<a name="line.91"></a>
-<FONT color="green">092</FONT>                    DEREGISTERED("deregistered"), //<a name="line.92"></a>
-<FONT color="green">093</FONT>                    PENDING("pending"), //<a name="line.93"></a>
-<FONT color="green">094</FONT>    <a name="line.94"></a>
-<FONT color="green">095</FONT>                    UNKNOWN("unknown"), //<a name="line.95"></a>
-<FONT color="green">096</FONT>    <a name="line.96"></a>
-<FONT color="green">097</FONT>                    ;<a name="line.97"></a>
-<FONT color="green">098</FONT>    <a name="line.98"></a>
-<FONT color="green">099</FONT>                    public final String value;<a name="line.99"></a>
-<FONT color="green">100</FONT>    <a name="line.100"></a>
-<FONT color="green">101</FONT>                    State(final String value) {<a name="line.101"></a>
-<FONT color="green">102</FONT>                            this.value = value;<a name="line.102"></a>
-<FONT color="green">103</FONT>                    }<a name="line.103"></a>
-<FONT color="green">104</FONT>    <a name="line.104"></a>
-<FONT color="green">105</FONT>                    public static State fromValue(final String value) {<a name="line.105"></a>
-<FONT color="green">106</FONT>                            for (final State known : values()) {<a name="line.106"></a>
-<FONT color="green">107</FONT>                                    if (known.value.equals(value)) {<a name="line.107"></a>
-<FONT color="green">108</FONT>                                            return known;<a name="line.108"></a>
-<FONT color="green">109</FONT>                                    }<a name="line.109"></a>
-<FONT color="green">110</FONT>                            }<a name="line.110"></a>
-<FONT color="green">111</FONT>                            return UNKNOWN;<a name="line.111"></a>
-<FONT color="green">112</FONT>                    }<a name="line.112"></a>
-<FONT color="green">113</FONT>    <a name="line.113"></a>
-<FONT color="green">114</FONT>            }<a name="line.114"></a>
-<FONT color="green">115</FONT>    <a name="line.115"></a>
-<FONT color="green">116</FONT>            private Image newImageWithStatus(final String state, final String code,<a name="line.116"></a>
-<FONT color="green">117</FONT>                            final String message) {<a name="line.117"></a>
-<FONT color="green">118</FONT>    <a name="line.118"></a>
-<FONT color="green">119</FONT>                    final StateReason reason = new StateReason();<a name="line.119"></a>
-<FONT color="green">120</FONT>                    reason.setCode(code);<a name="line.120"></a>
-<FONT color="green">121</FONT>                    reason.setMessage(message);<a name="line.121"></a>
-<FONT color="green">122</FONT>    <a name="line.122"></a>
-<FONT color="green">123</FONT>                    final Image image = new Image();<a name="line.123"></a>
-<FONT color="green">124</FONT>                    image.setState(state);<a name="line.124"></a>
-<FONT color="green">125</FONT>                    image.setStateReason(reason);<a name="line.125"></a>
-<FONT color="green">126</FONT>    <a name="line.126"></a>
-<FONT color="green">127</FONT>                    return image;<a name="line.127"></a>
-<FONT color="green">128</FONT>    <a name="line.128"></a>
-<FONT color="green">129</FONT>            }<a name="line.129"></a>
-<FONT color="green">130</FONT>    <a name="line.130"></a>
-<FONT color="green">131</FONT>            private Image waitForImage(final String imageId) throws Exception {<a name="line.131"></a>
-<FONT color="green">132</FONT>    <a name="line.132"></a>
-<FONT color="green">133</FONT>                    final long timeStart = System.currentTimeMillis();<a name="line.133"></a>
-<FONT color="green">134</FONT>    <a name="line.134"></a>
-<FONT color="green">135</FONT>                    final List&lt;String&gt; imageIds = new ArrayList&lt;String&gt;();<a name="line.135"></a>
-<FONT color="green">136</FONT>                    imageIds.add(imageId);<a name="line.136"></a>
-<FONT color="green">137</FONT>    <a name="line.137"></a>
-<FONT color="green">138</FONT>                    final DescribeImagesRequest request = new DescribeImagesRequest();<a name="line.138"></a>
-<FONT color="green">139</FONT>                    request.setImageIds(imageIds);<a name="line.139"></a>
-<FONT color="green">140</FONT>    <a name="line.140"></a>
-<FONT color="green">141</FONT>                    while (true) {<a name="line.141"></a>
-<FONT color="green">142</FONT>    <a name="line.142"></a>
-<FONT color="green">143</FONT>                            final DescribeImagesResult result = amazonClient<a name="line.143"></a>
-<FONT color="green">144</FONT>                                            .describeImages(request);<a name="line.144"></a>
-<FONT color="green">145</FONT>    <a name="line.145"></a>
-<FONT color="green">146</FONT>                            final List&lt;Image&gt; imageList = result.getImages();<a name="line.146"></a>
-<FONT color="green">147</FONT>    <a name="line.147"></a>
-<FONT color="green">148</FONT>                            final Image image;<a name="line.148"></a>
-<FONT color="green">149</FONT>    <a name="line.149"></a>
-<FONT color="green">150</FONT>                            if (isTimeoutPending(timeStart)) {<a name="line.150"></a>
-<FONT color="green">151</FONT>                                    image = newImageWithStatus(State.UNKNOWN.value, "timeout",<a name="line.151"></a>
-<FONT color="green">152</FONT>                                                    "image create timeout while waiting");<a name="line.152"></a>
-<FONT color="green">153</FONT>                            } else if (imageList == null || imageList.isEmpty()) {<a name="line.153"></a>
-<FONT color="green">154</FONT>                                    image = newImageWithStatus(State.UNKNOWN.value, "missing",<a name="line.154"></a>
-<FONT color="green">155</FONT>                                                    "image create missing in descriptions");<a name="line.155"></a>
-<FONT color="green">156</FONT>                            } else {<a name="line.156"></a>
-<FONT color="green">157</FONT>                                    image = imageList.get(0);<a name="line.157"></a>
-<FONT color="green">158</FONT>                            }<a name="line.158"></a>
-<FONT color="green">159</FONT>    <a name="line.159"></a>
-<FONT color="green">160</FONT>                            final String value = image.getState();<a name="line.160"></a>
-<FONT color="green">161</FONT>    <a name="line.161"></a>
-<FONT color="green">162</FONT>                            final State state = State.fromValue(value);<a name="line.162"></a>
-<FONT color="green">163</FONT>    <a name="line.163"></a>
-<FONT color="green">164</FONT>                            switch (state) {<a name="line.164"></a>
-<FONT color="green">165</FONT>    <a name="line.165"></a>
-<FONT color="green">166</FONT>                            case AVAILABLE:<a name="line.166"></a>
-<FONT color="green">167</FONT>                                    logger.info("image create success");<a name="line.167"></a>
-<FONT color="green">168</FONT>                                    return image;<a name="line.168"></a>
-<FONT color="green">169</FONT>    <a name="line.169"></a>
-<FONT color="green">170</FONT>                            case PENDING:<a name="line.170"></a>
-<FONT color="green">171</FONT>                                    final long timeCurrent = System.currentTimeMillis();<a name="line.171"></a>
-<FONT color="green">172</FONT>                                    final long timeDiff = timeCurrent - timeStart;<a name="line.172"></a>
-<FONT color="green">173</FONT>                                    logger.info("image create in progress; time=" + timeDiff / 1000);<a name="line.173"></a>
-<FONT color="green">174</FONT>                                    sleep();<a name="line.174"></a>
-<FONT color="green">175</FONT>                                    break;<a name="line.175"></a>
-<FONT color="green">176</FONT>    <a name="line.176"></a>
-<FONT color="green">177</FONT>                            default:<a name="line.177"></a>
-<FONT color="green">178</FONT>                                    logger.error("image create failure");<a name="line.178"></a>
-<FONT color="green">179</FONT>                                    return image;<a name="line.179"></a>
-<FONT color="green">180</FONT>    <a name="line.180"></a>
-<FONT color="green">181</FONT>                            }<a name="line.181"></a>
-<FONT color="green">182</FONT>    <a name="line.182"></a>
-<FONT color="green">183</FONT>                    }<a name="line.183"></a>
-<FONT color="green">184</FONT>    <a name="line.184"></a>
-<FONT color="green">185</FONT>            }<a name="line.185"></a>
-<FONT color="green">186</FONT>    <a name="line.186"></a>
-<FONT color="green">187</FONT>            private void sleep() throws Exception {<a name="line.187"></a>
-<FONT color="green">188</FONT>                    try {<a name="line.188"></a>
-<FONT color="green">189</FONT>                            Thread.sleep(waitBetweenAttempts * 1000);<a name="line.189"></a>
-<FONT color="green">190</FONT>                    } catch (final InterruptedException ie) {<a name="line.190"></a>
-<FONT color="green">191</FONT>                            throw new IllegalStateException("operation interrupted; "<a name="line.191"></a>
-<FONT color="green">192</FONT>                                            + "resources are left in inconsistent state; "<a name="line.192"></a>
-<FONT color="green">193</FONT>                                            + "requires manual intervention");<a name="line.193"></a>
-<FONT color="green">194</FONT>                    }<a name="line.194"></a>
-<FONT color="green">195</FONT>            }<a name="line.195"></a>
-<FONT color="green">196</FONT>    <a name="line.196"></a>
-<FONT color="green">197</FONT>            private boolean isTimeoutPending(final long startTime) {<a name="line.197"></a>
-<FONT color="green">198</FONT>                    return (System.currentTimeMillis() - startTime) &gt; (timeout * 1000);<a name="line.198"></a>
-<FONT color="green">199</FONT>            }<a name="line.199"></a>
-<FONT color="green">200</FONT>    <a name="line.200"></a>
-<FONT color="green">201</FONT>    }<a name="line.201"></a>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Copyright (C) 2010-2012 Andrei Pozolotin &lt;Andrei.Pozolotin@gmail.com&gt;<a name="line.2"></a>
+<span class="sourceLineNo">003</span> *<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * All rights reserved. Licensed under the OSI BSD License.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> *<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * http://www.opensource.org/licenses/bsd-license.php<a name="line.6"></a>
+<span class="sourceLineNo">007</span> */<a name="line.7"></a>
+<span class="sourceLineNo">008</span>package com.carrotgarden.maven.aws.ecc;<a name="line.8"></a>
+<span class="sourceLineNo">009</span><a name="line.9"></a>
+<span class="sourceLineNo">010</span>import java.util.ArrayList;<a name="line.10"></a>
+<span class="sourceLineNo">011</span>import java.util.List;<a name="line.11"></a>
+<span class="sourceLineNo">012</span><a name="line.12"></a>
+<span class="sourceLineNo">013</span>import org.slf4j.Logger;<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>import com.amazonaws.auth.AWSCredentials;<a name="line.15"></a>
+<span class="sourceLineNo">016</span>import com.amazonaws.auth.BasicAWSCredentials;<a name="line.16"></a>
+<span class="sourceLineNo">017</span>import com.amazonaws.services.ec2.AmazonEC2;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import com.amazonaws.services.ec2.AmazonEC2Client;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import com.amazonaws.services.ec2.model.CreateImageRequest;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import com.amazonaws.services.ec2.model.CreateImageResult;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import com.amazonaws.services.ec2.model.DescribeImagesRequest;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import com.amazonaws.services.ec2.model.DescribeImagesResult;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import com.amazonaws.services.ec2.model.Image;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import com.amazonaws.services.ec2.model.StateReason;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>/**<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * @author Andrei Pozolotin<a name="line.27"></a>
+<span class="sourceLineNo">028</span> */<a name="line.28"></a>
+<span class="sourceLineNo">029</span>public class ElasticCompute {<a name="line.29"></a>
+<span class="sourceLineNo">030</span><a name="line.30"></a>
+<span class="sourceLineNo">031</span>        private final Logger logger;<a name="line.31"></a>
+<span class="sourceLineNo">032</span><a name="line.32"></a>
+<span class="sourceLineNo">033</span>        private final String awsAccessKey;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>        private final String awsSecretKey;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>        private final AmazonEC2 amazonClient;<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>        private final long timeout;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>        private final long waitBetweenAttempts;<a name="line.39"></a>
+<span class="sourceLineNo">040</span><a name="line.40"></a>
+<span class="sourceLineNo">041</span>        private final String endpoint;<a name="line.41"></a>
+<span class="sourceLineNo">042</span><a name="line.42"></a>
+<span class="sourceLineNo">043</span>        public ElasticCompute(final Logger logger, final long timeout,<a name="line.43"></a>
+<span class="sourceLineNo">044</span>                        final String awsAccessKey, final String awsSecretKey,<a name="line.44"></a>
+<span class="sourceLineNo">045</span>                        final String endpoint) {<a name="line.45"></a>
+<span class="sourceLineNo">046</span><a name="line.46"></a>
+<span class="sourceLineNo">047</span>                this.logger = logger;<a name="line.47"></a>
+<span class="sourceLineNo">048</span><a name="line.48"></a>
+<span class="sourceLineNo">049</span>                this.timeout = timeout;<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>                this.awsAccessKey = awsAccessKey;<a name="line.51"></a>
+<span class="sourceLineNo">052</span>                this.awsSecretKey = awsSecretKey;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>                this.waitBetweenAttempts = 10;<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>                this.endpoint = endpoint;<a name="line.56"></a>
+<span class="sourceLineNo">057</span><a name="line.57"></a>
+<span class="sourceLineNo">058</span>                this.amazonClient = newClient(); // keep last<a name="line.58"></a>
+<span class="sourceLineNo">059</span><a name="line.59"></a>
+<span class="sourceLineNo">060</span>        }<a name="line.60"></a>
+<span class="sourceLineNo">061</span><a name="line.61"></a>
+<span class="sourceLineNo">062</span>        private AmazonEC2 newClient() {<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>                final AWSCredentials credentials = new BasicAWSCredentials(<a name="line.64"></a>
+<span class="sourceLineNo">065</span>                                this.awsAccessKey, this.awsSecretKey);<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>                final AmazonEC2 amazonClient = new AmazonEC2Client(credentials);<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>                amazonClient.setEndpoint(endpoint);<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>                return amazonClient;<a name="line.71"></a>
+<span class="sourceLineNo">072</span><a name="line.72"></a>
+<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
+<span class="sourceLineNo">074</span><a name="line.74"></a>
+<span class="sourceLineNo">075</span>        public Image imageRegister(final String instanceId, final String name,<a name="line.75"></a>
+<span class="sourceLineNo">076</span>                        final String description) throws Exception {<a name="line.76"></a>
+<span class="sourceLineNo">077</span><a name="line.77"></a>
+<span class="sourceLineNo">078</span>                final CreateImageRequest request = new CreateImageRequest();<a name="line.78"></a>
+<span class="sourceLineNo">079</span><a name="line.79"></a>
+<span class="sourceLineNo">080</span>                request.setInstanceId(instanceId);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>                request.setName(name);<a name="line.81"></a>
+<span class="sourceLineNo">082</span>                request.setDescription(description);<a name="line.82"></a>
+<span class="sourceLineNo">083</span><a name="line.83"></a>
+<span class="sourceLineNo">084</span>                final CreateImageResult result = amazonClient.createImage(request);<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>                final String imageId = result.getImageId();<a name="line.86"></a>
+<span class="sourceLineNo">087</span><a name="line.87"></a>
+<span class="sourceLineNo">088</span>                logger.info("register imageId=" + imageId);<a name="line.88"></a>
+<span class="sourceLineNo">089</span><a name="line.89"></a>
+<span class="sourceLineNo">090</span>                final Image image = waitForImage(imageId);<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>                return image;<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>        }<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>        public static enum State {<a name="line.96"></a>
+<span class="sourceLineNo">097</span><a name="line.97"></a>
+<span class="sourceLineNo">098</span>                AVAILABLE("available"), //<a name="line.98"></a>
+<span class="sourceLineNo">099</span>                DEREGISTERED("deregistered"), //<a name="line.99"></a>
+<span class="sourceLineNo">100</span>                PENDING("pending"), //<a name="line.100"></a>
+<span class="sourceLineNo">101</span><a name="line.101"></a>
+<span class="sourceLineNo">102</span>                UNKNOWN("unknown"), //<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>                ;<a name="line.104"></a>
+<span class="sourceLineNo">105</span><a name="line.105"></a>
+<span class="sourceLineNo">106</span>                public final String value;<a name="line.106"></a>
+<span class="sourceLineNo">107</span><a name="line.107"></a>
+<span class="sourceLineNo">108</span>                State(final String value) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>                        this.value = value;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                }<a name="line.110"></a>
+<span class="sourceLineNo">111</span><a name="line.111"></a>
+<span class="sourceLineNo">112</span>                public static State fromValue(final String value) {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                        for (final State known : values()) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                                if (known.value.equals(value)) {<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                                        return known;<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                                }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                        }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>                        return UNKNOWN;<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                }<a name="line.119"></a>
+<span class="sourceLineNo">120</span><a name="line.120"></a>
+<span class="sourceLineNo">121</span>        }<a name="line.121"></a>
+<span class="sourceLineNo">122</span><a name="line.122"></a>
+<span class="sourceLineNo">123</span>        private Image newImageWithStatus(final String state, final String code,<a name="line.123"></a>
+<span class="sourceLineNo">124</span>                        final String message) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span><a name="line.125"></a>
+<span class="sourceLineNo">126</span>                final StateReason reason = new StateReason();<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                reason.setCode(code);<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                reason.setMessage(message);<a name="line.128"></a>
+<span class="sourceLineNo">129</span><a name="line.129"></a>
+<span class="sourceLineNo">130</span>                final Image image = new Image();<a name="line.130"></a>
+<span class="sourceLineNo">131</span>                image.setState(state);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>                image.setStateReason(reason);<a name="line.132"></a>
+<span class="sourceLineNo">133</span><a name="line.133"></a>
+<span class="sourceLineNo">134</span>                return image;<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>        }<a name="line.136"></a>
+<span class="sourceLineNo">137</span><a name="line.137"></a>
+<span class="sourceLineNo">138</span>        private Image waitForImage(final String imageId) throws Exception {<a name="line.138"></a>
+<span class="sourceLineNo">139</span><a name="line.139"></a>
+<span class="sourceLineNo">140</span>                final long timeStart = System.currentTimeMillis();<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>                final List&lt;String&gt; imageIds = new ArrayList&lt;String&gt;();<a name="line.142"></a>
+<span class="sourceLineNo">143</span>                imageIds.add(imageId);<a name="line.143"></a>
+<span class="sourceLineNo">144</span><a name="line.144"></a>
+<span class="sourceLineNo">145</span>                final DescribeImagesRequest request = new DescribeImagesRequest();<a name="line.145"></a>
+<span class="sourceLineNo">146</span>                request.setImageIds(imageIds);<a name="line.146"></a>
+<span class="sourceLineNo">147</span><a name="line.147"></a>
+<span class="sourceLineNo">148</span>                while (true) {<a name="line.148"></a>
+<span class="sourceLineNo">149</span><a name="line.149"></a>
+<span class="sourceLineNo">150</span>                        final DescribeImagesResult result = amazonClient<a name="line.150"></a>
+<span class="sourceLineNo">151</span>                                        .describeImages(request);<a name="line.151"></a>
+<span class="sourceLineNo">152</span><a name="line.152"></a>
+<span class="sourceLineNo">153</span>                        final List&lt;Image&gt; imageList = result.getImages();<a name="line.153"></a>
+<span class="sourceLineNo">154</span><a name="line.154"></a>
+<span class="sourceLineNo">155</span>                        final Image image;<a name="line.155"></a>
+<span class="sourceLineNo">156</span><a name="line.156"></a>
+<span class="sourceLineNo">157</span>                        if (isTimeoutPending(timeStart)) {<a name="line.157"></a>
+<span class="sourceLineNo">158</span>                                image = newImageWithStatus(State.UNKNOWN.value, "timeout",<a name="line.158"></a>
+<span class="sourceLineNo">159</span>                                                "image create timeout while waiting");<a name="line.159"></a>
+<span class="sourceLineNo">160</span>                        } else if (imageList == null || imageList.isEmpty()) {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>                                image = newImageWithStatus(State.UNKNOWN.value, "missing",<a name="line.161"></a>
+<span class="sourceLineNo">162</span>                                                "image create missing in descriptions");<a name="line.162"></a>
+<span class="sourceLineNo">163</span>                        } else {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>                                image = imageList.get(0);<a name="line.164"></a>
+<span class="sourceLineNo">165</span>                        }<a name="line.165"></a>
+<span class="sourceLineNo">166</span><a name="line.166"></a>
+<span class="sourceLineNo">167</span>                        final String value = image.getState();<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>                        final State state = State.fromValue(value);<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>                        switch (state) {<a name="line.171"></a>
+<span class="sourceLineNo">172</span><a name="line.172"></a>
+<span class="sourceLineNo">173</span>                        case AVAILABLE:<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                                logger.info("image create success");<a name="line.174"></a>
+<span class="sourceLineNo">175</span>                                return image;<a name="line.175"></a>
+<span class="sourceLineNo">176</span><a name="line.176"></a>
+<span class="sourceLineNo">177</span>                        case PENDING:<a name="line.177"></a>
+<span class="sourceLineNo">178</span>                                final long timeCurrent = System.currentTimeMillis();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>                                final long timeDiff = timeCurrent - timeStart;<a name="line.179"></a>
+<span class="sourceLineNo">180</span>                                logger.info("image create in progress; time=" + timeDiff / 1000);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>                                sleep();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>                                break;<a name="line.182"></a>
+<span class="sourceLineNo">183</span><a name="line.183"></a>
+<span class="sourceLineNo">184</span>                        default:<a name="line.184"></a>
+<span class="sourceLineNo">185</span>                                logger.error("image create failure");<a name="line.185"></a>
+<span class="sourceLineNo">186</span>                                return image;<a name="line.186"></a>
+<span class="sourceLineNo">187</span><a name="line.187"></a>
+<span class="sourceLineNo">188</span>                        }<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>                }<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>        }<a name="line.192"></a>
+<span class="sourceLineNo">193</span><a name="line.193"></a>
+<span class="sourceLineNo">194</span>        private void sleep() throws Exception {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>                try {<a name="line.195"></a>
+<span class="sourceLineNo">196</span>                        Thread.sleep(waitBetweenAttempts * 1000);<a name="line.196"></a>
+<span class="sourceLineNo">197</span>                } catch (final InterruptedException ie) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                        throw new IllegalStateException("operation interrupted; "<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                                        + "resources are left in inconsistent state; "<a name="line.199"></a>
+<span class="sourceLineNo">200</span>                                        + "requires manual intervention");<a name="line.200"></a>
+<span class="sourceLineNo">201</span>                }<a name="line.201"></a>
+<span class="sourceLineNo">202</span>        }<a name="line.202"></a>
+<span class="sourceLineNo">203</span><a name="line.203"></a>
+<span class="sourceLineNo">204</span>        private boolean isTimeoutPending(final long startTime) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>                return (System.currentTimeMillis() - startTime) &gt; (timeout * 1000);<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        }<a name="line.206"></a>
+<span class="sourceLineNo">207</span><a name="line.207"></a>
+<span class="sourceLineNo">208</span>}<a name="line.208"></a>
 
 
 
@@ -262,6 +274,7 @@
 
 
 
-</PRE>
-</BODY>
-</HTML>
+</pre>
+</div>
+</body>
+</html>
