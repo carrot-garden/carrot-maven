@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -10,14 +9,15 @@
 	</parent>
 
 	<artifactId>carrot-maven-aws-plugin</artifactId>
-	<version>1.1.2-SNAPSHOT</version>
+	<version>1.1.2</version>
 	<packaging>maven-plugin</packaging>
 
 	<scm>
 		<url>https://github.com/carrot-garden/carrot-maven</url>
 		<connection>scm:git:git://github.com/carrot-garden/carrot-maven.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
-	</scm>
+	  <tag>carrot-maven-aws-plugin-1.1.2</tag>
+  </scm>
 
 	<description>${project.organization.name} AWS Maven Plugin</description>
 
