@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>com.carrotgarden.maven</groupId>
 		<artifactId>carrot-maven</artifactId>
-		<version>1.1.5</version>
+		<version>1.2.1</version>
 	</parent>
 
 	<artifactId>carrot-maven-scr-plugin</artifactId>
@@ -36,7 +36,7 @@
 
 	<properties>
 
-		<carrotScrAnnoVersion>1.1.1</carrotScrAnnoVersion>
+		<carrotScrAnnoVersion>1.1.3</carrotScrAnnoVersion>
 
 	</properties>
 
@@ -69,7 +69,7 @@
 			<version>${carrotScrAnnoVersion}</version>
 		</dependency>
 
-		<!-- used by generator -->
+		<!-- used by carrot scr anno generator -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -86,7 +86,7 @@
 		<dependency>
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
-			<version>1.4.1</version>
+			<version>1.4.2</version>
 		</dependency>
 
 	</dependencies>

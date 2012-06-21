@@ -7,6 +7,7 @@
  */
 package bench;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.osgi.service.component.annotations.Component;
@@ -17,9 +18,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(property = { "hello-string:String=hello string" })
 public class Comp2 extends Comp1 implements Runnable {
 
+	@SuppressWarnings("unused")
 	@Property
 	private static final String AAA = "aaa aaa aaa";
 
+	@SuppressWarnings("unused")
 	@Property
 	private static final String hello = "hello there";
 
@@ -29,14 +32,16 @@ public class Comp2 extends Comp1 implements Runnable {
 	@Property(name = "multi-lines")
 	static final String MULTI = "\n one \n two \n";
 
+	//
+
 	@Reference
-	protected void bind(final Callable task) {
-
+	protected void bind(final Callable<?> task, final Map<?, ?> param) {
 	}
 
-	protected void unbind(final Callable task) {
-
+	protected void unbind(final Callable<?> task, final Map<?, ?> param) {
 	}
+
+	//
 
 	@Override
 	public void run() {

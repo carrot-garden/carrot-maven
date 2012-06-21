@@ -45,6 +45,7 @@ public class IncludeProjectDependenciesComponentConfigurator extends
 	// .getLogger(IncludeProjectDependenciesComponentConfigurator.class);
 
 	// @Override
+	@SuppressWarnings("deprecation")
 	public void configureComponent(final Object component,
 			final PlexusConfiguration configuration,
 			final ExpressionEvaluator expressionEvaluator,
@@ -64,16 +65,17 @@ public class IncludeProjectDependenciesComponentConfigurator extends
 				expressionEvaluator, listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addProjectDependenciesToClassRealm(
 			final ExpressionEvaluator expressionEvaluator,
 			final ClassRealm containerRealm)
 			throws ComponentConfigurationException {
 
-		List runtimeClasspathElements;
+		List<String> runtimeClasspathElements;
 
 		try {
 			// noinspection unchecked
-			runtimeClasspathElements = (List) expressionEvaluator
+			runtimeClasspathElements = (List<String>) expressionEvaluator
 					.evaluate("${project.runtimeClasspathElements}");
 		} catch (final ExpressionEvaluationException e) {
 			throw new ComponentConfigurationException(
@@ -92,7 +94,8 @@ public class IncludeProjectDependenciesComponentConfigurator extends
 			throws ComponentConfigurationException {
 
 		// Add the projects classes and dependencies
-		final List<URL> urls = new ArrayList(runtimeClasspathElements.size());
+		final List<URL> urls = new ArrayList<URL>(
+				runtimeClasspathElements.size());
 
 		for (final String element : runtimeClasspathElements) {
 
