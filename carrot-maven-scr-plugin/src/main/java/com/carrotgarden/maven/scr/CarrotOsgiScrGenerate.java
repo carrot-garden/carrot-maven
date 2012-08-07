@@ -25,7 +25,7 @@ import org.apache.maven.project.MavenProject;
  * 
  * @goal generate
  * 
- * @phase prepare-package
+ * @phase process-classes
  * 
  * @inheritByDefault true
  * 
