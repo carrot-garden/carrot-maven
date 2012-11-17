@@ -12,6 +12,8 @@ import java.util.Properties;
 
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.amazonaws.services.ec2.model.BlockDeviceMapping;
+import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.Image;
 import com.carrotgarden.maven.aws.ecc.ElasticCompute.State;
 
@@ -91,8 +93,8 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 
 			final ElasticCompute compute = getElasticCompute();
 
-			final Image image = compute.imageRegister(instanceId, imageName,
-					imageDescription);
+			final Image image = compute.imageRegister( //
+					instanceId, imageName, imageDescription);
 
 			final State state = State.fromValue(image.getState());
 
@@ -103,7 +105,32 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 				throw new IllegalStateException("image reg failed : \n" + image);
 			}
 
-			getLog().info("image reg done [" + imageName + "]");
+			final String imageId = image.getImageId();
+
+			/** tag image */
+			compute.tagCreate(imageId, "Name", imageName);
+
+			/** tag image devices */
+			for (final BlockDeviceMapping blockDevice : image
+					.getBlockDeviceMappings()) {
+
+				final EbsBlockDevice elasticDevice = blockDevice.getEbs();
+
+				if (elasticDevice == null) {
+					continue;
+				}
+
+				final String snapshotId = elasticDevice.getSnapshotId();
+
+				if (snapshotId == null) {
+					continue;
+				}
+
+				compute.tagCreate(snapshotId, "Name", imageName);
+
+			}
+
+			getLog().info("image reg done [" + imageName + "] " + imageId);
 
 		} catch (final Exception e) {
 

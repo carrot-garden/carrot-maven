@@ -8,6 +8,7 @@
 package com.carrotgarden.maven.aws.ecc;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -18,10 +19,13 @@ import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
 import com.amazonaws.services.ec2.model.CreateImageResult;
+import com.amazonaws.services.ec2.model.CreateTagsRequest;
+import com.amazonaws.services.ec2.model.DeleteTagsRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesRequest;
 import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.StateReason;
+import com.amazonaws.services.ec2.model.Tag;
 
 /**
  * @author Andrei Pozolotin
@@ -69,6 +73,46 @@ public class ElasticCompute {
 		amazonClient.setEndpoint(endpoint);
 
 		return amazonClient;
+
+	}
+
+	public void tagCreate(final String resourceId, final String key,
+			final String value) {
+
+		final CreateTagsRequest request = new CreateTagsRequest();
+
+		final Collection<String> resourceList = new ArrayList<String>(1);
+		resourceList.add(resourceId);
+
+		final Collection<Tag> tagList = new ArrayList<Tag>(1);
+		tagList.add(new Tag(key, value));
+
+		request.setResources(resourceList);
+		request.setTags(tagList);
+
+		logger.info("tag create request=" + request);
+
+		amazonClient.createTags(request);
+
+	}
+
+	public void tagDelete(final String resourceId, final String key,
+			final String value) {
+
+		final DeleteTagsRequest request = new DeleteTagsRequest();
+
+		final Collection<String> resourceList = new ArrayList<String>(1);
+		resourceList.add(resourceId);
+
+		final Collection<Tag> tagList = new ArrayList<Tag>(1);
+		tagList.add(new Tag(key, value));
+
+		request.setResources(resourceList);
+		request.setTags(tagList);
+
+		logger.info("tag delete request=" + request);
+
+		amazonClient.deleteTags(request);
 
 	}
 
