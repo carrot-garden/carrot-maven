@@ -130,7 +130,9 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 
 			}
 
-			getLog().info("image reg done [" + imageName + "] " + imageId);
+			getLog().info("stack reg image=\n" + image);
+
+			getLog().info("image reg done [" + imageName + "]");
 
 		} catch (final Exception e) {
 
