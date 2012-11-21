@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.route53.AmazonRoute53;
@@ -27,13 +26,15 @@ import com.amazonaws.services.route53.model.ResourceRecordSet;
 
 public class Route53 {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final Logger logger;
 
 	private final AmazonRoute53 amazonClient;
 
 	private final AWSCredentials credentials;
 
 	public Route53(final Logger logger, final AWSCredentials credentials) {
+
+		this.logger = logger;
 
 		this.credentials = credentials;
 
@@ -155,16 +156,11 @@ public class Route53 {
 		return record;
 	}
 
-	public void ensureCNAME(String source, String target) throws Exception {
-
-		source = source.toLowerCase() + ".";
-		target = target.toLowerCase() + ".";
-
-		ensureCanonicalCNAME(source, target);
-
+	public String canonical(final String name) {
+		return name.toLowerCase() + ".";
 	}
 
-	public void ensureCanonicalCNAME(final String source, final String target)
+	public void ensureCNAME(final String source, final String target)
 			throws Exception {
 
 		final HostedZone zone = findZone(source);
@@ -213,7 +209,7 @@ public class Route53 {
 
 		final ChangeInfo changeResult = result.getChangeInfo();
 
-		log.info("changeResult : \n{}", changeResult);
+		logger.info("changeResult : \n{}", changeResult);
 
 	}
 }

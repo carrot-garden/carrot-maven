@@ -23,7 +23,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 	 * name of the maven property that will contain dns name list
 	 * 
 	 * @required
-	 * @parameter
+	 * @parameter default-value="source.default.example.com"
 	 */
 	protected String dnsSource;
 
@@ -31,7 +31,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 	 * name of the maven property that will contain dns name list
 	 * 
 	 * @required
-	 * @parameter
+	 * @parameter default-value="target.default.example.com"
 	 */
 	protected String dnsTarget;
 
@@ -44,7 +44,8 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 
 			final Route53 route53 = getRoute53();
 
-			route53.ensureCNAME(dnsSource, dnsTarget);
+			route53.ensureCNAME( //
+					route53.canonical(dnsSource), route53.canonical(dnsTarget));
 
 			getLog().info("dns cname done [" + "]");
 

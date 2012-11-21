@@ -134,8 +134,34 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 			final Properties stackInputProps = load(stackPropertiesInputFile);
 
+			final Map<String, String> stackParams = getStackParams(
+					stackInputProps, stackInputParams);
+
+			//
+
+			if (stackParams.containsKey("stackName")) {
+				stackName = stackParams.get("stackName");
+				stackParams.remove("stackName");
+			}
+			if (stackParams.containsKey("stackEndpoint")) {
+				stackEndpoint = stackParams.get("stackEndpoint");
+				stackParams.remove("stackEndpoint");
+			}
+			if (stackParams.containsKey("stackServerId")) {
+				stackServerId = stackParams.get("stackServerId");
+				stackParams.remove("stackServerId");
+			}
+			if (stackParams.containsKey("stackTimeout")) {
+				stackTimeout = Long.parseLong(stackParams.get("stackTimeout"));
+				stackParams.remove("stackTimeout");
+			}
+
+			//
+
 			final CloudFormation formation = getCloudFormation(
-					stackTemplateFile, stackInputProps, stackInputParams);
+					stackTemplateFile, stackParams);
+
+			formation.logParamList();
 
 			final Stack stack = formation.stackCreate();
 

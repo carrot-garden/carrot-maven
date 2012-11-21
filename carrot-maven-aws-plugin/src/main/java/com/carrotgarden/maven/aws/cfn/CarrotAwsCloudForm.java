@@ -88,9 +88,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	//
 
-	protected CloudFormation getCloudFormation(final File templateFile,
-			final Properties inputProps, final Map<String, String> inputParams)
-			throws Exception {
+	protected Map<String, String> getStackParams(final Properties inputProps,
+			final Map<String, String> inputParams) throws Exception {
 
 		/** merge template parameters */
 
@@ -101,6 +100,13 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		/** from maven pom.xml */
 		stackParams.putAll(safeMap(inputParams));
+
+		return stackParams;
+
+	}
+
+	protected CloudFormation getCloudFormation(final File templateFile,
+			final Map<String, String> stackParams) throws Exception {
 
 		/** */
 

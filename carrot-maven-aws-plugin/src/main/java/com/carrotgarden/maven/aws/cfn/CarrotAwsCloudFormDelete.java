@@ -46,7 +46,7 @@ public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
 
 			getLog().info("stack delete init [" + stackName + "]");
 
-			final CloudFormation formation = getCloudFormation(null, null, null);
+			final CloudFormation formation = getCloudFormation(null, null);
 
 			final Stack stack = formation.stackDelete();
 

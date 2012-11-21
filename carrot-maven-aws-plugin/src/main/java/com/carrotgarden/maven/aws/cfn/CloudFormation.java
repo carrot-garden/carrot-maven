@@ -330,4 +330,14 @@ public class CloudFormation {
 		}
 	}
 
+	public void logParamList() {
+
+		for (final Parameter param : paramList) {
+
+			logger.info(//
+			param.getParameterKey() + "=" + param.getParameterValue());
+
+		}
+
+	}
 }
