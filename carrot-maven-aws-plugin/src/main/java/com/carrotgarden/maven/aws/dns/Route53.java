@@ -1,11 +1,15 @@
 package com.carrotgarden.maven.aws.dns;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.route53.AmazonRoute53;
 import com.amazonaws.services.route53.AmazonRoute53Client;
 import com.amazonaws.services.route53.model.Change;
@@ -18,19 +22,20 @@ import com.amazonaws.services.route53.model.HostedZone;
 import com.amazonaws.services.route53.model.ListHostedZonesResult;
 import com.amazonaws.services.route53.model.ListResourceRecordSetsRequest;
 import com.amazonaws.services.route53.model.ListResourceRecordSetsResult;
+import com.amazonaws.services.route53.model.ResourceRecord;
 import com.amazonaws.services.route53.model.ResourceRecordSet;
 
 public class Route53 {
 
+	private final Logger log = LoggerFactory.getLogger(getClass());
+
 	private final AmazonRoute53 amazonClient;
 
-	private final String awsAccessKey;
-	private final String awsSecretKey;
+	private final AWSCredentials credentials;
 
-	public Route53(final String awsAccessKey, final String awsSecretKey) {
+	public Route53(final Logger logger, final AWSCredentials credentials) {
 
-		this.awsAccessKey = awsAccessKey;
-		this.awsSecretKey = awsSecretKey;
+		this.credentials = credentials;
 
 		this.amazonClient = newClient();
 
@@ -38,12 +43,47 @@ public class Route53 {
 
 	private AmazonRoute53 newClient() {
 
-		final AWSCredentials credentials = new BasicAWSCredentials(
-				this.awsAccessKey, this.awsSecretKey);
-
 		final AmazonRoute53 amazonClient = new AmazonRoute53Client(credentials);
 
 		return amazonClient;
+
+	}
+
+	public List<String> listZone(final String source) {
+
+		final List<String> nameList = new LinkedList<String>();
+
+		final HostedZone zone = findZone(source);
+
+		if (zone == null) {
+			return nameList;
+		}
+
+		final ListResourceRecordSetsRequest request = new ListResourceRecordSetsRequest();
+
+		request.setHostedZoneId(zone.getId());
+
+		while (true) {
+
+			final ListResourceRecordSetsResult result = amazonClient
+					.listResourceRecordSets(request);
+
+			final List<ResourceRecordSet> recordList = result
+					.getResourceRecordSets();
+
+			for (final ResourceRecordSet record : recordList) {
+				nameList.add(record.getName());
+			}
+
+			if (!result.isTruncated()) {
+				break;
+			}
+
+			request.setStartRecordName(result.getNextRecordName());
+
+		}
+
+		return nameList;
 
 	}
 
@@ -100,7 +140,31 @@ public class Route53 {
 		}
 	}
 
-	public void ensureCNAME(final String source, final String target)
+	public ResourceRecordSet makeRecordCNAME(final String source,
+			final String target) {
+
+		final Collection<ResourceRecord> resourceList = new ArrayList<ResourceRecord>();
+		resourceList.add(new ResourceRecord(target));
+
+		final ResourceRecordSet record = new ResourceRecordSet();
+		record.setName(source);
+		record.setTTL(60L);
+		record.setType("CNAME");
+		record.setResourceRecords(resourceList);
+
+		return record;
+	}
+
+	public void ensureCNAME(String source, String target) throws Exception {
+
+		source = source.toLowerCase() + ".";
+		target = target.toLowerCase() + ".";
+
+		ensureCanonicalCNAME(source, target);
+
+	}
+
+	public void ensureCanonicalCNAME(final String source, final String target)
 			throws Exception {
 
 		final HostedZone zone = findZone(source);
@@ -109,30 +173,35 @@ public class Route53 {
 
 		final String zoneId = zone.getId();
 
-		final ResourceRecordSet record = findRecord(zoneId, source);
-
-		if (record == null) {
-			createCNAME(source, target);
-		} else {
-			updateCNAME(source, target);
+		final boolean isPresent;
+		final ResourceRecordSet recordOld;
+		{
+			final ResourceRecordSet recordFound = findRecord(zoneId, source);
+			if (recordFound == null) {
+				isPresent = false;
+				recordOld = makeRecordCNAME(source, target);
+			} else {
+				isPresent = true;
+				recordOld = recordFound;
+			}
 		}
 
-	}
+		final ResourceRecordSet recordNew = makeRecordCNAME(source, target);
 
-	public void createCNAME(final String source, final String target)
-			throws Exception {
+		recordNew.setTTL(recordOld.getTTL());
 
-		final HostedZone zone = findZone(source);
-
-		final Change change = new Change();
-		change.setAction(ChangeAction.DELETE);
-		final ResourceRecordSet record = null;
-		change.setResourceRecordSet(record);
+		//
 
 		final Collection<Change> changeList = new LinkedList<Change>();
+		if (isPresent) {
+			changeList.add(new Change(ChangeAction.DELETE, recordOld));
+			changeList.add(new Change(ChangeAction.CREATE, recordNew));
+		} else {
+			changeList.add(new Change(ChangeAction.CREATE, recordNew));
+		}
 
 		final ChangeBatch changeRequest = new ChangeBatch();
-
+		changeRequest.setComment("updated : " + new Date());
 		changeRequest.setChanges(changeList);
 
 		final ChangeResourceRecordSetsRequest request = new ChangeResourceRecordSetsRequest();
@@ -144,11 +213,7 @@ public class Route53 {
 
 		final ChangeInfo changeResult = result.getChangeInfo();
 
-	}
-
-	public void updateCNAME(final String source, final String target)
-			throws Exception {
+		log.info("changeResult : \n{}", changeResult);
 
 	}
-
 }

@@ -17,6 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+
 public class TestCloudFormation {
 
 	Logger logger = LoggerFactory.getLogger(TestCloudFormation.class);
@@ -35,14 +38,16 @@ public class TestCloudFormation {
 		final long timeout = 6 * 60; // seconds
 
 		/** admin-cfn */
-		final String awsAccessKey = "";
-		final String awsSecretKey = "";
+		final String accessKey = "";
+		final String secretKey = "";
+
+		final AWSCredentials credentials = new BasicAWSCredentials(accessKey,
+				secretKey);
 
 		//
 
 		final CloudFormation formation = new CloudFormation(logger, stackName,
-				stackTemplate, stackParams, timeout, awsAccessKey,
-				awsSecretKey, null);
+				stackTemplate, stackParams, timeout, credentials, null);
 
 		formation.stackCreate();
 
@@ -51,4 +56,5 @@ public class TestCloudFormation {
 		formation.stackDelete();
 
 	}
+
 }

@@ -10,7 +10,9 @@ package com.carrotgarden.maven.aws.ecc;
 import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 
 /**
  * 
@@ -79,13 +81,12 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 							+ computeServerId);
 		}
 
-		final String username = server.getUsername();
-		final String password = server.getPassword();
+		final AWSCredentials credentials = new AWSCredentialsImpl(server);
 
 		final Logger logger = getLogger(ElasticCompute.class);
 
 		final ElasticCompute compute = new ElasticCompute(logger,
-				computeTimeout, username, password, getComputeEndpoint());
+				computeTimeout, credentials, getComputeEndpoint());
 
 		return compute;
 

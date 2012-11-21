@@ -14,7 +14,6 @@ import java.util.List;
 import org.slf4j.Logger;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.model.CreateImageRequest;
@@ -34,8 +33,7 @@ public class ElasticCompute {
 
 	private final Logger logger;
 
-	private final String awsAccessKey;
-	private final String awsSecretKey;
+	private final AWSCredentials credentials;
 
 	private final AmazonEC2 amazonClient;
 
@@ -45,15 +43,13 @@ public class ElasticCompute {
 	private final String endpoint;
 
 	public ElasticCompute(final Logger logger, final long timeout,
-			final String awsAccessKey, final String awsSecretKey,
-			final String endpoint) {
+			final AWSCredentials credentials, final String endpoint) {
 
 		this.logger = logger;
 
 		this.timeout = timeout;
 
-		this.awsAccessKey = awsAccessKey;
-		this.awsSecretKey = awsSecretKey;
+		this.credentials = credentials;
 
 		this.waitBetweenAttempts = 10;
 
@@ -64,9 +60,6 @@ public class ElasticCompute {
 	}
 
 	private AmazonEC2 newClient() {
-
-		final AWSCredentials credentials = new BasicAWSCredentials(
-				this.awsAccessKey, this.awsSecretKey);
 
 		final AmazonEC2 amazonClient = new AmazonEC2Client(credentials);
 

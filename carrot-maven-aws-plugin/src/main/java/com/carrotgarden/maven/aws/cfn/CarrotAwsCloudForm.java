@@ -16,7 +16,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
+import com.amazonaws.auth.AWSCredentials;
 import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 
 /**
  * 
@@ -114,8 +116,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 							+ stackServerId);
 		}
 
-		final String username = server.getUsername();
-		final String password = server.getPassword();
+		final AWSCredentials credentials = new AWSCredentialsImpl(server);
 
 		/** */
 
@@ -124,7 +125,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		/** */
 
 		final CloudFormation formation = new CloudFormation(logger, stackName,
-				stackTemplate, stackParams, stackTimeout, username, password,
+				stackTemplate, stackParams, stackTimeout, credentials,
 				getStackEndpoint());
 
 		return formation;

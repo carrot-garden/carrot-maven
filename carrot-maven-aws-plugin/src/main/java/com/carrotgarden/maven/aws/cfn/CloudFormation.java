@@ -14,7 +14,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.cloudformation.AmazonCloudFormation;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationAsyncClient;
 import com.amazonaws.services.cloudformation.model.CreateStackRequest;
@@ -46,8 +45,7 @@ public class CloudFormation {
 
 	private final long timeout;
 
-	private final String awsAccessKey;
-	private final String awsSecretKey;
+	private final AWSCredentials credentials;
 
 	private final AmazonCloudFormation amazonClient;
 
@@ -57,8 +55,8 @@ public class CloudFormation {
 
 	public CloudFormation(final Logger logger, final String stackName,
 			final String stackTemplate, final Map<String, String> stackParams,
-			final long timeout, final String awsAccessKey,
-			final String awsSecretKey, final String endpoint) {
+			final long timeout, final AWSCredentials credentials,
+			final String endpoint) {
 
 		this.logger = logger;
 
@@ -66,8 +64,7 @@ public class CloudFormation {
 		this.template = stackTemplate;
 		this.paramList = convert(stackParams);
 
-		this.awsAccessKey = awsAccessKey;
-		this.awsSecretKey = awsSecretKey;
+		this.credentials = credentials;
 
 		this.timeout = timeout;
 
@@ -133,9 +130,6 @@ public class CloudFormation {
 	}
 
 	private AmazonCloudFormation newClient() {
-
-		final AWSCredentials credentials = new BasicAWSCredentials(
-				this.awsAccessKey, this.awsSecretKey);
 
 		final AmazonCloudFormation amazonClient = new AmazonCloudFormationAsyncClient(
 				credentials);
