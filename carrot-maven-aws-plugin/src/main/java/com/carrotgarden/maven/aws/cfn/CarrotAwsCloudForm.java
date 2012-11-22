@@ -8,9 +8,13 @@
 package com.carrotgarden.maven.aws.cfn;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.settings.Server;
@@ -19,11 +23,20 @@ import org.slf4j.Logger;
 import com.amazonaws.auth.AWSCredentials;
 import com.carrotgarden.maven.aws.CarrotAws;
 import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
+import com.carrotgarden.maven.aws.util.Util;
 
 /**
  * 
  */
 public abstract class CarrotAwsCloudForm extends CarrotAws {
+
+	/**
+	 * prefix for reserved template parameter names
+	 * <p>
+	 * plug-in properties subject to override must use this prefix and
+	 * String.class type
+	 */
+	public static final String PREFIX = "stack";
 
 	/**
 	 * AWS CloudFormation stack name; must be unique under your aws account /
@@ -61,7 +74,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * @required
 	 * @parameter default-value="600"
 	 */
-	protected Long stackTimeout;
+	protected String stackTimeout;
 
 	/**
 	 * AWS CloudFormation
@@ -130,6 +143,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		/** */
 
+		final long stackTimeout = safeNumber(this.stackTimeout, 600);
+
 		final CloudFormation formation = new CloudFormation(logger, stackName,
 				stackTemplate, stackParams, stackTimeout, credentials,
 				getStackEndpoint());
@@ -144,6 +159,49 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		} else {
 			return FileUtils.readFileToString(templateFile);
 		}
+	}
+
+	protected long safeNumber(final String numberText, final long numberDefault) {
+		try {
+			return Long.parseLong(numberText);
+		} catch (final Throwable e) {
+			getLog().warn("using numberDefault=" + numberDefault);
+			return numberDefault;
+		}
+	}
+
+	protected void overrideStackParams(final Map<String, String> stackParams) {
+
+		final Set<Map.Entry<String, String>> entrySet = //
+		new HashSet<Entry<String, String>>(stackParams.entrySet());
+
+		for (final Map.Entry<String, String> entry : entrySet) {
+
+			final String key = entry.getKey();
+			final String value = entry.getValue();
+
+			if (!key.startsWith(PREFIX)) {
+				continue;
+			}
+
+			stackParams.remove(key);
+
+			try {
+
+				final Field field = Util.findField(this.getClass(), key);
+
+				field.set(this, value);
+
+				getLog().info("override : " + key + "=" + value);
+
+			} catch (final Exception e) {
+
+				getLog().warn("override : invalid stack param=" + key, e);
+
+			}
+
+		}
+
 	}
 
 }

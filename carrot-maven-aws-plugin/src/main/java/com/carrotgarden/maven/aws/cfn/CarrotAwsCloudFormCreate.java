@@ -50,8 +50,11 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * 
  * ({@link #stackPropertiesOutputFile})
  * 
- * ; wait for completion or fail ({@link #stackTimeout})
+ * ; wait for completion or fail ({@link #stackTimeout});
  * 
+ * <p>
+ * note: template parameters names starting with "stack" are reserved, see
+ * {@link #PREFIX}
  * 
  * @goal cloud-formation-create
  * 
@@ -137,26 +140,7 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 			final Map<String, String> stackParams = getStackParams(
 					stackInputProps, stackInputParams);
 
-			//
-
-			if (stackParams.containsKey("stackName")) {
-				stackName = stackParams.get("stackName");
-				stackParams.remove("stackName");
-			}
-			if (stackParams.containsKey("stackEndpoint")) {
-				stackEndpoint = stackParams.get("stackEndpoint");
-				stackParams.remove("stackEndpoint");
-			}
-			if (stackParams.containsKey("stackServerId")) {
-				stackServerId = stackParams.get("stackServerId");
-				stackParams.remove("stackServerId");
-			}
-			if (stackParams.containsKey("stackTimeout")) {
-				stackTimeout = Long.parseLong(stackParams.get("stackTimeout"));
-				stackParams.remove("stackTimeout");
-			}
-
-			//
+			overrideStackParams(stackParams);
 
 			final CloudFormation formation = getCloudFormation(
 					stackTemplateFile, stackParams);

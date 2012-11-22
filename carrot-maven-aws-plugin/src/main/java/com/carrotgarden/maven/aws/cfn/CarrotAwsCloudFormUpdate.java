@@ -9,15 +9,12 @@ package com.carrotgarden.maven.aws.cfn;
 
 import org.apache.maven.plugin.MojoFailureException;
 
-import com.amazonaws.services.cloudformation.model.Stack;
-import com.amazonaws.services.cloudformation.model.StackStatus;
-
 /**
  * cloud formation:
  * 
  * <b><a href=
  * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_DeleteStack.html"
- * >delete stack</a></b>
+ * >update stack</a></b>
  * 
  * based on:
  * 
@@ -29,7 +26,7 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * note: template parameters names starting with "stack" are reserved, see
  * {@link #PREFIX}
  * 
- * @goal cloud-formation-delete
+ * @goal cloud-formation-update
  * 
  * @phase prepare-package
  * 
@@ -38,7 +35,7 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
+public class CarrotAwsCloudFormUpdate extends CarrotAwsCloudForm {
 
 	/**
 	 * {@inheritDoc}
@@ -48,25 +45,11 @@ public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("stack delete init [" + stackName + "]");
+			getLog().info("stack update init [" + stackName + "]");
 
-			final CloudFormation formation = getCloudFormation(null, null);
+			getLog().error("TODO");
 
-			final Stack stack = formation.stackDelete();
-
-			final StackStatus status = StackStatus.fromValue(stack
-					.getStackStatus());
-
-			switch (status) {
-			case DELETE_COMPLETE:
-				break;
-			default:
-				throw new IllegalStateException("stack delete failed");
-			}
-
-			getLog().info("stack delete stack=\n" + stack);
-
-			getLog().info("stack delete done [" + stackName + "]");
+			getLog().info("stack update done [" + stackName + "]");
 
 		} catch (final Exception e) {
 
