@@ -40,14 +40,13 @@ public abstract class CarrotAwsNameServ extends CarrotAws {
 	 */
 	protected String dnsServerId;
 
-	protected Route53 getRoute53() throws Exception {
+	protected Route53 newRoute53() throws Exception {
 
-		final Server server = settings.getServer(dnsServerId);
+		final Server server = settings().getServer(dnsServerId);
 
 		if (server == null) {
 			throw new IllegalArgumentException(
-					"server definition is missing for serverId="
-							+ dnsServerId);
+					"server definition is missing for serverId=" + dnsServerId);
 		}
 
 		final AWSCredentials credentials = new AWSCredentialsImpl(server);

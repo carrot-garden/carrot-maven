@@ -54,7 +54,7 @@ public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
 
 			getLog().info("");
 
-			final SecureShell ssh = getSecureShell();
+			final SecureShell ssh = newSecureShell();
 
 			final String source = new File(sshSource).getAbsolutePath();
 			final String target = sshTarget;

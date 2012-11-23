@@ -42,7 +42,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 
 			getLog().info("dns cname init [" + "]");
 
-			final Route53 route53 = getRoute53();
+			final Route53 route53 = newRoute53();
 
 			route53.ensureCNAME( //
 					route53.canonical(dnsSource), route53.canonical(dnsTarget));

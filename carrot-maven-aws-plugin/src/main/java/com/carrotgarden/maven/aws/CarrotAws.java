@@ -12,10 +12,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.settings.Settings;
@@ -32,18 +34,39 @@ public abstract class CarrotAws extends AbstractMojo {
 	}
 
 	/**
+	 * The Maven Session *
+	 * 
+	 * @required
+	 * @readonly
+	 * @parameter expression="${session}"
+	 */
+	private MavenSession session;
+
+	protected MavenSession session() {
+		return session;
+	}
+
+	/**
 	 * @readonly
 	 * @required
 	 * @parameter expression="${project}"
 	 */
-	protected MavenProject project;
+	private MavenProject project;
+
+	protected MavenProject project() {
+		return project;
+	}
 
 	/**
 	 * @readonly
 	 * @required
 	 * @parameter expression="${settings}"
 	 */
-	protected Settings settings;
+	private Settings settings;
+
+	protected Settings settings() {
+		return settings;
+	}
 
 	/**
 	 * AWS
@@ -56,7 +79,20 @@ public abstract class CarrotAws extends AbstractMojo {
 	 * @required
 	 * @parameter default-value="us-east-1"
 	 */
-	protected String amazonRegion;
+	private String amazonRegion;
+
+	/**
+	 * @parameter
+	 */
+	private String amazonRegionProperty;
+
+	protected String amazonRegion() {
+		if (amazonRegionProperty == null) {
+			return amazonRegion;
+		} else {
+			return (String) project().getProperties().get(amazonRegionProperty);
+		}
+	}
 
 	//
 
@@ -152,4 +188,19 @@ public abstract class CarrotAws extends AbstractMojo {
 		props.store(writer, null);
 
 	}
+
+	protected void logProps(final String title, final Properties props) {
+
+		getLog().info("properties : " + title);
+
+		final Object[] keyArray = props.keySet().toArray();
+
+		Arrays.sort(keyArray);
+
+		for (final Object key : keyArray) {
+			getLog().info("\t" + key + "=" + props.get(key));
+		}
+
+	}
+
 }

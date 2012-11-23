@@ -104,7 +104,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 
 	}
 
-	protected SecureShell getSecureShell() throws Exception {
+	protected SecureShell newSecureShell() throws Exception {
 
 		final Logger logger = getLogger(CloudFormation.class);
 

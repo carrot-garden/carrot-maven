@@ -61,19 +61,19 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 * 
 	 * @parameter
 	 */
-	protected String computeEndpoint;
+	private String computeEndpoint;
 
-	protected String getComputeEndpoint() {
+	protected String computeEndpoint() {
 		if (computeEndpoint == null) {
-			return "https://ec2." + amazonRegion + ".amazonaws.com";
+			return "https://ec2." + amazonRegion() + ".amazonaws.com";
 		} else {
 			return computeEndpoint;
 		}
 	}
 
-	protected ElasticCompute getElasticCompute() throws Exception {
+	protected ElasticCompute newElasticCompute() throws Exception {
 
-		final Server server = settings.getServer(computeServerId);
+		final Server server = settings().getServer(computeServerId);
 
 		if (server == null) {
 			throw new IllegalArgumentException(
@@ -86,7 +86,7 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 		final Logger logger = getLogger(ElasticCompute.class);
 
 		final ElasticCompute compute = new ElasticCompute(logger,
-				computeTimeout, credentials, getComputeEndpoint());
+				computeTimeout, credentials, computeEndpoint());
 
 		return compute;
 

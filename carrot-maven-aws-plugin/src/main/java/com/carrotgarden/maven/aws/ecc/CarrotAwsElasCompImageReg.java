@@ -91,7 +91,7 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 				instanceId = imageInstanceId;
 			}
 
-			final ElasticCompute compute = getElasticCompute();
+			final ElasticCompute compute = newElasticCompute();
 
 			final Image image = compute.imageRegister( //
 					instanceId, imageName, imageDescription);

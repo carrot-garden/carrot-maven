@@ -55,7 +55,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 
 			getLog().info("dns list init [" + dnsZoneName + "]");
 
-			final Route53 route53 = getRoute53();
+			final Route53 route53 = newRoute53();
 
 			final List<String> list = route53.listZone(dnsZoneName);
 
@@ -64,7 +64,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 
 			getLog().info("dns name list : " + dnsResultNameList);
 
-			project.getProperties().put(dnsResultProperty, dnsResultNameList);
+			project().getProperties().put(dnsResultProperty, dnsResultNameList);
 
 			getLog().info("dns list done [" + dnsZoneName + "]");
 

@@ -133,17 +133,22 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("stack create init [" + stackName + "]");
+			// logProps("system", session().getSystemProperties());
+			// logProps("command", session().getUserProperties());
+			// logProps("project", project().getProperties());
+
+			getLog().info("stack create init [" + stackName() + "]");
 
 			final Properties stackInputProps = load(stackPropertiesInputFile);
 
-			final Map<String, String> stackParams = getStackParams(
+			final Map<String, String> pluginParams = loadPluginParams(
 					stackInputProps, stackInputParams);
 
-			overrideStackParams(stackParams);
+			final Map<String, String> stackTemplateParams = loadTemplateParameters(
+					stackTemplateFile, pluginParams);
 
-			final CloudFormation formation = getCloudFormation(
-					stackTemplateFile, stackParams);
+			final CloudFormation formation = newCloudFormation(
+					stackTemplateFile, stackTemplateParams);
 
 			formation.logParamList();
 
@@ -180,7 +185,7 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 			save(outputProps, stackPropertiesOutputFile);
 
-			getLog().info("stack create done [" + stackName + "]");
+			getLog().info("stack create done [" + stackName() + "]");
 
 		} catch (final Exception e) {
 

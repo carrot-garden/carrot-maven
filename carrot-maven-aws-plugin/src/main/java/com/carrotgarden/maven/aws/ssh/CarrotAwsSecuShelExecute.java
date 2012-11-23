@@ -44,7 +44,7 @@ public class CarrotAwsSecuShelExecute extends CarrotAwsSecuShel {
 
 			getLog().info("");
 
-			final SecureShell ssh = getSecureShell();
+			final SecureShell ssh = newSecureShell();
 
 			final int status = ssh.execute(sshCommand);
 

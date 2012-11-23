@@ -9,12 +9,13 @@ package com.carrotgarden.maven.aws.cfn;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.settings.Server;
@@ -30,13 +31,8 @@ import com.carrotgarden.maven.aws.util.Util;
  */
 public abstract class CarrotAwsCloudForm extends CarrotAws {
 
-	/**
-	 * prefix for reserved template parameter names
-	 * <p>
-	 * plug-in properties subject to override must use this prefix and
-	 * String.class type
-	 */
-	public static final String PREFIX = "stack";
+	/** amazon template entry */
+	public static final String PARAMETERS = "Parameters";
 
 	/**
 	 * AWS CloudFormation stack name; must be unique under your aws account /
@@ -45,7 +41,20 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * @required
 	 * @parameter default-value="amazon-builder"
 	 */
-	protected String stackName;
+	private String stackName;
+
+	/**
+	 * @parameter
+	 */
+	private String stackNameProperty;
+
+	protected String stackName() {
+		if (stackNameProperty == null) {
+			return stackName;
+		} else {
+			return (String) project().getProperties().get(stackNameProperty);
+		}
+	}
 
 	/**
 	 * AWS CloudFormation
@@ -89,11 +98,12 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * 
 	 * @parameter
 	 */
-	protected String stackEndpoint;
+	private String stackEndpoint;
 
-	protected String getStackEndpoint() {
+	protected String stackEndpoint() {
 		if (stackEndpoint == null) {
-			return "https://cloudformation." + amazonRegion + ".amazonaws.com";
+			return "https://cloudformation." + amazonRegion()
+					+ ".amazonaws.com";
 		} else {
 			return stackEndpoint;
 		}
@@ -101,24 +111,24 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	//
 
-	protected Map<String, String> getStackParams(final Properties inputProps,
+	protected Map<String, String> loadPluginParams(final Properties inputProps,
 			final Map<String, String> inputParams) throws Exception {
 
 		/** merge template parameters */
 
-		final Map<String, String> stackParams = new HashMap<String, String>();
+		final Map<String, String> pluginParams = new TreeMap<String, String>();
 
 		/** from properties file */
-		stackParams.putAll(safeMap(inputProps));
+		pluginParams.putAll(safeMap(inputProps));
 
 		/** from maven pom.xml */
-		stackParams.putAll(safeMap(inputParams));
+		pluginParams.putAll(safeMap(inputParams));
 
-		return stackParams;
+		return pluginParams;
 
 	}
 
-	protected CloudFormation getCloudFormation(final File templateFile,
+	protected CloudFormation newCloudFormation(final File templateFile,
 			final Map<String, String> stackParams) throws Exception {
 
 		/** */
@@ -127,7 +137,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		/** */
 
-		final Server server = settings.getServer(stackServerId);
+		final Server server = settings().getServer(stackServerId);
 
 		if (server == null) {
 			throw new IllegalArgumentException(
@@ -145,9 +155,9 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		final long stackTimeout = safeNumber(this.stackTimeout, 600);
 
-		final CloudFormation formation = new CloudFormation(logger, stackName,
-				stackTemplate, stackParams, stackTimeout, credentials,
-				getStackEndpoint());
+		final CloudFormation formation = new CloudFormation(logger,
+				stackName(), stackTemplate, stackParams, stackTimeout,
+				credentials, stackEndpoint());
 
 		return formation;
 
@@ -170,7 +180,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		}
 	}
 
-	protected void overrideStackParams(final Map<String, String> stackParams) {
+	@SuppressWarnings("unused")
+	private void overridePluginProperties(final Map<String, String> stackParams) {
 
 		final Set<Map.Entry<String, String>> entrySet = //
 		new HashSet<Entry<String, String>>(stackParams.entrySet());
@@ -180,7 +191,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 			final String key = entry.getKey();
 			final String value = entry.getValue();
 
-			if (!key.startsWith(PREFIX)) {
+			if (!key.startsWith("stack")) {
 				continue;
 			}
 
@@ -201,6 +212,70 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 			}
 
 		}
+
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected Set<String> loadTemplateParamNames(final File templateFile)
+			throws Exception {
+
+		final Set<String> nameSet = new TreeSet<String>();
+
+		if (templateFile == null || !templateFile.exists()) {
+			return nameSet;
+		}
+
+		final Map templateMap = Util.loadJson(templateFile, Map.class);
+
+		final Map paramMap = (Map) templateMap.get(PARAMETERS);
+
+		if (paramMap == null) {
+			return nameSet;
+		}
+
+		nameSet.addAll(paramMap.keySet());
+
+		return nameSet;
+
+	}
+
+	protected Map<String, String> loadTemplateParameters(
+			final File templateFile, final Map<String, String> pluginParams)
+			throws Exception {
+
+		final Map<String, String> stackParams = new TreeMap<String, String>();
+
+		final Set<String> nameSet = loadTemplateParamNames(templateFile);
+
+		final Properties propsProject = project().getProperties();
+		final Properties propsCommand = session().getUserProperties();
+		final Properties propsSystem = session().getSystemProperties();
+
+		for (final String name : nameSet) {
+
+			if (pluginParams.containsKey(name)) {
+				stackParams.put(name, pluginParams.get(name));
+				continue;
+			}
+
+			if (propsProject.containsKey(name)) {
+				stackParams.put(name, propsProject.get(name).toString());
+				continue;
+			}
+
+			if (propsCommand.containsKey(name)) {
+				stackParams.put(name, propsCommand.get(name).toString());
+				continue;
+			}
+
+			if (propsSystem.containsKey(name)) {
+				stackParams.put(name, propsSystem.get(name).toString());
+				continue;
+			}
+
+		}
+
+		return stackParams;
 
 	}
 

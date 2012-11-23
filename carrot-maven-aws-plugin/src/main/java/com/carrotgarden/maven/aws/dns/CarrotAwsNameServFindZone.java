@@ -47,7 +47,7 @@ public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
 
 			getLog().info("dns zone init [" + dnsHostName + "]");
 
-			final Route53 route53 = getRoute53();
+			final Route53 route53 = newRoute53();
 
 			final HostedZone zone = route53.findZone( //
 					route53.canonical(dnsHostName));
@@ -61,7 +61,7 @@ public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
 
 			getLog().info("dns zone name : " + dnsResultZoneName);
 
-			project.getProperties().put(dnsResultProperty, dnsResultZoneName);
+			project().getProperties().put(dnsResultProperty, dnsResultZoneName);
 
 			getLog().info("dns zone done [" + dnsHostName + "]");
 

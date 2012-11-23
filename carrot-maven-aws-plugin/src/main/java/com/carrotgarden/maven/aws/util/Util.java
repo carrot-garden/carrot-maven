@@ -1,7 +1,10 @@
 package com.carrotgarden.maven.aws.util;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
+
+import org.codehaus.jackson.map.ObjectMapper;
 
 public class Util {
 
@@ -45,6 +48,19 @@ public class Util {
 
 		return null;
 
+	}
+
+	public static <T> T loadJson(final File file, final Class<T> klaz)
+			throws Exception {
+
+		final ObjectMapper mapper = new ObjectMapper();
+
+		return mapper.readValue(file, klaz);
+
+	}
+
+	public static String stringNullOrValue(final Object object) {
+		return object == null ? null : object.toString();
 	}
 
 }

@@ -85,10 +85,13 @@ public class CloudFormation {
 		}
 
 		for (final String name : paraMap.keySet()) {
+
 			final Parameter parameter = new Parameter();
 			parameter.setParameterKey(name);
 			parameter.setParameterValue(paraMap.get(name));
+
 			list.add(parameter);
+
 		}
 
 		return list;

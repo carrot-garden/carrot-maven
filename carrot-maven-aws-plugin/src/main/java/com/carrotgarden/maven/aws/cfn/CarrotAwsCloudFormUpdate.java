@@ -45,11 +45,11 @@ public class CarrotAwsCloudFormUpdate extends CarrotAwsCloudForm {
 
 		try {
 
-			getLog().info("stack update init [" + stackName + "]");
+			getLog().info("stack update init [" + stackName() + "]");
 
 			getLog().error("TODO");
 
-			getLog().info("stack update done [" + stackName + "]");
+			getLog().info("stack update done [" + stackName() + "]");
 
 		} catch (final Exception e) {
 
