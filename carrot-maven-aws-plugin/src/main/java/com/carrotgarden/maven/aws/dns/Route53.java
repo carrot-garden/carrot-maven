@@ -1,3 +1,10 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.dns;
 
 import java.util.ArrayList;
@@ -23,6 +30,7 @@ import com.amazonaws.services.route53.model.ListResourceRecordSetsRequest;
 import com.amazonaws.services.route53.model.ListResourceRecordSetsResult;
 import com.amazonaws.services.route53.model.ResourceRecord;
 import com.amazonaws.services.route53.model.ResourceRecordSet;
+import com.carrotgarden.maven.aws.util.Util;
 
 public class Route53 {
 
@@ -134,13 +142,6 @@ public class Route53 {
 
 	}
 
-	private void assertNotNull(final Object instance, final String message) {
-		if (instance == null) {
-			throw new IllegalStateException(message);
-
-		}
-	}
-
 	public ResourceRecordSet makeRecordCNAME(final String source,
 			final String target) {
 
@@ -156,8 +157,15 @@ public class Route53 {
 		return record;
 	}
 
-	public String canonical(final String name) {
-		return name.toLowerCase() + ".";
+	public String canonical(String name) {
+
+		name = name.toLowerCase();
+
+		if (!name.endsWith(".")) {
+			name = name + ".";
+		}
+
+		return name;
 	}
 
 	public void ensureCNAME(final String source, final String target)
@@ -165,7 +173,7 @@ public class Route53 {
 
 		final HostedZone zone = findZone(source);
 
-		assertNotNull(zone, "missing zone for " + source);
+		Util.assertNotNull(zone, "missing zone for " + source);
 
 		final String zoneId = zone.getId();
 
@@ -212,4 +220,5 @@ public class Route53 {
 		logger.info("changeResult : \n{}", changeResult);
 
 	}
+
 }

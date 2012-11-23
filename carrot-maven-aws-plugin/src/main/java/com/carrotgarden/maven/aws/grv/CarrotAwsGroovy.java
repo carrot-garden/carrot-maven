@@ -12,6 +12,7 @@ import java.io.File;
 import org.apache.maven.project.MavenProject;
 
 import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.util.MavenProps;
 
 /**
  * 
@@ -19,7 +20,8 @@ import com.carrotgarden.maven.aws.CarrotAws;
 public abstract class CarrotAwsGroovy extends CarrotAws {
 
 	/**
-	 * groovy script file (executed before {@link #groovyText})
+	 * groovy external script file; if present, executed before
+	 * {@link #groovyText}
 	 * 
 	 * @required
 	 * @parameter default-value="./target/script.groovy"
@@ -27,7 +29,8 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 	protected File groovyFile;
 
 	/**
-	 * groovy script text (executed after {@link #groovyFile})
+	 * groovy script text in pom.xml; if present, executed after
+	 * {@link #groovyFile}
 	 * 
 	 * @parameter default-value=""
 	 */
@@ -63,14 +66,14 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 
 	protected GroovyRunner newRunner() throws Exception {
 
-		final MavenConfig mavenConfig = new MavenConfig( //
+		final MavenProps mavenProps = new MavenProps( //
 				session(), project(), //
 				groovyIsSystemProperties, //
 				groovyIsCommandProperties, //
 				groovyIsProjectProperties //
 		);
 
-		final MavenProject project = new MavenProjectAdaptor(mavenConfig);
+		final MavenProject project = new MavenProjectAdaptor(mavenProps);
 
 		final GroovyRunner runner = new GroovyRunner(project);
 

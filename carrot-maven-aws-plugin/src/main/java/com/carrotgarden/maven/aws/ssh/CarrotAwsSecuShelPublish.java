@@ -34,7 +34,7 @@ public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
 	 * @required
 	 * @parameter default-value="./target/publish"
 	 */
-	protected String sshSource;
+	private String sshSource;
 
 	/**
 	 * ssh sftp target directory on remote file system
@@ -42,7 +42,7 @@ public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
 	 * @required
 	 * @parameter default-value="/tmp/publish"
 	 */
-	protected String sshTarget;
+	private String sshTarget;
 
 	/**
 	 * {@inheritDoc}
@@ -61,11 +61,11 @@ public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
 
 			final int status = ssh.publish(source, target);
 
-			ensureStatusSuccess(status);
+			assertStatusSuccess(status);
 
 		} catch (final Exception e) {
 
-			throw new MojoFailureException("command failed", e);
+			throw new MojoFailureException("publish failed", e);
 		}
 
 	}

@@ -25,10 +25,6 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * 
  * ; wait for completion or fail ({@link #stackTimeout})
  * 
- * <p>
- * note: template parameters names starting with "stack" are reserved, see
- * {@link #PREFIX}
- * 
  * @goal cloud-formation-delete
  * 
  * @phase prepare-package

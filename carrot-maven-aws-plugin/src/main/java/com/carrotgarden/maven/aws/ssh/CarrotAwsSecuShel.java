@@ -11,15 +11,11 @@ package com.carrotgarden.maven.aws.ssh;
  */
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.Set;
 
 import org.slf4j.Logger;
 
 import com.carrotgarden.maven.aws.CarrotAws;
-import com.carrotgarden.maven.aws.cfn.CloudFormation;
 
 /**
  * 
@@ -32,7 +28,25 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter default-value="${user.home}/.amazon/ssh-key.pem"
 	 */
-	protected File sshKeyFile;
+	private File sshKeyFile;
+
+	/**
+	 * ssh key file property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshKeyFile}
+	 * 
+	 * @parameter
+	 */
+	private String sshKeyFileProperty;
+
+	protected File sshKeyFile() {
+		if (sshKeyFileProperty == null) {
+			return sshKeyFile;
+		} else {
+			final String path = (String) project().getProperties().get(
+					sshKeyFileProperty);
+			return new File(path);
+		}
+	}
 
 	/**
 	 * ssh user name
@@ -40,7 +54,23 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter default-value="ubuntu"
 	 */
-	protected String sshUser;
+	private String sshUser;
+
+	/**
+	 * ssh user name property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshUser}
+	 * 
+	 * @parameter
+	 */
+	private String sshUserProperty;
+
+	protected String sshUser() {
+		if (sshUserProperty == null) {
+			return sshUser;
+		} else {
+			return (String) project().getProperties().get(sshUserProperty);
+		}
+	}
 
 	/**
 	 * ssh host name
@@ -48,7 +78,23 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter default-value="builder.example.com"
 	 */
-	protected String sshHost;
+	private String sshHost;
+
+	/**
+	 * ssh host name property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshHost}
+	 * 
+	 * @parameter
+	 */
+	private String sshHostProperty;
+
+	protected String sshHost() {
+		if (sshHostProperty == null) {
+			return sshHost;
+		} else {
+			return (String) project().getProperties().get(sshHostProperty);
+		}
+	}
 
 	/**
 	 * ssh run expected exit success status collection; such as
@@ -56,21 +102,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter
 	 */
-	protected Set<Integer> sshStatusSuccess;
-
-	/**
-	 * AWS CloudFormation stack create execution result
-	 * 
-	 * <a href=
-	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/concept-outputs.html"
-	 * >Outputs Section</a>
-	 * 
-	 * output properties file - used to substitute ssHost
-	 * 
-	 * @required
-	 * @parameter default-value="./target/formation/formation-output.properties"
-	 */
-	protected File stackPropertiesOutputFile;
+	private Set<Integer> sshStatusSuccess;
 
 	/**
 	 * How many times to attempt to retry ssh connection before giving up
@@ -78,7 +110,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter default-value="5"
 	 */
-	protected int sshConnectRetries;
+	private int sshConnectRetries;
 
 	/**
 	 * How long (in seconds) to wait if a ssh connection fails before retrying
@@ -86,7 +118,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 	 * @required
 	 * @parameter default-value="10"
 	 */
-	protected int sshConnectTimeout;
+	private int sshConnectTimeout;
 
 	//
 
@@ -94,7 +126,7 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 		return sshStatusSuccess.contains(status);
 	}
 
-	protected void ensureStatusSuccess(final Integer status) throws Exception {
+	protected void assertStatusSuccess(final Integer status) throws Exception {
 
 		if (isStatusSuccess(status)) {
 			return;
@@ -106,38 +138,19 @@ public abstract class CarrotAwsSecuShel extends CarrotAws {
 
 	protected SecureShell newSecureShell() throws Exception {
 
-		final Logger logger = getLogger(CloudFormation.class);
+		final Logger logger = getLogger(getClass());
 
-		final String sshHostConverted = getSSHHost();
-
-		final SecureShell ssh = new SecureShell(logger, sshKeyFile, sshUser,
-				sshHostConverted, sshConnectRetries, sshConnectTimeout);
+		final SecureShell ssh = new SecureShell( //
+				logger, //
+				sshKeyFile(), //
+				sshUser(), //
+				sshHost(), //
+				sshConnectRetries, //
+				sshConnectTimeout //
+		);
 
 		return ssh;
 
-	}
-
-	private String getSSHHost() {
-		if (stackPropertiesOutputFile.exists()) {
-			getLog().info("Attempt to property substitute sshHost " + sshHost);
-			final Properties props = new Properties();
-
-			try {
-				final FileReader fr = new FileReader(stackPropertiesOutputFile);
-				props.load(fr);
-			} catch (final IOException e) {
-				// Ignore exception
-				getLog().warn(
-						"Failed to read properties from "
-								+ stackPropertiesOutputFile);
-				return sshHost;
-			}
-
-			final String sshHostConverted = props.getProperty(sshHost, sshHost);
-			getLog().debug("Return sshHost as " + sshHostConverted);
-			return sshHostConverted;
-		}
-		return sshHost;
 	}
 
 }

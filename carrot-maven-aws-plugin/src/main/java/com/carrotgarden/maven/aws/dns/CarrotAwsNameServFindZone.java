@@ -1,3 +1,10 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.dns;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -32,7 +39,7 @@ public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
 	protected String dnsHostName;
 
 	/**
-	 * name of the maven property that will contain dns zone name after
+	 * name of the maven project.property that will contain dns zone name after
 	 * execution of this maven goal
 	 * 
 	 * @required

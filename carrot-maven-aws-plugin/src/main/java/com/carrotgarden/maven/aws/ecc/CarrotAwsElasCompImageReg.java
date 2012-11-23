@@ -16,6 +16,7 @@ import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.Image;
 import com.carrotgarden.maven.aws.ecc.ElasticCompute.State;
+import com.carrotgarden.maven.aws.util.Util;
 
 /**
  * register/create new ami image from existing AWS ElasticCompute instance
@@ -82,7 +83,7 @@ public class CarrotAwsElasCompImageReg extends CarrotAwsElasComp {
 
 			getLog().info("image reg init [" + imageName + "]");
 
-			final Properties props = load(imagePropertiesInputFile);
+			final Properties props = Util.propsLoad(getLog(), imagePropertiesInputFile);
 
 			final String instanceId;
 			if (imageInstanceId == null) {

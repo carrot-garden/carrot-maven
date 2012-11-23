@@ -18,6 +18,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
+import com.carrotgarden.maven.aws.util.Util;
 
 /**
  * cloud formation:
@@ -50,11 +51,9 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * 
  * ({@link #stackPropertiesOutputFile})
  * 
- * ; wait for completion or fail ({@link #stackTimeout});
+ * as well as inject output into into project.properties
  * 
- * <p>
- * note: template parameters names starting with "stack" are reserved, see
- * {@link #PREFIX}
+ * ; wait for completion or fail ({@link #stackTimeout});
  * 
  * @goal cloud-formation-create
  * 
@@ -126,6 +125,23 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 	protected File stackPropertiesOutputFile;
 
 	/**
+	 * should inject stack operation output into the project.properties?
+	 * 
+	 * @required
+	 * @parameter default-value="true"
+	 */
+	protected boolean stackIsInjectOutputProperties;
+
+	/**
+	 * should persist stack operation output into
+	 * {@link #stackPropertiesOutputFile}
+	 * 
+	 * @required
+	 * @parameter default-value="true"
+	 */
+	protected boolean stackIsPersistOutputProperties;
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -133,19 +149,16 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 		try {
 
-			// logProps("system", session().getSystemProperties());
-			// logProps("command", session().getUserProperties());
-			// logProps("project", project().getProperties());
-
 			getLog().info("stack create init [" + stackName() + "]");
 
-			final Properties stackInputProps = load(stackPropertiesInputFile);
+			final Properties stackInputProps = Util.propsLoad(getLog(),
+					stackPropertiesInputFile);
 
-			final Map<String, String> pluginParams = loadPluginParams(
+			final Map<String, String> pluginProps = mergePluginProps(
 					stackInputProps, stackInputParams);
 
 			final Map<String, String> stackTemplateParams = loadTemplateParameters(
-					stackTemplateFile, pluginParams);
+					stackTemplateFile, pluginProps);
 
 			final CloudFormation formation = newCloudFormation(
 					stackTemplateFile, stackTemplateParams);
@@ -163,6 +176,8 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 			default:
 				throw new IllegalStateException("stack create failed");
 			}
+
+			//
 
 			getLog().info("stack create stack=\n" + stack);
 
@@ -183,7 +198,26 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 
 			}
 
-			save(outputProps, stackPropertiesOutputFile);
+			if (stackIsInjectOutputProperties) {
+
+				project().getProperties().putAll(outputProps);
+
+				getLog().info(
+						"stack create output is injected in project.properties]");
+
+			}
+
+			if (stackIsPersistOutputProperties) {
+
+				Util.propsSave(getLog(), outputProps, stackPropertiesOutputFile);
+
+				getLog().info(
+						"stack create output is persisted to : "
+								+ stackPropertiesOutputFile);
+
+			}
+
+			//
 
 			getLog().info("stack create done [" + stackName() + "]");
 
@@ -194,4 +228,5 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 		}
 
 	}
+
 }

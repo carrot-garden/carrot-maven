@@ -1,3 +1,10 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.grv;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -5,7 +12,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * groovy script executor; has access to {@link MavenProject}; for example:
+ * groovy script executor; has access to {@link MavenProject};
+ * <p>
+ * for example:
  * 
  * <pre>
  * def value = project.properties['key'] // read from project
@@ -30,22 +39,24 @@ public class CarrotAwsGroovyExec extends CarrotAwsGroovy {
 
 			getLog().info("groovy exec init ");
 
-			// logProps("syst", session.getSystemProperties());
-			// logProps("user", session.getUserProperties());
-			// logProps("proj", project.getProperties());
-
 			final GroovyRunner runner = newRunner();
 
 			if (groovyFile != null && groovyFile.exists()) {
+
 				getLog().info("groovy exec file : " + groovyFile);
+
 				runner.execute(groovyFile);
+
 			}
 
 			if (groovyText != null && groovyText.length() != 0) {
+
 				getLog().info(
 						"groovy exec text : "
 								+ groovyText.replaceAll("\n", ";"));
+
 				runner.execute(groovyText);
+
 			}
 
 			getLog().info("groovy exec done ");

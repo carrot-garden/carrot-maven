@@ -13,18 +13,14 @@ import org.apache.maven.plugin.MojoFailureException;
  * cloud formation:
  * 
  * <b><a href=
- * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_DeleteStack.html"
+ * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/APIReference/API_UpdateStack.html"
  * >update stack</a></b>
  * 
  * based on:
  * 
- * <b>stack name</b>;
+ * <b>stack name</b>
  * 
  * ; wait for completion or fail ({@link #stackTimeout})
- * 
- * <p>
- * note: template parameters names starting with "stack" are reserved, see
- * {@link #PREFIX}
  * 
  * @goal cloud-formation-update
  * 

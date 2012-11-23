@@ -1,3 +1,10 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.dns;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -6,7 +13,9 @@ import org.apache.maven.plugin.MojoFailureException;
 /**
  * route53:
  * 
- * <b><a href= "http://invalid" >ensure cname record</a></b>
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/Route53/latest/DeveloperGuide/RRSchanges.html"
+ * >ensure cname record</a></b>
  * 
  * @goal route53-ensure-cname
  * 
@@ -20,7 +29,7 @@ import org.apache.maven.plugin.MojoFailureException;
 public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 
 	/**
-	 * name of the maven property that will contain dns name list
+	 * source dns name, or left-hand side of CNAME record
 	 * 
 	 * @required
 	 * @parameter default-value="source.default.example.com"
@@ -28,7 +37,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 	protected String dnsSource;
 
 	/**
-	 * name of the maven property that will contain dns name list
+	 * target dns name, or right-hand side of CNAME record
 	 * 
 	 * @required
 	 * @parameter default-value="target.default.example.com"
@@ -40,14 +49,16 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 
 		try {
 
-			getLog().info("dns cname init [" + "]");
+			final String entry = dnsSource + " -> " + dnsTarget;
+
+			getLog().info("dns cname init [" + entry + "]");
 
 			final Route53 route53 = newRoute53();
 
 			route53.ensureCNAME( //
 					route53.canonical(dnsSource), route53.canonical(dnsTarget));
 
-			getLog().info("dns cname done [" + "]");
+			getLog().info("dns cname done [" + entry + "]");
 
 		} catch (final Exception e) {
 

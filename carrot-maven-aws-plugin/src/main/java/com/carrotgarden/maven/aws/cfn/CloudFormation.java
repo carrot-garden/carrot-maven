@@ -26,6 +26,7 @@ import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackEvent;
 import com.amazonaws.services.cloudformation.model.StackStatus;
+import com.amazonaws.services.cloudformation.model.UpdateStackRequest;
 import com.google.common.collect.Lists;
 
 /**
@@ -37,21 +38,21 @@ import com.google.common.collect.Lists;
  */
 public class CloudFormation {
 
+	private final AmazonCloudFormation amazonClient;
+
+	private final AWSCredentials credentials;
+	private final String endpoint;
 	private final Logger logger;
 
 	private final String name;
-	private final String template;
+
 	private final List<Parameter> paramList;
+
+	private final String template;
 
 	private final long timeout;
 
-	private final AWSCredentials credentials;
-
-	private final AmazonCloudFormation amazonClient;
-
 	private final long waitBetweenAttempts;
-
-	private final String endpoint;
 
 	public CloudFormation(final Logger logger, final String stackName,
 			final String stackTemplate, final Map<String, String> stackParams,
@@ -98,20 +99,122 @@ public class CloudFormation {
 
 	}
 
-	/**
-	 */
-	public Stack stackDelete() throws Exception {
+	private Stack getStack() throws Exception {
 
-		final DeleteStackRequest request = new DeleteStackRequest();
+		final DescribeStacksRequest request = new DescribeStacksRequest();
 
-		request.withStackName(name);
+		final DescribeStacksResult result = amazonClient
+				.describeStacks(request);
 
-		amazonClient.deleteStack(request);
+		for (final Stack stack : result.getStacks()) {
+			if (name.equals(stack.getStackName())) {
+				return stack;
+			}
+		}
 
-		final Stack stack = waitForStackDelete();
+		return null;
+
+	}
+
+	private boolean isStackValid(final Stack stack) {
+		return stack != null;
+	}
+
+	private boolean isTimeoutPending(final long startTime) {
+		return (System.currentTimeMillis() - startTime) > (timeout * 1000);
+	}
+
+	public void logParamList() {
+
+		for (final Parameter param : paramList) {
+
+			logger.info(//
+			param.getParameterKey() + "=" + param.getParameterValue());
+
+		}
+
+	}
+
+	private AmazonCloudFormation newClient() {
+
+		final AmazonCloudFormation amazonClient = new AmazonCloudFormationAsyncClient(
+				credentials);
+
+		logger.info("stack endpoint : {}", endpoint);
+
+		amazonClient.setEndpoint(endpoint);
+
+		return amazonClient;
+
+	}
+
+	private Stack newStackWithStatus(final StackStatus status,
+			final String reason) {
+
+		final Stack stack = new Stack();
+
+		stack.setStackName(name);
+		stack.setStackStatus(status);
+		stack.setStackStatusReason(reason);
 
 		return stack;
 
+	}
+
+	private void printStackEvents() {
+
+		final DescribeStackEventsRequest request = new DescribeStackEventsRequest();
+
+		request.withStackName(name);
+
+		final DescribeStackEventsResult describeStackEvents = amazonClient
+				.describeStackEvents(request);
+
+		final List<StackEvent> stackEvents = describeStackEvents
+				.getStackEvents();
+
+		Collections.reverse(stackEvents);
+
+		logger.info("stack events:");
+
+		for (final StackEvent event : stackEvents) {
+
+			final StringBuilder text = new StringBuilder(128);
+
+			text.append("\n\t");
+			text.append("time=");
+			text.append(event.getTimestamp());
+
+			text.append("\n\t");
+			text.append("id=");
+			text.append(event.getEventId());
+
+			text.append("\n\t");
+			text.append("type=");
+			text.append(event.getResourceType());
+
+			text.append("\n\t");
+			text.append("status=");
+			text.append(event.getResourceStatus());
+
+			text.append("\n\t");
+			text.append("reason=");
+			text.append(event.getResourceStatusReason());
+
+			logger.info("event {}", text);
+
+		}
+
+	}
+
+	private void sleep() throws Exception {
+		try {
+			Thread.sleep(waitBetweenAttempts * 1000);
+		} catch (final InterruptedException ie) {
+			throw new IllegalStateException("operation interrupted; "
+					+ "resources are left in inconsistent state; "
+					+ "requires manual intervention");
+		}
 	}
 
 	/**
@@ -132,78 +235,33 @@ public class CloudFormation {
 
 	}
 
-	private AmazonCloudFormation newClient() {
+	/**
+	 */
+	public Stack stackDelete() throws Exception {
 
-		final AmazonCloudFormation amazonClient = new AmazonCloudFormationAsyncClient(
-				credentials);
+		final DeleteStackRequest request = new DeleteStackRequest();
 
-		logger.info("stack endpoint : {}", endpoint);
+		request.withStackName(name);
 
-		amazonClient.setEndpoint(endpoint);
+		amazonClient.deleteStack(request);
 
-		return amazonClient;
+		final Stack stack = waitForStackDelete();
 
-	}
-
-	private boolean isStackValid(final Stack stack) {
-		return stack != null;
-	}
-
-	private Stack waitForStackDelete() throws Exception {
-
-		final long timeStart = System.currentTimeMillis();
-
-		while (true) {
-
-			if (isTimeoutPending(timeStart)) {
-				return newStackWithStatus(StackStatus.DELETE_FAILED,
-						"stack delete timeout");
-			}
-
-			Stack stack = null;
-			try {
-				stack = getStack();
-			} catch (final Exception e) {
-				return newStackWithStatus(StackStatus.DELETE_FAILED,
-						e.toString());
-			}
-
-			if (!isStackValid(stack)) {
-				return newStackWithStatus(StackStatus.DELETE_COMPLETE,
-						"stack delete invalid/missing");
-			}
-
-			final StackStatus status = StackStatus.fromValue(stack
-					.getStackStatus());
-
-			switch (status) {
-			case DELETE_IN_PROGRESS:
-				final long timeCurrent = System.currentTimeMillis();
-				final long timeDiff = timeCurrent - timeStart;
-				logger.info("stack delete in progress; time=" + timeDiff / 1000);
-				sleep();
-				continue;
-			case DELETE_COMPLETE:
-				logger.info("stack delete complete");
-				printStackEvents();
-				return stack;
-			default:
-				logger.error("stack delete failed");
-				return stack;
-			}
-
-		}
+		return stack;
 
 	}
 
-	private Stack newStackWithStatus(final StackStatus status,
-			final String reason) {
+	public Stack stackUpdate() throws Exception {
 
-		final Stack stack = new Stack();
+		final UpdateStackRequest request = new UpdateStackRequest();
 
-		stack.setStackName(name);
-		stack.setStackStatus(status);
-		stack.setStackStatusReason(reason);
+		request.withStackName(name);
+		request.withParameters(paramList);
+		request.withTemplateBody(template);
+
+		amazonClient.updateStack(request);
+
+		final Stack stack = waitForStackUpdate();
 
 		return stack;
 
@@ -256,91 +314,98 @@ public class CloudFormation {
 
 	}
 
-	private void printStackEvents() {
+	private Stack waitForStackDelete() throws Exception {
 
-		final DescribeStackEventsRequest request = new DescribeStackEventsRequest();
+		final long timeStart = System.currentTimeMillis();
 
-		request.withStackName(name);
+		while (true) {
 
-		final DescribeStackEventsResult describeStackEvents = amazonClient
-				.describeStackEvents(request);
+			if (isTimeoutPending(timeStart)) {
+				return newStackWithStatus(StackStatus.DELETE_FAILED,
+						"stack delete timeout");
+			}
 
-		final List<StackEvent> stackEvents = describeStackEvents
-				.getStackEvents();
+			Stack stack = null;
+			try {
+				stack = getStack();
+			} catch (final Exception e) {
+				return newStackWithStatus(StackStatus.DELETE_FAILED,
+						e.toString());
+			}
 
-		Collections.reverse(stackEvents);
+			if (!isStackValid(stack)) {
+				return newStackWithStatus(StackStatus.DELETE_COMPLETE,
+						"stack delete invalid/missing");
+			}
 
-		logger.info("stack events:");
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
 
-		for (final StackEvent event : stackEvents) {
-
-			final StringBuilder text = new StringBuilder(128);
-
-			text.append("\n\t");
-			text.append("time=");
-			text.append(event.getTimestamp());
-
-			text.append("\n\t");
-			text.append("id=");
-			text.append(event.getEventId());
-
-			text.append("\n\t");
-			text.append("type=");
-			text.append(event.getResourceType());
-
-			text.append("\n\t");
-			text.append("status=");
-			text.append(event.getResourceStatus());
-
-			text.append("\n\t");
-			text.append("reason=");
-			text.append(event.getResourceStatusReason());
-
-			logger.info("event {}", text);
-
-		}
-
-	}
-
-	private boolean isTimeoutPending(final long startTime) {
-		return (System.currentTimeMillis() - startTime) > (timeout * 1000);
-	}
-
-	private Stack getStack() throws Exception {
-
-		final DescribeStacksRequest request = new DescribeStacksRequest();
-
-		final DescribeStacksResult result = amazonClient
-				.describeStacks(request);
-
-		for (final Stack stack : result.getStacks()) {
-			if (name.equals(stack.getStackName())) {
+			switch (status) {
+			case DELETE_IN_PROGRESS:
+				final long timeCurrent = System.currentTimeMillis();
+				final long timeDiff = timeCurrent - timeStart;
+				logger.info("stack delete in progress; time=" + timeDiff / 1000);
+				sleep();
+				continue;
+			case DELETE_COMPLETE:
+				logger.info("stack delete complete");
+				printStackEvents();
+				return stack;
+			default:
+				logger.error("stack delete failed");
 				return stack;
 			}
-		}
-
-		return null;
-
-	}
-
-	private void sleep() throws Exception {
-		try {
-			Thread.sleep(waitBetweenAttempts * 1000);
-		} catch (final InterruptedException ie) {
-			throw new IllegalStateException("operation interrupted; "
-					+ "resources are left in inconsistent state; "
-					+ "requires manual intervention");
-		}
-	}
-
-	public void logParamList() {
-
-		for (final Parameter param : paramList) {
-
-			logger.info(//
-			param.getParameterKey() + "=" + param.getParameterValue());
 
 		}
 
 	}
+
+	private Stack waitForStackUpdate() throws Exception {
+
+		final long timeStart = System.currentTimeMillis();
+
+		while (true) {
+
+			if (isTimeoutPending(timeStart)) {
+				return newStackWithStatus(StackStatus.UPDATE_ROLLBACK_FAILED,
+						"stack update timeout");
+			}
+
+			Stack stack = null;
+			try {
+				stack = getStack();
+			} catch (final Exception e) {
+				return newStackWithStatus(StackStatus.UPDATE_ROLLBACK_FAILED,
+						e.toString());
+			}
+
+			if (!isStackValid(stack)) {
+				return newStackWithStatus(StackStatus.UPDATE_ROLLBACK_FAILED,
+						"stack update invalid/missing");
+			}
+
+			final StackStatus status = StackStatus.fromValue(stack
+					.getStackStatus());
+
+			switch (status) {
+			case UPDATE_IN_PROGRESS:
+				final long timeCurrent = System.currentTimeMillis();
+				final long timeDiff = timeCurrent - timeStart;
+				logger.info("stack update in progress; time=" + timeDiff / 1000);
+				sleep();
+				continue;
+			case UPDATE_COMPLETE:
+				logger.info("stack update complete");
+				printStackEvents();
+				return stack;
+			default:
+				logger.error("stack updtae failed");
+				return stack;
+			}
+
+		}
+
+	}
+
 }

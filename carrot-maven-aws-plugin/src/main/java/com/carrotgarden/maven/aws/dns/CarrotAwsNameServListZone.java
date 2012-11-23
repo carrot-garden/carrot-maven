@@ -1,3 +1,10 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.dns;
 
 import java.util.List;
@@ -10,7 +17,9 @@ import com.carrotgarden.maven.aws.util.Util;
 /**
  * route53:
  * 
- * <b><a href= "http://invalid" >list dns zone entires</a></b>
+ * <b><a href=
+ * "http://docs.amazonwebservices.com/Route53/latest/DeveloperGuide/ListingRRS.html"
+ * >list dns zone entires</a></b>
  * 
  * @goal route53-list-zone
  * 
@@ -32,7 +41,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 	protected String dnsZoneName;
 
 	/**
-	 * name of the maven property that will contain dns name list after
+	 * name of the maven project.property that will contain dns name list after
 	 * execution of this maven goal
 	 * 
 	 * @required
@@ -41,7 +50,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 	protected String dnsResultProperty;
 
 	/**
-	 * separator to use when building result name list
+	 * separator character to use when building dns result name list
 	 * 
 	 * @required
 	 * @parameter default-value=";"

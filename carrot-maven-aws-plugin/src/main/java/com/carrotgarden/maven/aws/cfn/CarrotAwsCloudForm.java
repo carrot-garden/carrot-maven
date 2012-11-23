@@ -8,10 +8,7 @@
 package com.carrotgarden.maven.aws.cfn;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
@@ -27,12 +24,19 @@ import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 import com.carrotgarden.maven.aws.util.Util;
 
 /**
- * 
+ * base for cloud formation goals
  */
 public abstract class CarrotAwsCloudForm extends CarrotAws {
 
-	/** amazon template entry */
-	public static final String PARAMETERS = "Parameters";
+	/**
+	 * amazon template entry:
+	 * 
+	 * <a href=
+	 * "http://docs.amazonwebservices.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html"
+	 * > parameters-section-structure </a>
+	 * 
+	 */
+	public static final String TEMPLATE_PARAMETERS = "Parameters";
 
 	/**
 	 * AWS CloudFormation stack name; must be unique under your aws account /
@@ -44,10 +48,14 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	private String stackName;
 
 	/**
+	 * name of project.property which, if set dynamically, will be used instead
+	 * of plug-in property {@link #stackName}
+	 * 
 	 * @parameter
 	 */
 	private String stackNameProperty;
 
+	/** prefer project.property over plug-in property */
 	protected String stackName() {
 		if (stackNameProperty == null) {
 			return stackName;
@@ -100,6 +108,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 */
 	private String stackEndpoint;
 
+	/** construct end pont per amazon rules */
 	protected String stackEndpoint() {
 		if (stackEndpoint == null) {
 			return "https://cloudformation." + amazonRegion()
@@ -111,20 +120,27 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	//
 
-	protected Map<String, String> loadPluginParams(final Properties inputProps,
-			final Map<String, String> inputParams) throws Exception {
-
-		/** merge template parameters */
+	protected Map<String, String> loadPluginProperties() throws Exception {
 
 		final Map<String, String> pluginParams = new TreeMap<String, String>();
 
+		return pluginParams;
+
+	}
+
+	protected Map<String, String> mergePluginProps(final Properties inputProps,
+			final Map<String, String> inputParams) throws Exception {
+
+		/** merge template parameters */
+		final Map<String, String> pluginProps = new TreeMap<String, String>();
+
 		/** from properties file */
-		pluginParams.putAll(safeMap(inputProps));
+		pluginProps.putAll(Util.safeMap(inputProps));
 
 		/** from maven pom.xml */
-		pluginParams.putAll(safeMap(inputParams));
+		pluginProps.putAll(Util.safeMap(inputParams));
 
-		return pluginParams;
+		return pluginProps;
 
 	}
 
@@ -153,7 +169,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		/** */
 
-		final long stackTimeout = safeNumber(this.stackTimeout, 600);
+		final long stackTimeout = Util.safeNumber(getLog(), this.stackTimeout,
+				600);
 
 		final CloudFormation formation = new CloudFormation(logger,
 				stackName(), stackTemplate, stackParams, stackTimeout,
@@ -171,52 +188,8 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 		}
 	}
 
-	protected long safeNumber(final String numberText, final long numberDefault) {
-		try {
-			return Long.parseLong(numberText);
-		} catch (final Throwable e) {
-			getLog().warn("using numberDefault=" + numberDefault);
-			return numberDefault;
-		}
-	}
-
-	@SuppressWarnings("unused")
-	private void overridePluginProperties(final Map<String, String> stackParams) {
-
-		final Set<Map.Entry<String, String>> entrySet = //
-		new HashSet<Entry<String, String>>(stackParams.entrySet());
-
-		for (final Map.Entry<String, String> entry : entrySet) {
-
-			final String key = entry.getKey();
-			final String value = entry.getValue();
-
-			if (!key.startsWith("stack")) {
-				continue;
-			}
-
-			stackParams.remove(key);
-
-			try {
-
-				final Field field = Util.findField(this.getClass(), key);
-
-				field.set(this, value);
-
-				getLog().info("override : " + key + "=" + value);
-
-			} catch (final Exception e) {
-
-				getLog().warn("override : invalid stack param=" + key, e);
-
-			}
-
-		}
-
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected Set<String> loadTemplateParamNames(final File templateFile)
+	protected Set<String> loadParameterNames(final File templateFile)
 			throws Exception {
 
 		final Set<String> nameSet = new TreeSet<String>();
@@ -225,9 +198,9 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 			return nameSet;
 		}
 
-		final Map templateMap = Util.loadJson(templateFile, Map.class);
+		final Map templateMap = Util.jsonLoad(templateFile, Map.class);
 
-		final Map paramMap = (Map) templateMap.get(PARAMETERS);
+		final Map paramMap = (Map) templateMap.get(TEMPLATE_PARAMETERS);
 
 		if (paramMap == null) {
 			return nameSet;
@@ -245,7 +218,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		final Map<String, String> stackParams = new TreeMap<String, String>();
 
-		final Set<String> nameSet = loadTemplateParamNames(templateFile);
+		final Set<String> nameSet = loadParameterNames(templateFile);
 
 		final Properties propsProject = project().getProperties();
 		final Properties propsCommand = session().getUserProperties();

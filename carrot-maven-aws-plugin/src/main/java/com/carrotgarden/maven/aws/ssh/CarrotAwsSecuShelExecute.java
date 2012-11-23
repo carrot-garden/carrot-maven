@@ -32,7 +32,7 @@ public class CarrotAwsSecuShelExecute extends CarrotAwsSecuShel {
 	 * @required
 	 * @parameter default-value="ls -las"
 	 */
-	protected String sshCommand;
+	private String sshCommand;
 
 	/**
 	 * {@inheritDoc}
@@ -48,11 +48,12 @@ public class CarrotAwsSecuShelExecute extends CarrotAwsSecuShel {
 
 			final int status = ssh.execute(sshCommand);
 
-			ensureStatusSuccess(status);
+			assertStatusSuccess(status);
 
 		} catch (final Exception e) {
 
 			throw new MojoFailureException("command failed", e);
+
 		}
 
 	}

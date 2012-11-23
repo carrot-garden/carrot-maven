@@ -38,7 +38,7 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 * @required
 	 * @parameter default-value="com.example.aws.compute"
 	 */
-	protected String computeServerId;
+	private String computeServerId;
 
 	/**
 	 * AWS ElasticCompute operation timeout; seconds
@@ -46,7 +46,7 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 * @required
 	 * @parameter default-value="600"
 	 */
-	protected Long computeTimeout;
+	private Long computeTimeout;
 
 	/**
 	 * AWS ElasticCompute
@@ -63,6 +63,7 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 */
 	private String computeEndpoint;
 
+	/** construct end point per amazon rules */
 	protected String computeEndpoint() {
 		if (computeEndpoint == null) {
 			return "https://ec2." + amazonRegion() + ".amazonaws.com";

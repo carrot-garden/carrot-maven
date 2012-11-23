@@ -1,37 +1,43 @@
+/**
+ * Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+ *
+ * All rights reserved. Licensed under the OSI BSD License.
+ *
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
 package com.carrotgarden.maven.aws.grv;
 
 import java.util.Map;
 import java.util.Properties;
 
+import com.carrotgarden.maven.aws.util.MavenProps;
+
+/**
+ * properties proxy:
+ * <p>
+ * {@link #get(Object)} does hierarchical lookup
+ * <p>
+ * {@link #put(Object, Object)} updates only project
+ */
 @SuppressWarnings("serial")
 public class MavenPropertiesAdaptor extends Properties {
 
-	public final MavenConfig mavenConfig;
+	public final MavenProps mavenProps;
 
-	private final Properties propsSystem;
-	private final Properties propsCommand;
-	private final Properties propsProject;
+	public MavenPropertiesAdaptor(final MavenProps mavenProps) {
 
-	public MavenPropertiesAdaptor(final MavenConfig mavenConfig) {
+		this.mavenProps = mavenProps;
 
-		this.mavenConfig = mavenConfig;
-
-		propsSystem = mavenConfig.session.getSystemProperties();
-
-		propsCommand = mavenConfig.session.getUserProperties();
-
-		propsProject = mavenConfig.project.getProperties();
-
-		if (mavenConfig.isSystem) {
-			thisPutAll(propsSystem);
+		if (mavenProps.isSystem) {
+			superPutAll(mavenProps.propsSystem());
 		}
 
-		if (mavenConfig.isCommand) {
-			thisPutAll(propsCommand);
+		if (mavenProps.isCommand) {
+			superPutAll(mavenProps.propsCommand());
 		}
 
-		if (mavenConfig.isProject) {
-			thisPutAll(propsProject);
+		if (mavenProps.isProject) {
+			superPutAll(mavenProps.propsProject());
 		}
 
 	}
@@ -48,40 +54,40 @@ public class MavenPropertiesAdaptor extends Properties {
 	@Override
 	public Object get(final Object key) {
 
-		return thisGet(key);
+		return superGet(key);
 
 	}
 
-	/** save into both groovy and maven */
+	/** save into both local and project.properties */
 	@Override
 	public Object put(final Object grvKey, final Object grvValue) {
 
 		final String key = grvKey == null ? null : grvKey.toString();
 		final String value = grvValue == null ? null : grvValue.toString();
 
-		thisPut(key, value);
+		superPut(key, value);
 
-		return propsProject.put(key, value);
+		return mavenProps.propsProject().put(key, value);
 
 	}
 
-	private Object thisGet(final Object key) {
+	private Object superGet(final Object key) {
 
 		return super.get(key);
 
 	}
 
-	private Object thisPut(final Object key, final Object value) {
+	private Object superPut(final Object key, final Object value) {
 
 		return super.put(key, value);
 
 	}
 
-	private void thisPutAll(final Properties props) {
+	private void superPutAll(final Properties props) {
 
 		for (final Map.Entry<Object, Object> entry : props.entrySet()) {
 
-			thisPut(entry.getKey(), entry.getValue());
+			superPut(entry.getKey(), entry.getValue());
 
 		}
 
