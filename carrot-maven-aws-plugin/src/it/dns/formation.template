@@ -1,0 +1,53 @@
+{
+	
+    "AWSTemplateFormatVersion": "2010-09-09",
+    
+    "Description": "tester dns",
+    
+    "Parameters": {
+
+        "ParamZoneName": {
+            "Type": "String",
+            "Default" : "carrotgarden.com.",
+            "Description": ""
+        },
+
+        "ParamHostName": {
+            "Type": "String",
+            "Default" : "tester-source.carrotgarden.com.",
+            "Description": ""
+        },
+    	
+        "ParamNickName": {
+            "Type": "String",
+            "Default" : "tester-target.carrotgarden.com.",
+            "Description": ""
+        }
+    	
+    },
+    
+    "Resources": {
+    	
+    	"TesterDNS": {
+  		  "Type": "AWS::Route53::RecordSet",
+  		  "Properties": {
+  		      "HostedZoneName": { "Ref": "ParamZoneName" },
+  		      "Name": { "Ref": "ParamHostName" },
+  		      "Type": "CNAME", 
+  		      "TTL": "60",
+  		      "ResourceRecords": [ { "Ref": "ParamNickName" } ]
+  		  }
+    	}
+    
+    },
+    
+    "Outputs": {
+    	
+        "OutputNameDNS": {
+            "Description": "should match to 'TesterDNS.Name' (with no '.' at the end) ",
+            "Value": { "Ref": "TesterDNS" } 
+        }
+
+    }
+    
+}

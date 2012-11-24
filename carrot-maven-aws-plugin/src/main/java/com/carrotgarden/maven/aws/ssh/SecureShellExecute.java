@@ -5,14 +5,14 @@
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
-package com.carrotgarden.maven.aws.ecc;
+package com.carrotgarden.maven.aws.ssh;
 
 import org.apache.maven.plugin.MojoFailureException;
 
 /**
- * unregister/delete existing ami image
+ * execute remote ssh commands
  * 
- * @goal elastic-compute-image-unregister
+ * @goal secure-shell-execute
  * 
  * @phase prepare-package
  * 
@@ -21,30 +21,35 @@ import org.apache.maven.plugin.MojoFailureException;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsElasCompImageUnReg extends CarrotAwsElasComp {
+public class SecureShellExecute extends SecureShell {
 
 	/**
-	 * AWS ElasticCompute ami image name; must be unique;
+	 * ssh exec command
 	 * 
 	 * @required
-	 * @parameter default-value="amazon-image-name"
+	 * @parameter default-value="ls -las"
 	 */
-	protected String imageName;
+	private String sshCommand;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void execute() throws MojoFailureException {
 
 		try {
 
-			getLog().info("image unreg init");
+			getLog().info("");
 
-			getLog().info("image unreg done");
+			final CarrotSecureShell ssh = newSecureShell();
 
-			throw new UnsupportedOperationException("TODO");
+			final int status = ssh.execute(sshCommand);
+
+			assertStatusSuccess(status);
 
 		} catch (final Exception e) {
 
-			throw new MojoFailureException("bada-boom", e);
+			throw new MojoFailureException("command failed", e);
 
 		}
 

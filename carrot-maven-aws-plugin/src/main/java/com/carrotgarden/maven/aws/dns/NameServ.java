@@ -11,13 +11,13 @@ import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.CarrotMojo;
 import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 
 /**
- * 
+ * base for route 53 dns goals
  */
-public abstract class CarrotAwsNameServ extends CarrotAws {
+public abstract class NameServ extends CarrotMojo {
 
 	/**
 	 * AWS Route53
@@ -38,9 +38,9 @@ public abstract class CarrotAwsNameServ extends CarrotAws {
 	 * @required
 	 * @parameter default-value="com.example.aws.route53"
 	 */
-	protected String dnsServerId;
+	private String dnsServerId;
 
-	protected Route53 newRoute53() throws Exception {
+	protected CarrotRoute53 newRoute53() throws Exception {
 
 		final Server server = settings().getServer(dnsServerId);
 
@@ -51,9 +51,9 @@ public abstract class CarrotAwsNameServ extends CarrotAws {
 
 		final AWSCredentials credentials = new AWSCredentialsImpl(server);
 
-		final Logger logger = getLogger(Route53.class);
+		final Logger logger = getLogger(CarrotRoute53.class);
 
-		final Route53 compute = new Route53(logger, credentials);
+		final CarrotRoute53 compute = new CarrotRoute53(logger, credentials);
 
 		return compute;
 

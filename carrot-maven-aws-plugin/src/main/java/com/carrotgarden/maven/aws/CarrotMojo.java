@@ -15,8 +15,20 @@ import org.slf4j.Logger;
 import org.slf4j.impl.MavenLoggerFactory;
 
 /**
+ * base plug-in mojo
  */
-public abstract class CarrotAws extends AbstractMojo {
+public abstract class CarrotMojo extends AbstractMojo {
+
+	/**
+	 * default amazon tag for resource names
+	 * 
+	 * @parameter default-value="Name"
+	 */
+	private String amazonTagName;
+
+	protected String amazonTagName() {
+		return amazonTagName;
+	}
 
 	/** do not use during class init */
 	protected Logger getLogger(final Class<?> klaz) {
@@ -66,6 +78,8 @@ public abstract class CarrotAws extends AbstractMojo {
 	 * 
 	 * which controls amazon region selection;
 	 * 
+	 * alternatively, see {@link #amazonRegionProperty}
+	 * 
 	 * @required
 	 * @parameter default-value="us-east-1"
 	 */
@@ -81,11 +95,28 @@ public abstract class CarrotAws extends AbstractMojo {
 
 	/** prefer project.properies over plug-in property */
 	protected String amazonRegion() {
-		if (amazonRegionProperty == null) {
-			return amazonRegion;
+		return projectValue(amazonRegion, amazonRegionProperty);
+	}
+
+	/**
+	 * @return value, if present; else substitute {@link #amazonRegion()} into
+	 *         format expression
+	 */
+	protected String amazonEndpoint(final String value, final String format) {
+		if (value == null) {
+			return String.format(format, amazonRegion());
 		} else {
-			return (String) project().getProperties().get(amazonRegionProperty);
+			return value;
 		}
+	}
+
+	protected String projectValue(final String propValue, final String propName) {
+		if (propName == null) {
+			return propValue;
+		} else {
+			return (String) project().getProperties().get(propName);
+		}
+
 	}
 
 }

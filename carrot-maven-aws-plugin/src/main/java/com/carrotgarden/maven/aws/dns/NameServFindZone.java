@@ -7,6 +7,8 @@
  */
 package com.carrotgarden.maven.aws.dns;
 
+import java.util.Properties;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -28,7 +30,7 @@ import com.amazonaws.services.route53.model.HostedZone;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
+public class NameServFindZone extends NameServ {
 
 	/**
 	 * dns host name which should be resolved into dns zone name
@@ -36,7 +38,7 @@ public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="default.example.com"
 	 */
-	protected String dnsHostName;
+	private String dnsHostName;
 
 	/**
 	 * name of the maven project.property that will contain dns zone name after
@@ -45,32 +47,35 @@ public class CarrotAwsNameServFindZone extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="dnsZoneName"
 	 */
-	protected String dnsResultProperty;
+	private String dnsResultProperty;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 
 		try {
 
-			getLog().info("dns zone init [" + dnsHostName + "]");
+			getLog().info("dns find init [" + dnsHostName + "]");
 
-			final Route53 route53 = newRoute53();
+			final CarrotRoute53 route53 = newRoute53();
 
 			final HostedZone zone = route53.findZone( //
 					route53.canonical(dnsHostName));
 
+			final Properties props = project().getProperties();
+
+			final String zoneName;
+
 			if (zone == null) {
-				throw new IllegalStateException("can not find zone for "
-						+ dnsHostName);
+				zoneName = null;
+				props.remove(dnsResultProperty);
+			} else {
+				zoneName = zone.getName();
+				props.put(dnsResultProperty, zoneName);
 			}
 
-			final String dnsResultZoneName = zone.getName();
+			getLog().info("dns zone name : " + zoneName);
 
-			getLog().info("dns zone name : " + dnsResultZoneName);
-
-			project().getProperties().put(dnsResultProperty, dnsResultZoneName);
-
-			getLog().info("dns zone done [" + dnsHostName + "]");
+			getLog().info("dns find done [" + dnsHostName + "]");
 
 		} catch (final Exception e) {
 

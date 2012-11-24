@@ -1,0 +1,138 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.2.0</version>
+		<relativePath />
+	</parent>
+
+	<artifactId>carrot-integrate-aws-ssh</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<description>verify ssh goals</description>
+
+	<properties>
+
+		<testFile>/tmp/integration-${project.artifactId}-file</testFile>
+
+		<publishSource>${basedir}</publishSource>
+		<publishTarget>/tmp/integration-${project.artifactId}-folder</publishTarget>
+
+	</properties>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>com.carrotgarden.maven</groupId>
+				<artifactId>carrot-maven-aws-plugin</artifactId>
+				<version>@project.version@</version>
+				<configuration>
+
+					<sshHost>localhost</sshHost>
+					<sshPort>22</sshPort>
+					<sshUser>${user.name}</sshUser>
+					<sshKeyFile>${user.home}/.ssh/id_rsa</sshKeyFile>
+					<sshConnectRetries>1</sshConnectRetries>
+					<sshConnectTimeout>1</sshConnectTimeout>
+
+				</configuration>
+				<executions>
+
+					<execution>
+						<id>assert-ssh-init</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+							
+ 								def file = new File("${testFile}")
+ 								def folder = new File("${publishTarget}")
+ 								
+ 								file.delete()
+ 								folder.deleteDir()
+
+ 								assert file.exists() == false
+ 								assert folder.exists() == false
+ 								
+ 							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>ssh-publish</id>
+						<phase>package</phase>
+						<goals>
+							<goal>secure-shell-publish</goal>
+						</goals>
+						<configuration>
+							<sshSource>${publishSource}</sshSource>
+							<sshTarget>${publishTarget}</sshTarget>
+							<sshStatusSuccess>
+								<status>0</status>
+								<status>-1</status>
+							</sshStatusSuccess>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>ssh-execute</id>
+						<phase>package</phase>
+						<goals>
+							<goal>secure-shell-execute</goal>
+						</goals>
+						<configuration>
+							<sshCommand>touch ${testFile}</sshCommand>
+							<sshStatusSuccess>
+								<status>0</status>
+							</sshStatusSuccess>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>assert-ssh-done</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+							
+ 								def file = new File("${testFile}")
+ 								def folder = new File("${publishTarget}")
+ 								
+ 								assert file.exists() == true
+ 								assert folder.exists() == true
+ 								
+ 								def test = new File(folder, "/test/test.file")
+ 								assert test.exists() == true
+ 								assert test.size() == 6
+
+ 								file.delete()
+ 								folder.deleteDir()
+ 								
+							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+				</executions>
+
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

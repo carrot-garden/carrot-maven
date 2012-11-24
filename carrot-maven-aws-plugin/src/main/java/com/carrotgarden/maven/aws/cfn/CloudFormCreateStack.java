@@ -64,7 +64,7 @@ import com.carrotgarden.maven.aws.util.Util;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
+public class CloudFormCreateStack extends CloudForm {
 
 	/**
 	 * AWS CloudFormation
@@ -105,7 +105,6 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 	 * 
 	 * will be overridden by #stackInputParams if any
 	 * 
-	 * @required
 	 * @parameter default-value="./target/formation/formation-input.properties"
 	 */
 	protected File stackPropertiesInputFile;
@@ -119,7 +118,6 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 	 * 
 	 * output properties file
 	 * 
-	 * @required
 	 * @parameter default-value="./target/formation/formation-output.properties"
 	 */
 	protected File stackPropertiesOutputFile;
@@ -127,7 +125,6 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 	/**
 	 * should inject stack operation output into the project.properties?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean stackIsInjectOutputProperties;
@@ -136,7 +133,6 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 	 * should persist stack operation output into
 	 * {@link #stackPropertiesOutputFile}
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean stackIsPersistOutputProperties;
@@ -160,7 +156,7 @@ public class CarrotAwsCloudFormCreate extends CarrotAwsCloudForm {
 			final Map<String, String> stackTemplateParams = loadTemplateParameters(
 					stackTemplateFile, pluginProps);
 
-			final CloudFormation formation = newCloudFormation(
+			final CarrotCloudForm formation = newCloudFormation(
 					stackTemplateFile, stackTemplateParams);
 
 			formation.logParamList();

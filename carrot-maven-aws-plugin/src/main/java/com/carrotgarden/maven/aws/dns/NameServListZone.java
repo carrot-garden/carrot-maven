@@ -30,7 +30,7 @@ import com.carrotgarden.maven.aws.util.Util;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
+public class NameServListZone extends NameServ {
 
 	/**
 	 * dns zone name to be listed
@@ -38,7 +38,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="default.example.com"
 	 */
-	protected String dnsZoneName;
+	private String dnsZoneName;
 
 	/**
 	 * name of the maven project.property that will contain dns name list after
@@ -47,7 +47,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="dnsNameList"
 	 */
-	protected String dnsResultProperty;
+	private String dnsResultProperty;
 
 	/**
 	 * separator character to use when building dns result name list
@@ -55,7 +55,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value=";"
 	 */
-	protected String dnsResultSeparator;
+	private String dnsResultSeparator;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -64,7 +64,7 @@ public class CarrotAwsNameServListZone extends CarrotAwsNameServ {
 
 			getLog().info("dns list init [" + dnsZoneName + "]");
 
-			final Route53 route53 = newRoute53();
+			final CarrotRoute53 route53 = newRoute53();
 
 			final List<String> list = route53.listZone(dnsZoneName);
 

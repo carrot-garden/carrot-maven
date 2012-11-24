@@ -1,0 +1,44 @@
+{
+	
+    "AWSTemplateFormatVersion": "2010-09-09",
+    
+    "Description": "tester cfn",
+    
+    "Parameters": {
+    	
+    },
+    
+    "Resources": {
+    	
+        "TesterLoadBalancer": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "AvailabilityZones": {
+                    "Fn::GetAZs": ""
+                },
+                "Listeners": [
+                    {
+                        "LoadBalancerPort": "80",
+                        "InstancePort": "8080",
+                        "Protocol": "HTTP"
+                    }
+                ]
+            }
+        }
+    },
+    
+    "Outputs": {
+    	
+        "OutputNameDNS": {
+            "Description": "balancer dns nam3",
+            "Value": { "Fn::GetAtt": [ "TesterLoadBalancer", "DNSName" ] } 
+        },
+    	
+        "OutputSecretId": {
+            "Description": "secret id",
+            "Value": "secret-id-123"
+        }
+
+    }
+    
+}

@@ -17,11 +17,11 @@ import org.apache.maven.project.MavenProject;
 /**
  * groovy script executor which exposes maven project
  */
-public class GroovyRunner {
+public class CarrotGroovyRunner {
 
 	private final MavenProject project;
 
-	public GroovyRunner(final MavenProject project) {
+	public CarrotGroovyRunner(final MavenProject project) {
 		this.project = project;
 	}
 

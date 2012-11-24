@@ -32,7 +32,7 @@ import com.amazonaws.services.route53.model.ResourceRecord;
 import com.amazonaws.services.route53.model.ResourceRecordSet;
 import com.carrotgarden.maven.aws.util.Util;
 
-public class Route53 {
+public class CarrotRoute53 {
 
 	private final Logger logger;
 
@@ -40,7 +40,7 @@ public class Route53 {
 
 	private final AWSCredentials credentials;
 
-	public Route53(final Logger logger, final AWSCredentials credentials) {
+	public CarrotRoute53(final Logger logger, final AWSCredentials credentials) {
 
 		this.logger = logger;
 

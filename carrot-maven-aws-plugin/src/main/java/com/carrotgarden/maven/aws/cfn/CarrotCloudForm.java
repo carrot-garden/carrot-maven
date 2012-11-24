@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
  * @author Erick Dovale
  *         https://github.com/Syncapse/jenkins-cloudformation-plugin
  */
-public class CloudFormation {
+public class CarrotCloudForm {
 
 	private final AmazonCloudFormation amazonClient;
 
@@ -54,7 +54,7 @@ public class CloudFormation {
 
 	private final long waitBetweenAttempts;
 
-	public CloudFormation(final Logger logger, final String stackName,
+	public CarrotCloudForm(final Logger logger, final String stackName,
 			final String stackTemplate, final Map<String, String> stackParams,
 			final long timeout, final AWSCredentials credentials,
 			final String endpoint) {
@@ -99,7 +99,7 @@ public class CloudFormation {
 
 	}
 
-	private Stack getStack() throws Exception {
+	public Stack findStack() throws Exception {
 
 		final DescribeStacksRequest request = new DescribeStacksRequest();
 
@@ -280,7 +280,7 @@ public class CloudFormation {
 
 			Stack stack = null;
 			try {
-				stack = getStack();
+				stack = findStack();
 			} catch (final Exception e) {
 				return newStackWithStatus(StackStatus.CREATE_FAILED,
 						e.toString());
@@ -327,7 +327,7 @@ public class CloudFormation {
 
 			Stack stack = null;
 			try {
-				stack = getStack();
+				stack = findStack();
 			} catch (final Exception e) {
 				return newStackWithStatus(StackStatus.DELETE_FAILED,
 						e.toString());
@@ -374,7 +374,7 @@ public class CloudFormation {
 
 			Stack stack = null;
 			try {
-				stack = getStack();
+				stack = findStack();
 			} catch (final Exception e) {
 				return newStackWithStatus(StackStatus.UPDATE_ROLLBACK_FAILED,
 						e.toString());

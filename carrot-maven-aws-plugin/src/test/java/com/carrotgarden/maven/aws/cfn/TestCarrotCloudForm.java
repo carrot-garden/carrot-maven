@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 
-public class TestCloudFormation {
+public class TestCarrotCloudForm {
 
-	Logger logger = LoggerFactory.getLogger(TestCloudFormation.class);
+	Logger logger = LoggerFactory.getLogger(TestCarrotCloudForm.class);
 
 	// @Test
 	public void testStack() throws Exception {
@@ -46,7 +46,7 @@ public class TestCloudFormation {
 
 		//
 
-		final CloudFormation formation = new CloudFormation(logger, stackName,
+		final CarrotCloudForm formation = new CarrotCloudForm(logger, stackName,
 				stackTemplate, stackParams, timeout, credentials, null);
 
 		formation.stackCreate();

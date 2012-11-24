@@ -34,7 +34,7 @@ import com.amazonaws.services.cloudformation.model.StackStatus;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
+public class CloudFormDeleteStack extends CloudForm {
 
 	/**
 	 * {@inheritDoc}
@@ -46,7 +46,7 @@ public class CarrotAwsCloudFormDelete extends CarrotAwsCloudForm {
 
 			getLog().info("stack delete init [" + stackName() + "]");
 
-			final CloudFormation formation = newCloudFormation(null, null);
+			final CarrotCloudForm formation = newCloudFormation(null, null);
 
 			final Stack stack = formation.stackDelete();
 

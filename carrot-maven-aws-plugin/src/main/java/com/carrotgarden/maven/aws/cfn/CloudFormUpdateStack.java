@@ -31,7 +31,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsCloudFormUpdate extends CarrotAwsCloudForm {
+public class CloudFormUpdateStack extends CloudForm {
 
 	/**
 	 * {@inheritDoc}
@@ -43,7 +43,7 @@ public class CarrotAwsCloudFormUpdate extends CarrotAwsCloudForm {
 
 			getLog().info("stack update init [" + stackName() + "]");
 
-			getLog().error("TODO");
+			getLog().error("stack update TODO");
 
 			getLog().info("stack update done [" + stackName() + "]");
 

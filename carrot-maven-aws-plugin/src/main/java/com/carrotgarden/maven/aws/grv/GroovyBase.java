@@ -11,13 +11,13 @@ import java.io.File;
 
 import org.apache.maven.project.MavenProject;
 
-import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.CarrotMojo;
 import com.carrotgarden.maven.aws.util.MavenProps;
 
 /**
- * 
+ * base for groovy script goals
  */
-public abstract class CarrotAwsGroovy extends CarrotAws {
+public abstract class GroovyBase extends CarrotMojo {
 
 	/**
 	 * groovy external script file; if present, executed before
@@ -41,7 +41,6 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 	 * {@link System#getProperties()} into project.properties during script
 	 * execution?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean groovyIsSystemProperties;
@@ -50,7 +49,6 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 	 * should load all user properties (a.k.a maven command line properties)
 	 * into project.properties during script execution?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean groovyIsCommandProperties;
@@ -59,12 +57,11 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 	 * should load all project properties from current pom.xml model state into
 	 * project.properties during script execution?
 	 * 
-	 * @required
 	 * @parameter default-value="true"
 	 */
 	protected boolean groovyIsProjectProperties;
 
-	protected GroovyRunner newRunner() throws Exception {
+	protected CarrotGroovyRunner newRunner() throws Exception {
 
 		final MavenProps mavenProps = new MavenProps( //
 				session(), project(), //
@@ -75,7 +72,7 @@ public abstract class CarrotAwsGroovy extends CarrotAws {
 
 		final MavenProject project = new MavenProjectAdaptor(mavenProps);
 
-		final GroovyRunner runner = new GroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
 
 		return runner;
 

@@ -17,7 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
 
-public class TestGroovyRunner {
+public class TestCarrotGroovyRunner {
 
 	@Test
 	public void testFile() throws Exception {
@@ -31,7 +31,7 @@ public class TestGroovyRunner {
 
 		when(project.getProperties()).thenReturn(properties);
 
-		final GroovyRunner runner = new GroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
 
 		final File script = new File("./src/test/resources/script.groovy");
 
@@ -55,7 +55,7 @@ public class TestGroovyRunner {
 
 		when(project.getProperties()).thenReturn(properties);
 
-		final GroovyRunner runner = new GroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
 
 		final File file = new File("./src/test/resources/script.groovy");
 

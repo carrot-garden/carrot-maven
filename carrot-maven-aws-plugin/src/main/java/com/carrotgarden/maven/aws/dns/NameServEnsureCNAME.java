@@ -26,7 +26,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
+public class NameServEnsureCNAME extends NameServ {
 
 	/**
 	 * source dns name, or left-hand side of CNAME record
@@ -34,7 +34,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="source.default.example.com"
 	 */
-	protected String dnsSource;
+	private String dnsSource;
 
 	/**
 	 * target dns name, or right-hand side of CNAME record
@@ -42,7 +42,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 	 * @required
 	 * @parameter default-value="target.default.example.com"
 	 */
-	protected String dnsTarget;
+	private String dnsTarget;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -53,7 +53,7 @@ public class CarrotAwsNameServEnsureCNAME extends CarrotAwsNameServ {
 
 			getLog().info("dns cname init [" + entry + "]");
 
-			final Route53 route53 = newRoute53();
+			final CarrotRoute53 route53 = newRoute53();
 
 			route53.ensureCNAME( //
 					route53.canonical(dnsSource), route53.canonical(dnsTarget));

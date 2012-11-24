@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.2.0</version>
+		<relativePath />
+	</parent>
+
+	<artifactId>carrot-integrate-aws-grv</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<description>verify groovy script execution</description>
+
+	<properties>
+
+		<stackName>${project.artifactId}</stackName>
+
+	</properties>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>com.carrotgarden.maven</groupId>
+				<artifactId>carrot-maven-aws-plugin</artifactId>
+				<version>@project.version@</version>
+				<configuration>
+				</configuration>
+				<executions>
+
+					<execution>
+						<id>assert-stack-init</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+								def properties = project.properties
+								assert properties["stackName"] == "${project.artifactId}"
+								properties["groovy.secret"] = "groovy-secret"
+								properties["groovy.env.home"] = properties["env.HOME"]
+							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>assert-stack-done</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+								def properties = project.properties
+								println "groovy.secret = " + properties["groovy.secret"]
+								assert properties["groovy.secret"] == "groovy-secret"
+								println	"groovy.env.home = " + properties["groovy.env.home"]
+								assert properties["groovy.env.home"] == System.getProperty("user.home")
+							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>

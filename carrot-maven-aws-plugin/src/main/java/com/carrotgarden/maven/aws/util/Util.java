@@ -27,6 +27,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class Util {
 
+	public static void assertNotNull(final Object instance, final String message) {
+		if (instance == null) {
+			throw new IllegalStateException(message);
+	
+		}
+	}
+
 	public static String concatenate(final List<String> list,
 			final String separator) {
 
@@ -242,13 +249,6 @@ public class Util {
 
 	public static String stringNullOrValue(final Object object) {
 		return object == null ? null : object.toString();
-	}
-
-	public static void assertNotNull(final Object instance, final String message) {
-		if (instance == null) {
-			throw new IllegalStateException(message);
-	
-		}
 	}
 
 }

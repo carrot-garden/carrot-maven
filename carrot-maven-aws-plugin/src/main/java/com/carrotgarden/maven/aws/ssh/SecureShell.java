@@ -7,304 +7,156 @@
  */
 package com.carrotgarden.maven.aws.ssh;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 
-import com.carrotgarden.maven.aws.ssh.PathMaker.Entry;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpProgressMonitor;
+import com.carrotgarden.maven.aws.CarrotMojo;
 
 /**
- * @author Andrei Pozolotin
+ * base for ssh goals
  */
-public class SecureShell {
+public abstract class SecureShell extends CarrotMojo {
 
-	/** session connect retry, count */
-	private final int connectRetries;
+	/**
+	 * ssh key file
+	 * 
+	 * @required
+	 * @parameter default-value="${user.home}/.amazon/ssh-key.pem"
+	 */
+	private String sshKeyFile;
 
-	/** session connect retry, milliseconds */
-	private final long connectTimeout;
+	/**
+	 * ssh key file property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshKeyFile}
+	 * 
+	 * @parameter
+	 */
+	private String sshKeyFileProperty;
 
-	private final Logger logger;
+	protected File sshKeyFile() {
+		final String path = projectValue(sshKeyFile, sshKeyFileProperty);
+		return new File(path);
+	}
 
-	private final File keyFile;
+	/**
+	 * ssh user name
+	 * 
+	 * @required
+	 * @parameter default-value="ubuntu"
+	 */
+	private String sshUser;
 
-	private final String user;
-	private final String host;
-	private final int port;
+	/**
+	 * ssh user name property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshUser}
+	 * 
+	 * @parameter
+	 */
+	private String sshUserProperty;
 
-	public SecureShell(final Logger logger, final File keyFile,
-			final String user, final String host, final int retries,
-			final long timeout) {
+	protected String sshUser() {
+		return projectValue(sshUser, sshUserProperty);
+	}
 
-		this.logger = logger;
+	/**
+	 * ssh host port
+	 * 
+	 * @parameter default-value="22"
+	 */
+	private String sshPort;
 
-		this.keyFile = keyFile;
+	/**
+	 * ssh host port property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshPort}
+	 * 
+	 * @parameter
+	 */
+	private String sshPortProperty;
 
-		this.user = user;
-		this.host = host;
-		this.port = 22;
+	protected Integer sshPort() {
+		final String text = projectValue(sshPort, sshPortProperty);
+		return Integer.parseInt(text);
+	}
 
-		this.connectRetries = retries;
-		this.connectTimeout = timeout * 1000;
+	/**
+	 * ssh host name
+	 * 
+	 * @required
+	 * @parameter default-value="builder.example.com"
+	 */
+	private String sshHost;
+
+	/**
+	 * ssh host name property; if present, will use dynamic project.property
+	 * instead of static plug-in property {@link #sshHost}
+	 * 
+	 * @parameter
+	 */
+	private String sshHostProperty;
+
+	protected String sshHost() {
+		return projectValue(sshHost, sshHostProperty);
+	}
+
+	/**
+	 * ssh run expected exit success status collection; contains 0 by default
+	 * 
+	 * @parameter
+	 */
+	private Set<Integer> sshStatusSuccess;
+	{
+		sshStatusSuccess = new HashSet<Integer>();
+		sshStatusSuccess.add(0);
+	}
+
+	/**
+	 * How many times to attempt to retry ssh connection before giving up
+	 * 
+	 * @parameter default-value="5"
+	 */
+	private int sshConnectRetries;
+
+	/**
+	 * How long (in seconds) to wait if a ssh connection fails before retrying
+	 * 
+	 * @parameter default-value="10"
+	 */
+	private int sshConnectTimeout;
+
+	//
+
+	protected boolean isStatusSuccess(final Integer status) {
+		return sshStatusSuccess.contains(status);
+	}
+
+	protected void assertStatusSuccess(final Integer status) throws Exception {
+
+		if (isStatusSuccess(status)) {
+			return;
+		}
+
+		throw new IllegalStateException("invalid ssh exit status = " + status);
 
 	}
 
-	private Session newSession() throws Exception {
-
-		logger.debug("exec getSession: on " + host + " : " + port + " user "
-				+ user);
-
-		final JSch jsch = new JSch();
-
-		jsch.addIdentity(keyFile.getAbsolutePath());
-
-		final Session session = jsch.getSession(user, host, port);
-
-		session.setConfig("StrictHostKeyChecking", "no");
-
-		sessionConnectWithRetry(session);
-
-		return session;
-
-	}
-
-	/** assume sshd isnt running yet, wait and retry */
-	private void sessionConnectWithRetry(final Session session)
-			throws Exception {
-
-		Exception cause = null;
-
-		for (int count = 0; count < connectRetries; count++) {
-
-			try {
-
-				session.connect();
-
-				logger.debug("session connect success");
-
-				return;
-
-			} catch (final Exception e) {
-
-				cause = e;
-
-			}
-
-			logger.debug("session connect attempt : {}", count);
-
-			Thread.sleep(connectTimeout);
-
-		}
-
-		if (cause == null) {
-			throw new IllegalStateException("unexpected");
-		} else {
-			throw cause;
-		}
-
-	}
-
-	public int execute(final String command) throws Exception {
-
-		logger.info("exec command: " + command + " on " + host);
-
-		final Session session = newSession();
-
-		final ChannelExec channel = (ChannelExec) session.openChannel("exec");
-
-		channel.setCommand(command);
-
-		channel.setPty(true);
-
-		channel.connect();
-
-		//
-
-		final InputStream input = channel.getInputStream();
-
-		final Reader reader = new InputStreamReader(input);
-
-		final BufferedReader buffered = new BufferedReader(reader);
-
-		while (true) {
-
-			final String line = buffered.readLine();
-
-			if (line == null) {
-				break;
-			}
-
-			logger.info(">>> " + line);
-
-		}
-
-		//
-
-		input.close();
-
-		//
-
-		int count = 50;
-		final int delay = 100;
-
-		while (true) {
-			if (channel.isClosed()) {
-				break;
-			}
-			if (count-- < 0) {
-				break;
-			}
-			Thread.sleep(delay);
-		}
-
-		logger.info("exec channel closed: " + channel.isClosed());
-
-		final int status = channel.getExitStatus();
-
-		logger.info("exec exit status: " + status);
-
-		channel.disconnect();
-
-		session.disconnect();
-
-		return status;
-
-	}
-
-	private String makePath(final String root, final String base) {
-		// logger.debug("sftp root={} base={}", root, base);
-		if ("/".equals(root)) {
-			return "/" + base;
-		} else {
-			return root + "/" + base;
-		}
-	}
-
-	private void ensureTargetFolder(final ChannelSftp channel,
-			final String folder) throws Exception {
-
-		logger.debug("sftp ensure: " + folder);
-
-		final String[] pathArray = folder.split("/");
-
-		String root = "/";
-
-		for (final String path : pathArray) {
-
-			if (path.length() == 0) {
-				continue;
-			}
-
-			if (".".equals(path)) {
-				continue;
-			}
-
-			/** absolute */
-			channel.cd(root);
-
-			/** absolute */
-			final String next = makePath(root, path);
-
-			boolean isPresent = false;
-
-			try {
-				channel.stat(next);
-				isPresent = true;
-			} catch (final Exception e) {
-				isPresent = false;
-			}
-
-			if (isPresent) {
-				logger.debug("sftp present: " + next);
-			} else {
-				/** relative to root */
-				logger.debug("sftp creating: " + next + " path " + path);
-				channel.mkdir(path);
-				logger.debug("sftp created: " + next);
-			}
-
-			root = next;
-
-		}
-
-	}
-
-	public int publish(final String source, final String target)
-			throws Exception {
-
-		logger.info("sftp host  : " + host);
-		logger.info("sftp source: " + source);
-		logger.info("sftp target: " + target);
-
-		final Session session = newSession();
-
-		final ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
-
-		channel.connect();
-
-		//
-
-		final SftpProgressMonitor monitor = new SftpProgressMonitor() {
-
-			@Override
-			public void init(final int op, final String source,
-					final String target, final long max) {
-				logger.info("sftp upload: " + target);
-			}
-
-			@Override
-			public boolean count(final long count) {
-				logger.debug("sftp bytes: " + count);
-				return true;
-			}
-
-			@Override
-			public void end() {
-				logger.debug("sftp done");
-			}
-
-		};
-
-		final PathMaker maker = new PathMaker(logger, source, target);
-
-		final List<Entry> entryList = maker.getEntryList();
-
-		ensureTargetFolder(channel, target);
-
-		for (final Entry entry : entryList) {
-
-			final String file = entry.target;
-			final int index = file.lastIndexOf("/");
-			final String folder = file.substring(0, index);
-
-			ensureTargetFolder(channel, folder);
-
-			channel.put(entry.source, entry.target, monitor,
-					ChannelSftp.OVERWRITE);
-
-		}
-
-		//
-
-		channel.disconnect();
-
-		final int status = channel.getExitStatus();
-
-		session.disconnect();
-
-		logger.info("sftp exit status: " + status);
-
-		return status;
+	protected CarrotSecureShell newSecureShell() throws Exception {
+
+		final Logger logger = getLogger(getClass());
+
+		final CarrotSecureShell ssh = new CarrotSecureShell( //
+				logger, //
+				sshKeyFile(), //
+				sshUser(), //
+				sshHost(), //
+				sshPort(), //
+				sshConnectRetries, //
+				sshConnectTimeout //
+		);
+
+		return ssh;
 
 	}
 

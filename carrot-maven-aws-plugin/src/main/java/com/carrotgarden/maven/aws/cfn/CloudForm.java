@@ -19,14 +19,14 @@ import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.CarrotMojo;
 import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 import com.carrotgarden.maven.aws.util.Util;
 
 /**
  * base for cloud formation goals
  */
-public abstract class CarrotAwsCloudForm extends CarrotAws {
+public abstract class CloudForm extends CarrotMojo {
 
 	/**
 	 * amazon template entry:
@@ -40,7 +40,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	/**
 	 * AWS CloudFormation stack name; must be unique under your aws account /
-	 * region
+	 * region; alternatively, see {@link #stackNameProperty}
 	 * 
 	 * @required
 	 * @parameter default-value="amazon-builder"
@@ -57,11 +57,7 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	/** prefer project.property over plug-in property */
 	protected String stackName() {
-		if (stackNameProperty == null) {
-			return stackName;
-		} else {
-			return (String) project().getProperties().get(stackNameProperty);
-		}
+		return projectValue(stackName, stackNameProperty);
 	}
 
 	/**
@@ -88,7 +84,6 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	/**
 	 * AWS CloudFormation operation timeout; seconds
 	 * 
-	 * @required
 	 * @parameter default-value="600"
 	 */
 	protected String stackTimeout;
@@ -102,20 +97,22 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 	 * 
 	 * which controls amazon region selection;
 	 * 
-	 * when omitted, will be constructed from {@link #amazonRegion}
+	 * when omitted, will be constructed from {@link #stackEndpintFormat} and
+	 * {@link #amazonRegion}
 	 * 
 	 * @parameter
 	 */
 	private String stackEndpoint;
 
-	/** construct end pont per amazon rules */
+	/**
+	 * AWS CloudFormation end point format
+	 * 
+	 * @parameter default-value="https://cloudformation.%s.amazonaws.com"
+	 */
+	private String stackEndpintFormat;
+
 	protected String stackEndpoint() {
-		if (stackEndpoint == null) {
-			return "https://cloudformation." + amazonRegion()
-					+ ".amazonaws.com";
-		} else {
-			return stackEndpoint;
-		}
+		return amazonEndpoint(stackEndpoint, stackEndpintFormat);
 	}
 
 	//
@@ -144,8 +141,10 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 	}
 
-	protected CloudFormation newCloudFormation(final File templateFile,
-			final Map<String, String> stackParams) throws Exception {
+	protected CarrotCloudForm newCloudFormation( //
+			final File templateFile, //
+			final Map<String, String> stackParams //
+	) throws Exception {
 
 		/** */
 
@@ -165,14 +164,14 @@ public abstract class CarrotAwsCloudForm extends CarrotAws {
 
 		/** */
 
-		final Logger logger = getLogger(CloudFormation.class);
+		final Logger logger = getLogger(CarrotCloudForm.class);
 
 		/** */
 
 		final long stackTimeout = Util.safeNumber(getLog(), this.stackTimeout,
 				600);
 
-		final CloudFormation formation = new CloudFormation(logger,
+		final CarrotCloudForm formation = new CarrotCloudForm(logger,
 				stackName(), stackTemplate, stackParams, stackTimeout,
 				credentials, stackEndpoint());
 

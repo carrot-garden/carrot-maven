@@ -11,7 +11,9 @@ import org.apache.maven.settings.Server;
 
 import com.amazonaws.auth.AWSCredentials;
 
-/** amazon user/pass from maven settings.xml server entry */
+/**
+ * amazon user/pass from maven settings.xml server entry
+ */
 public class AWSCredentialsImpl implements AWSCredentials {
 
 	private final String accessKey;

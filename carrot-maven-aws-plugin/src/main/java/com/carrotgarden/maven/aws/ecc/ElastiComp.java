@@ -11,13 +11,13 @@ import org.apache.maven.settings.Server;
 import org.slf4j.Logger;
 
 import com.amazonaws.auth.AWSCredentials;
-import com.carrotgarden.maven.aws.CarrotAws;
+import com.carrotgarden.maven.aws.CarrotMojo;
 import com.carrotgarden.maven.aws.util.AWSCredentialsImpl;
 
 /**
- * 
+ * base for elastic compute goals
  */
-public abstract class CarrotAwsElasComp extends CarrotAws {
+public abstract class ElastiComp extends CarrotMojo {
 
 	/**
 	 * AWS ElasticCompute
@@ -43,7 +43,6 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	/**
 	 * AWS ElasticCompute operation timeout; seconds
 	 * 
-	 * @required
 	 * @parameter default-value="600"
 	 */
 	private Long computeTimeout;
@@ -57,22 +56,25 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 	 * 
 	 * which controls amazon region selection;
 	 * 
-	 * when omitted, will be constructed from {@link #amazonRegion}
+	 * when omitted, will be constructed from {@link #computeEndpointFormat} and
+	 * {@link #amazonRegion}
 	 * 
 	 * @parameter
 	 */
 	private String computeEndpoint;
 
-	/** construct end point per amazon rules */
+	/**
+	 * AWS ElasticCompute end point format
+	 * 
+	 * @parameter default-value="https://ec2.%s.amazonaws.com"
+	 */
+	private String computeEndpointFormat;
+
 	protected String computeEndpoint() {
-		if (computeEndpoint == null) {
-			return "https://ec2." + amazonRegion() + ".amazonaws.com";
-		} else {
-			return computeEndpoint;
-		}
+		return amazonEndpoint(computeEndpoint, computeEndpointFormat);
 	}
 
-	protected ElasticCompute newElasticCompute() throws Exception {
+	protected CarrotElasticCompute newElasticCompute() throws Exception {
 
 		final Server server = settings().getServer(computeServerId);
 
@@ -84,10 +86,14 @@ public abstract class CarrotAwsElasComp extends CarrotAws {
 
 		final AWSCredentials credentials = new AWSCredentialsImpl(server);
 
-		final Logger logger = getLogger(ElasticCompute.class);
+		final Logger logger = getLogger(getClass());
 
-		final ElasticCompute compute = new ElasticCompute(logger,
-				computeTimeout, credentials, computeEndpoint());
+		final CarrotElasticCompute compute = new CarrotElasticCompute( //
+				logger, //
+				computeTimeout, //
+				credentials, //
+				computeEndpoint() //
+		);
 
 		return compute;
 

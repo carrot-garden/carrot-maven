@@ -30,7 +30,15 @@ import org.apache.maven.project.MavenProject;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsGroovyExec extends CarrotAwsGroovy {
+public class GroovyExec extends GroovyBase {
+
+	private String singleLine(String text) {
+
+		text = text.replaceAll("\n", ";");
+		text = text.replaceAll("\\s+", " ");
+
+		return text;
+	}
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -39,7 +47,7 @@ public class CarrotAwsGroovyExec extends CarrotAwsGroovy {
 
 			getLog().info("groovy exec init ");
 
-			final GroovyRunner runner = newRunner();
+			final CarrotGroovyRunner runner = newRunner();
 
 			if (groovyFile != null && groovyFile.exists()) {
 
@@ -51,9 +59,7 @@ public class CarrotAwsGroovyExec extends CarrotAwsGroovy {
 
 			if (groovyText != null && groovyText.length() != 0) {
 
-				getLog().info(
-						"groovy exec text : "
-								+ groovyText.replaceAll("\n", ";"));
+				getLog().info("groovy exec text : " + singleLine(groovyText));
 
 				runner.execute(groovyText);
 

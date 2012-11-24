@@ -14,7 +14,11 @@ About
 	{{{http://aws.amazon.com/}aws}} 
 	:
 	
-	* create/delete of
+	* manipulation of
+	{{{http://aws.amazon.com/route53/}route 53}} 
+	zones and records
+	
+	* create/delete/update of
 	{{{http://aws.amazon.com/cloudformation/}cloud formation}} 
 	stacks
 	
@@ -26,4 +30,9 @@ About
 	{{{http://aws.amazon.com/amis}ami image}} 
 	management    
 
-	
+	* execution of
+	{{{http://groovy.codehaus.org/Scripts+and+Classes}groovy scripts}} 
+	to glue multiple
+	{{{http://maven.apache.org/guides/mini/guide-default-execution-ids.html}maven executions}}
+	together
+

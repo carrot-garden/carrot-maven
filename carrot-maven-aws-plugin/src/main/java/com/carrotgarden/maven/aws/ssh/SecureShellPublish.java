@@ -7,9 +7,6 @@
  */
 package com.carrotgarden.maven.aws.ssh;
 
-/**
- */
-
 import java.io.File;
 
 import org.apache.maven.plugin.MojoFailureException;
@@ -26,7 +23,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * @requiresDependencyResolution test
  * 
  */
-public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
+public class SecureShellPublish extends SecureShell {
 
 	/**
 	 * ssh sftp source directory on local file system
@@ -54,7 +51,7 @@ public class CarrotAwsSecuShelPublish extends CarrotAwsSecuShel {
 
 			getLog().info("");
 
-			final SecureShell ssh = newSecureShell();
+			final CarrotSecureShell ssh = newSecureShell();
 
 			final String source = new File(sshSource).getAbsolutePath();
 			final String target = sshTarget;

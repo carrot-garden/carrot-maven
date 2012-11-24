@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.2.0</version>
+		<relativePath />
+	</parent>
+
+	<artifactId>carrot-integrate-aws-dns</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<description>verify route 53</description>
+
+	<properties>
+
+		<amazonRegion>us-west-2</amazonRegion>
+		<stackName>${project.artifactId}</stackName>
+		
+		<ParamHostName>${project.artifactId}.carrotgarden.com</ParamHostName>
+
+	</properties>
+
+	<build>
+
+		<plugins>
+
+			<plugin>
+				<groupId>com.carrotgarden.maven</groupId>
+				<artifactId>carrot-maven-aws-plugin</artifactId>
+				<version>@project.version@</version>
+				<configuration>
+					<amazonRegion>${amazonRegion}</amazonRegion>
+					<stackServerId>com.carrotgarden.aws.stack</stackServerId>
+				</configuration>
+				<executions>
+
+					<execution>
+						<id>assert-stack-init</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+								def props = project.properties
+								assert props["OutputNameDNS"] == null
+							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>stack-create</id>
+						<phase>package</phase>
+						<goals>
+							<goal>cloud-formation-create</goal>
+						</goals>
+						<configuration>
+							<stackName>${stackName}</stackName>
+							<stackTemplateFile>./formation.template</stackTemplateFile>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>assert-stack-output</id>
+						<phase>package</phase>
+						<goals>
+							<goal>groovy-execute-script</goal>
+						</goals>
+						<configuration>
+							<groovyText>
+							<![CDATA[
+								def props = project.properties
+								assert props["OutputNameDNS"] == props["ParamHostName"]
+							]]>
+							</groovyText>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>stack-delete</id>
+						<phase>package</phase>
+						<goals>
+							<goal>cloud-formation-delete</goal>
+						</goals>
+						<configuration>
+							<stackName>${stackName}</stackName>
+						</configuration>
+					</execution>
+
+				</executions>
+				
+			</plugin>
+
+		</plugins>
+
+	</build>
+
+</project>
