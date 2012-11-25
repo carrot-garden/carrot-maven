@@ -167,15 +167,16 @@
 						<artifactId>maven-invoker-plugin</artifactId>
 						<version>1.7</version>
 						<configuration>
-							<streamLogs>false</streamLogs>
+							<showErrors>true</showErrors>
+							<streamLogs>true</streamLogs>
 							<parallelThreads>5</parallelThreads>
 							<cloneProjectsTo>./target/it</cloneProjectsTo>
 							<pomIncludes>
-								<include>grv</include>
-								<include>cfn</include>
 								<include>ssh</include>
-								<include>ecc</include>
-								<include>dns</include>
+								<!-- <include>grv</include> -->
+								<!-- <include>cfn</include> -->
+								<!-- <include>ecc</include> -->
+								<!-- <include>dns</include> -->
 							</pomIncludes>
 						</configuration>
 						<executions>
@@ -188,7 +189,7 @@
 							</execution>
 						</executions>
 					</plugin>
-					
+
 				</plugins>
 			</build>
 

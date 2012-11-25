@@ -18,10 +18,13 @@
 
 	<properties>
 
-		<testFile>/tmp/integration-${project.artifactId}-file</testFile>
+		<testFile>/tmp/integration-${project.artifactId}-test-file</testFile>
 
-		<publishSource>${basedir}</publishSource>
-		<publishTarget>/tmp/integration-${project.artifactId}-folder</publishTarget>
+		<publishSource>${basedir}/publish</publishSource>
+		<publishTarget>/tmp/integration-${project.artifactId}-test-folder</publishTarget>
+
+		<retrieveSource>${publishTarget}</retrieveSource>
+		<retrieveTarget>${basedir}/retrieve</retrieveTarget>
 
 	</properties>
 
@@ -56,13 +59,16 @@
 							<![CDATA[
 							
  								def file = new File("${testFile}")
- 								def folder = new File("${publishTarget}")
+ 								def publishTarget = new File("${publishTarget}")
+ 								def retrieveTarget = new File("${retrieveTarget}")
  								
  								file.delete()
- 								folder.deleteDir()
+ 								publishTarget.deleteDir()
+ 								retrieveTarget.deleteDir()
 
  								assert file.exists() == false
- 								assert folder.exists() == false
+ 								assert publishTarget.exists() == false
+ 								assert retrieveTarget.exists() == false
  								
  							]]>
 							</groovyText>
@@ -78,6 +84,22 @@
 						<configuration>
 							<sshSource>${publishSource}</sshSource>
 							<sshTarget>${publishTarget}</sshTarget>
+							<sshStatusSuccess>
+								<status>0</status>
+								<status>-1</status>
+							</sshStatusSuccess>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>ssh-retrieve</id>
+						<phase>package</phase>
+						<goals>
+							<goal>secure-shell-retrieve</goal>
+						</goals>
+						<configuration>
+							<sshSource>${retrieveSource}</sshSource>
+							<sshTarget>${retrieveTarget}</sshTarget>
 							<sshStatusSuccess>
 								<status>0</status>
 								<status>-1</status>
@@ -110,17 +132,32 @@
 							<![CDATA[
 							
  								def file = new File("${testFile}")
- 								def folder = new File("${publishTarget}")
+ 								def publishTarget = new File("${publishTarget}")
+ 								def retrieveTarget = new File("${retrieveTarget}")
  								
  								assert file.exists() == true
- 								assert folder.exists() == true
+ 								assert publishTarget.exists() == true
+ 								assert retrieveTarget.exists() == true
  								
- 								def test = new File(folder, "/test/test.file")
- 								assert test.exists() == true
- 								assert test.size() == 6
+ 								def test1 = new File(publishTarget, "/test.file")
+ 								assert test1.exists() == true
+ 								assert test1.size() == 6
+
+ 								def test2 = new File(publishTarget, "/test/test.file")
+ 								assert test2.exists() == true
+ 								assert test2.size() == 6
+
+ 								def test3 = new File(retrieveTarget, "/test.file")
+ 								assert test3.exists() == true
+ 								assert test3.size() == 6
+
+ 								def test4 = new File(retrieveTarget, "/test/test.file")
+ 								assert test4.exists() == true
+ 								assert test4.size() == 6
 
  								file.delete()
- 								folder.deleteDir()
+ 								publishTarget.deleteDir()
+ 								retrieveTarget.deleteDir()
  								
 							]]>
 							</groovyText>

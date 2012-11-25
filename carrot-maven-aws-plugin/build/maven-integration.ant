@@ -27,8 +27,6 @@
 			<arg value="--activate-profiles" />
 			<arg value="integration" />
 
-			<arg value="-e" />
-
 		</exec>
 		
 	</target>

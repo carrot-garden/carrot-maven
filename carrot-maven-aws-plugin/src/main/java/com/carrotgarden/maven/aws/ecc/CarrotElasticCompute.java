@@ -52,8 +52,14 @@ public class CarrotElasticCompute {
 
 	private final AmazonEC2 amazonClient;
 
+	/** global operation timeout */
 	private final long timeout;
-	private final long waitBetweenAttempts;
+
+	/** time to sleep between steps inside operation, seconds */
+	private final long attemptPause;
+
+	/** number of step attempts inside operation before failure */
+	private final long attemptCount;
 
 	private final String endpoint;
 
@@ -66,7 +72,8 @@ public class CarrotElasticCompute {
 
 		this.credentials = credentials;
 
-		this.waitBetweenAttempts = 10;
+		this.attemptPause = 10; // seconds
+		this.attemptCount = 3; // number of times
 
 		this.endpoint = endpoint;
 
@@ -181,7 +188,7 @@ public class CarrotElasticCompute {
 
 		final InstanceStateName state = stateFrom(instance);
 
-		logger.info("start: instance state: " + state);
+		logger.info("start: current state=" + state);
 
 		switch (state) {
 		case Running:
@@ -198,7 +205,7 @@ public class CarrotElasticCompute {
 		case Terminated:
 			throw new IllegalStateException("start: dead instance");
 		default:
-			throw new IllegalStateException("start: wrong state");
+			throw new IllegalStateException("start: unknown state");
 		}
 
 		final StartInstancesRequest request = new StartInstancesRequest();
@@ -220,19 +227,21 @@ public class CarrotElasticCompute {
 
 		final InstanceStateName state = stateFrom(instance);
 
-		logger.info("stop: instance state: " + state);
+		logger.info("stop: current state=" + state);
 
 		switch (state) {
-		case Running:
-			break;
 		case Pending:
 			waitForIstanceState(instanceId, InstanceStateName.Running);
+		case Running:
 			break;
 		case Stopping:
 			waitForIstanceState(instanceId, InstanceStateName.Stopped);
+		case Stopped:
+		case Terminated:
+		case ShuttingDown:
 			return;
 		default:
-			return;
+			throw new IllegalStateException("start: unknown state");
 		}
 
 		final StopInstancesRequest request = new StopInstancesRequest();
@@ -244,10 +253,13 @@ public class CarrotElasticCompute {
 
 	}
 
+	/**
+	 * stop instance and take image snapshot
+	 */
 	public Image imageCreate(final String instanceId, final String name,
 			final String description) throws Exception {
 
-		logger.info("ensure instance : instanceId=" + instanceId);
+		logger.info("ensure instance state : instanceId=" + instanceId);
 
 		final InstanceStateName state = stateFrom(instanceId);
 
@@ -265,7 +277,8 @@ public class CarrotElasticCompute {
 			wasRunning = false;
 			break;
 		default:
-			throw new Exception("image create : wrong state=" + state);
+			throw new Exception("image create : invalid instance state="
+					+ state);
 		}
 
 		if (wasRunning) {
@@ -282,7 +295,7 @@ public class CarrotElasticCompute {
 
 		final String imageId = result.getImageId();
 
-		logger.info("ensure image : imageId=" + imageId);
+		logger.info("ensure image state: imageId=" + imageId);
 
 		final Image image = waitForImageCreate(imageId);
 
@@ -294,30 +307,57 @@ public class CarrotElasticCompute {
 
 	}
 
+	/**
+	 * @return valid image or null if missing
+	 */
 	public Image findImage(final String imageId) throws Exception {
 
-		final List<String> imageIdList = new ArrayList<String>();
-		imageIdList.add(imageId);
+		/**
+		 * work around for image entry not being immediately available right
+		 * after create/register operation
+		 */
+		for (int index = 0; index < attemptCount; index++) {
 
-		final DescribeImagesRequest request = new DescribeImagesRequest();
-		request.setImageIds(imageIdList);
+			try {
 
-		final DescribeImagesResult result = amazonClient
-				.describeImages(request);
+				final DescribeImagesRequest request = new DescribeImagesRequest();
+				request.setImageIds(wrapList(imageId));
 
-		final List<Image> imageList = result.getImages();
+				final DescribeImagesResult result = amazonClient
+						.describeImages(request);
 
-		switch (imageList.size()) {
-		case 0:
-			return null;
-		case 1:
-			return imageList.get(0);
-		default:
-			throw new IllegalStateException("duplicate images");
+				final List<Image> imageList = result.getImages();
+
+				switch (imageList.size()) {
+				case 0:
+					logger.info("image find : missing imageId=" + imageId);
+					break;
+				case 1:
+					logger.info("image find : success imageId=" + imageId);
+					return imageList.get(0);
+				default:
+					logger.info("image find : duplicate imageId=" + imageId);
+					break;
+				}
+
+			} catch (final Exception e) {
+				logger.info("image find : exception imageId={} / {}", //
+						imageId, e.getMessage());
+			}
+
+			logger.info("image find : attempt=" + index);
+
+			sleep();
+
 		}
+
+		logger.error("image find : failure imageId=" + imageId);
+
+		return null;
 
 	}
 
+	/** unregister EBS snapshot; will fail if snapshot still in use */
 	public void snapshotDelete(final String snapshotId) throws Exception {
 
 		final DeleteSnapshotRequest request = new DeleteSnapshotRequest();
@@ -329,6 +369,7 @@ public class CarrotElasticCompute {
 
 	}
 
+	/** delete AMI image and related EBS snapshots */
 	public void imageDelete(final String imageId) throws Exception {
 
 		final Image image = findImage(imageId);
@@ -374,7 +415,7 @@ public class CarrotElasticCompute {
 
 	}
 
-	public static enum State {
+	public static enum ImageState {
 
 		AVAILABLE("available"), //
 		DEREGISTERED("deregistered"), //
@@ -386,12 +427,12 @@ public class CarrotElasticCompute {
 
 		public final String value;
 
-		State(final String value) {
+		ImageState(final String value) {
 			this.value = value;
 		}
 
-		public static State fromValue(final String value) {
-			for (final State known : values()) {
+		public static ImageState fromValue(final String value) {
+			for (final ImageState known : values()) {
 				if (known.value.equals(value)) {
 					return known;
 				}
@@ -452,6 +493,11 @@ public class CarrotElasticCompute {
 
 	private Image waitForImageCreate(final String imageId) throws Exception {
 
+		if (findImage(imageId) == null) {
+			throw new IllegalStateException("image create: missing imageId="
+					+ imageId);
+		}
+
 		final long timeStart = System.currentTimeMillis();
 
 		final List<String> imageIdList = new ArrayList<String>();
@@ -470,34 +516,35 @@ public class CarrotElasticCompute {
 			final Image image;
 
 			if (isTimeoutPending(timeStart)) {
-				image = newImageWithStatus(State.UNKNOWN.value, "timeout",
-						"image create timeout while waiting");
+				image = newImageWithStatus(ImageState.UNKNOWN.value, "timeout",
+						"image create: timeout while waiting");
 			} else if (imageList == null || imageList.isEmpty()) {
-				image = newImageWithStatus(State.UNKNOWN.value, "missing",
-						"image create missing in descriptions");
+				image = newImageWithStatus(ImageState.UNKNOWN.value, "missing",
+						"image create: missing in descriptions");
 			} else {
 				image = imageList.get(0);
 			}
 
 			final String value = image.getState();
 
-			final State state = State.fromValue(value);
+			final ImageState state = ImageState.fromValue(value);
 
 			switch (state) {
 
 			case AVAILABLE:
-				logger.info("image create success");
+				logger.info("image create: success");
 				return image;
 
 			case PENDING:
 				final long timeThis = System.currentTimeMillis();
 				final long timeDiff = timeThis - timeStart;
-				logger.info("image create in progress; time=" + timeDiff / 1000);
+				logger.info("image create: in progress; time=" + timeDiff
+						/ 1000);
 				sleep();
 				break;
 
 			default:
-				logger.error("image create failure");
+				logger.error("image create: failure");
 				return image;
 
 			}
@@ -508,7 +555,7 @@ public class CarrotElasticCompute {
 
 	private void sleep() throws Exception {
 		try {
-			Thread.sleep(waitBetweenAttempts * 1000);
+			Thread.sleep(attemptPause * 1000);
 		} catch (final InterruptedException ie) {
 			throw new IllegalStateException("operation interrupted; "
 					+ "resources are left in inconsistent state; "

@@ -12,7 +12,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import com.amazonaws.services.ec2.model.BlockDeviceMapping;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
 import com.amazonaws.services.ec2.model.Image;
-import com.carrotgarden.maven.aws.ecc.CarrotElasticCompute.State;
+import com.carrotgarden.maven.aws.ecc.CarrotElasticCompute.ImageState;
 
 /**
  * create new ami image from existing AWS ElasticCompute instance
@@ -115,7 +115,7 @@ public class ElastiCompImageCreate extends ElastiComp {
 					imageDescription //
 					);
 
-			final State state = State.fromValue(image.getState());
+			final ImageState state = ImageState.fromValue(image.getState());
 
 			switch (state) {
 			case AVAILABLE:

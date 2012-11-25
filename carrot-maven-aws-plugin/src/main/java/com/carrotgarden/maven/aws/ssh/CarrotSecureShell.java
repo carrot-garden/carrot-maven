@@ -191,7 +191,6 @@ public class CarrotSecureShell {
 	}
 
 	private String makePath(final String root, final String base) {
-		// logger.debug("sftp root={} base={}", root, base);
 		if ("/".equals(root)) {
 			return "/" + base;
 		} else {
@@ -304,6 +303,62 @@ public class CarrotSecureShell {
 					ChannelSftp.OVERWRITE);
 
 		}
+
+		//
+
+		channel.disconnect();
+
+		final int status = channel.getExitStatus();
+
+		session.disconnect();
+
+		logger.info("sftp exit status: " + status);
+
+		return status;
+
+	}
+
+	public int retrieve(final String source, final String target)
+			throws Exception {
+
+		logger.info("sftp user  : " + user);
+		logger.info("sftp host  : " + host);
+		logger.info("sftp port  : " + port);
+		logger.info("sftp source: " + source);
+		logger.info("sftp target: " + target);
+
+		final Session session = newSession();
+
+		final ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
+
+		channel.connect();
+
+		final SftpProgressMonitor monitor = new SftpProgressMonitor() {
+
+			@Override
+			public void init(final int op, final String source,
+					final String target, final long max) {
+				logger.info("sftp download: " + target);
+			}
+
+			@Override
+			public boolean count(final long count) {
+				logger.debug("sftp bytes: " + count);
+				return true;
+			}
+
+			@Override
+			public void end() {
+				logger.debug("sftp done");
+			}
+
+		};
+
+		//
+
+		final PathFetcher fetcher = new PathFetcher(logger);
+
+		fetcher.fetchFolder(channel, source, target, monitor);
 
 		//
 
