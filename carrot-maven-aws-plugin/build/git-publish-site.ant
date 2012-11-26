@@ -7,7 +7,9 @@
     http://www.opensource.org/licenses/bsd-license.php
 
 -->
-<project default="git" basedir="./..">
+<project default="default" basedir="./..">
+
+	<property name="tag" value="carrot-maven-aws-plugin-1.2.2" />
 
 	<basename property="project" file="${basedir}" />
 
@@ -28,34 +30,28 @@
 	<echo message="source : ${source}" />
 	<echo message="target : ${target}" />
 
-	<target name="git">
+	<target name="default">
 
 		<echo message="kill temp" />
-		<delete dir="${tempdir}" verbose="true" />
+		<delete dir="${tempdir}" verbose="false" />
 
-		<echo message="select master" />
+		<echo message="select tag" />
 		<exec executable="git">
 			<arg value="checkout" />
-			<arg value="master" />
+			<arg value="${tag}" />
+		</exec>
+
+		<echo message="build site" />
+		<exec executable="mvn">
+			<arg value="validate" />
+			<arg value="clean" />
+			<arg value="site" />
 		</exec>
 
 		<echo message="copy site" />
-		<copy todir="${tempdir}" overwrite="true" verbose="true">
+		<copy todir="${tempdir}" overwrite="true" verbose="false">
 			<fileset dir="${source}" />
 		</copy>
-
-		<echo message="commit master" />
-		<exec executable="git">
-			<arg value="commit" />
-			<arg value="-a" />
-			<arg value="-m" />
-			<arg value="publish" />
-		</exec>
-		<exec executable="git">
-			<arg value="push" />
-			<arg value="origin" />
-			<arg value="master" />
-		</exec>
 
 		<echo message="select gh-pages" />
 		<exec executable="git">
@@ -64,7 +60,7 @@
 		</exec>
 
 		<echo message="copy site" />
-		<copy todir="${target}" overwrite="true" verbose="true">
+		<copy todir="${target}" overwrite="true" verbose="false">
 			<fileset dir="${tempdir}" />
 		</copy>
 
