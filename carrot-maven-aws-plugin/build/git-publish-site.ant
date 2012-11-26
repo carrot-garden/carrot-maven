@@ -27,8 +27,8 @@
 	<echo message="sitedir : ${sitedir}" />
 	<echo message="tempdir : ${tempdir}" />
 
-	<echo message="source : ${source}" />
-	<echo message="target : ${target}" />
+	<echo message="source  : ${source}" />
+	<echo message="target  : ${target}" />
 
 	<target name="default">
 
