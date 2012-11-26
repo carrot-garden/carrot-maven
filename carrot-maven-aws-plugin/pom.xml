@@ -168,15 +168,15 @@
 						<version>1.7</version>
 						<configuration>
 							<showErrors>true</showErrors>
-							<streamLogs>true</streamLogs>
+							<streamLogs>false</streamLogs>
 							<parallelThreads>5</parallelThreads>
 							<cloneProjectsTo>./target/it</cloneProjectsTo>
 							<pomIncludes>
 								<include>ssh</include>
-								<!-- <include>grv</include> -->
-								<!-- <include>cfn</include> -->
-								<!-- <include>ecc</include> -->
-								<!-- <include>dns</include> -->
+								<include>grv</include>
+								<include>cfn</include>
+								<include>ecc</include>
+								<include>dns</include>
 							</pomIncludes>
 						</configuration>
 						<executions>
