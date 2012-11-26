@@ -10,14 +10,14 @@
 	</parent>
 
 	<artifactId>carrot-maven-aws-plugin</artifactId>
-	<version>1.2.2</version>
+	<version>1.2.3-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 
 	<scm>
 		<url>https://github.com/carrot-garden/carrot-maven</url>
 		<connection>scm:git:git://github.com/carrot-garden/carrot-maven.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
-		<tag>carrot-maven-aws-plugin-1.2.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<description>${project.organization.name} AWS Maven Plugin</description>
