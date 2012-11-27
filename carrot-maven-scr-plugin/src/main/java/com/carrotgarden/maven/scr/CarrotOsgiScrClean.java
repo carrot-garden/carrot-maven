@@ -31,28 +31,39 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	@Override
 	public void execute() throws MojoFailureException {
 
-		if (isImproperPackaging()) {
+		if (!isProperPackaging()) {
+			getLog().info("skip for packaging=" + project.getPackaging());
 			return;
 		}
 
 		//
 
+		final File folder = outputDirectorySCR();
+
 		getLog().info("");
 
-		getLog().info("delete " + outputDirectorySCR());
+		getLog().info("delete : " + folder);
 
-		final boolean isDelete = deleteDir(outputDirectorySCR());
+		if (folder.exists()) {
 
-		if (!isDelete) {
-			getLog().warn("delete failed");
+			final boolean isDelete = deleteDir(folder);
+
+			if (!isDelete) {
+				getLog().warn("delete failed");
+			}
+
 		}
 
-		getLog().info("create " + outputDirectorySCR());
+		getLog().info("create : " + folder);
 
-		final boolean isCreate = outputDirectorySCR().mkdirs();
+		if (!folder.exists()) {
 
-		if (!isCreate) {
-			getLog().warn("create failed");
+			final boolean isCreate = folder.mkdirs();
+
+			if (!isCreate) {
+				getLog().warn("create failed");
+			}
+
 		}
 
 	}

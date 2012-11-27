@@ -108,13 +108,13 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected boolean isIncludeGeneratedDescritors;
 
 	/**
-	 * collection of names of unwanted maven project packaging types for which
-	 * to skip invocation of this plugin;
+	 * collection of names of known maven project packaging types for which to
+	 * invoke this plug-in
 	 * 
 	 * @required
-	 * @parameter default-value="pom"
+	 * @parameter default-value="bundle"
 	 */
-	protected Set<String> improperPackaging;
+	protected Set<String> properPackaging;
 
 	// ####################################################
 
@@ -127,18 +127,17 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	}
 
-	protected boolean isImproperPackaging() {
+	protected boolean isProperPackaging() {
 
 		final String packaging = project.getPackaging();
 
-		if (improperPackaging.contains(packaging)) {
-			getLog().info(
-					"execution is improper for project packaging '" + packaging
-							+ "'; ignoring plugin invocation");
+		if (properPackaging.contains(packaging)) {
+			getLog().debug("proper packaging=" + packaging);
 			return true;
+		} else {
+			getLog().debug("proper packaging=" + packaging);
+			return false;
 		}
-
-		return false;
 
 	}
 

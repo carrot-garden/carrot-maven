@@ -43,7 +43,8 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	@Override
 	public void execute() throws MojoFailureException {
 
-		if (isImproperPackaging()) {
+		if (!isProperPackaging()) {
+			getLog().info("skip for packaging=" + project.getPackaging());
 			return;
 		}
 
@@ -54,8 +55,8 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		}
 
 		getLog().info("");
-		getLog().info("improperPackaging");
-		for (final String packaging : improperPackaging) {
+		getLog().info("properPackaging");
+		for (final String packaging : properPackaging) {
 			getLog().info("\t packaging=" + packaging);
 		}
 

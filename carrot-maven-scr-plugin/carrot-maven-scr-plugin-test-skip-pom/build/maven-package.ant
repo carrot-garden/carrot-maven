@@ -13,7 +13,8 @@
 
 	<target name="maven">
 		<exec executable="mvn">
-			<arg value="deploy" />
+			<arg value="clean" />
+			<arg value="package" />
 		</exec>
 	</target>
 

@@ -69,7 +69,7 @@
 			<plugin>
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
-				<version>1.1.4-SNAPSHOT</version>
+				<version>1.2.0-SNAPSHOT</version>
 				<configuration>
 					<excludedServices>
 						<service>java.lang.Runnable</service>
