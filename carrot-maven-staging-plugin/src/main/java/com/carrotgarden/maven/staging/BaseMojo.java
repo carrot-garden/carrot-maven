@@ -18,21 +18,11 @@ import org.sonatype.aether.resolution.ArtifactResult;
 public abstract class BaseMojo extends AbstractMojo {
 
 	/**
-	 * The project currently being build.
-	 * 
-	 * @parameter default-value="${project}"
-	 * @parameter required
+	 * @parameter expression="${localRepository}"
+	 * @required
 	 * @readonly
 	 */
-	protected MavenProject project;
-	/**
-	 * The current Maven session.
-	 * 
-	 * @parameter default-value="${session}"
-	 * @parameter required
-	 * @readonly
-	 */
-	protected MavenSession session;
+	protected ArtifactRepository localRepository;
 	/**
 	 * The Maven BuildPluginManager component.
 	 * 
@@ -41,49 +31,64 @@ public abstract class BaseMojo extends AbstractMojo {
 	 */
 	protected BuildPluginManager manager;
 	/**
-	 * @component
+	 * The project currently being build.
+	 * 
+	 * @parameter default-value="${project}"
+	 * @parameter required
 	 * @readonly
 	 */
-	protected RepositorySystem repoSystem;
-	/**
-	 * @parameter default-value="${repositorySystemSession}"
-	 * @readonly
-	 */
-	protected RepositorySystemSession repoSession;
+	protected MavenProject project;
 	/**
 	 * @parameter default-value="${project.remotePluginRepositories}"
 	 * @readonly
 	 */
 	protected List<RemoteRepository> remoteRepos;
 	/**
-	 * @parameter expression="${localRepository}"
-	 * @required
+	 * @parameter default-value="${repositorySystemSession}"
 	 * @readonly
 	 */
-	protected ArtifactRepository localRepository;
+	protected RepositorySystemSession repoSession;
+	/**
+	 * @component
+	 * @readonly
+	 */
+	protected RepositorySystem repoSystem;
+	/**
+	 * The current Maven session.
+	 * 
+	 * @parameter default-value="${session}"
+	 * @parameter required
+	 * @readonly
+	 */
+	protected MavenSession session;
+
 	protected boolean isResolved(final Artifact artifact) {
-	
+
 		final ArtifactRequest request = new ArtifactRequest();
-	
+
 		request.setArtifact(artifact);
-	
+
 		request.setRepositories(remoteRepos);
-	
+
 		try {
-	
+
 			final ArtifactResult result = //
 			repoSystem.resolveArtifact(repoSession, request);
-	
+
 			return result.isResolved();
-	
+
 		} catch (final ArtifactResolutionException e) {
-	
+
 			getLog().warn("missing artifact : " + artifact);
-	
+
 			return false;
-	
+
 		}
-	
+
+	}
+
+	protected boolean isPackagingPom() {
+		return "pom".equals(project.getPackaging());
 	}
 
 }

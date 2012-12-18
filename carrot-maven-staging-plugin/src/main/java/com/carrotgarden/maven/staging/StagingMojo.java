@@ -61,6 +61,7 @@ public class StagingMojo extends BaseMojo {
 	 * @required
 	 */
 	protected String stagingArtifactId;
+
 	/**
 	 * @parameter default-value="${project.version}"
 	 * @required
@@ -68,9 +69,13 @@ public class StagingMojo extends BaseMojo {
 	protected String stagingVersion;
 
 	/**
-	 * default-value="pom,jar,sources:jar,javadoc:jar"
-	 * 
-	 * @parameter default-value="pom"
+	 * @parameter default-value="jar"
+	 * @required
+	 */
+	protected String stagingExtension;
+
+	/**
+	 * @parameter default-value="jar,sources:jar,javadoc:jar"
 	 * @required
 	 */
 	protected String stagingSearchList;
@@ -161,6 +166,20 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
+	protected Artifact stagingArtifact() {
+
+		final Artifact artifact = new DefaultArtifact( //
+				stagingGroupId, //
+				stagingArtifactId, //
+				"", //
+				stagingExtension, //
+				stagingVersion //
+		);
+
+		return artifact;
+
+	}
+
 	protected void assertStagingPom() throws MojoExecutionException {
 		if (isResolved(stagingPom())) {
 			return;
@@ -173,21 +192,33 @@ public class StagingMojo extends BaseMojo {
 	@Override
 	public void execute() throws MojoExecutionException {
 
-		assertStagingPom();
-
 		getLog().info("### init");
 
-		final List<Artifact> artifactList = artifactList();
+		assertStagingPom();
 
-		getLog().info("### artifactList size=" + artifactList.size());
+		getLog().info("### find pom");
 
-		for (final Artifact artifact : artifactList) {
+		executeDepend(stagingPom());
 
-			getLog().info("### staging artifact=" + artifact);
+		if (isPackagingPom()) {
 
-			executeDepend(artifact);
+			getLog().info("### pom only");
 
-			executeSigner(artifact);
+			executeSigner(stagingPom());
+
+		} else {
+
+			final List<Artifact> artifactList = artifactList();
+
+			getLog().info("### pom and artifact " + artifactList.size());
+
+			for (final Artifact artifact : artifactList) {
+
+				executeDepend(artifact);
+
+			}
+
+			executeSigner(stagingArtifact());
 
 		}
 
