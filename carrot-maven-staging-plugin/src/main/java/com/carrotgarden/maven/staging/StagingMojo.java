@@ -26,6 +26,7 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
 
 /**
  * 
@@ -37,13 +38,19 @@ public class StagingMojo extends BaseMojo {
 	 * @parameter
 	 * @required
 	 */
-	protected Plugin dependPlugin;
+	// protected Plugin dependPlugin;
 
 	/**
 	 * @parameter
 	 * @required
 	 */
-	protected Plugin signerPlugin;
+	// protected Plugin signerPlugin;
+
+	/**
+	 * @parameter
+	 * @required
+	 */
+	protected Plugin deployPlugin;
 
 	/**
 	 * @parameter
@@ -75,7 +82,7 @@ public class StagingMojo extends BaseMojo {
 	protected String stagingExtension;
 
 	/**
-	 * @parameter default-value="jar,sources:jar,javadoc:jar"
+	 * @parameter default-value="pom,jar,sources:jar,javadoc:jar"
 	 * @required
 	 */
 	protected String stagingSearchList;
@@ -85,6 +92,12 @@ public class StagingMojo extends BaseMojo {
 	 * @required
 	 */
 	protected String dependGoal;
+
+	/**
+	 * @parameter default-value="deploy-file"
+	 * @required
+	 */
+	protected String deployGoal;
 
 	/**
 	 * @parameter default-value="staging-close"
@@ -157,7 +170,7 @@ public class StagingMojo extends BaseMojo {
 		final Artifact artifact = new DefaultArtifact( //
 				stagingGroupId, //
 				stagingArtifactId, //
-				"", //
+				null, //
 				"pom", //
 				stagingVersion //
 		);
@@ -198,21 +211,15 @@ public class StagingMojo extends BaseMojo {
 
 		getLog().info("### get pom");
 
-		executeDepend(stagingPom());
+		// executeDepend(stagingPom());
 
-		final List<Artifact> artifactList = artifactList();
+		// if (isPackagingPom()) {
+		// executePom();
+		// } else {
+		// executeJar();
+		// }
 
-		getLog().info("### put list " + artifactList.size());
-
-		for (final Artifact artifact : artifactList) {
-
-			getLog().info("### put artifact=" + artifact);
-
-			executeDepend(artifact);
-
-			executeSigner(artifact);
-
-		}
+		executeArtifact();
 
 		getLog().info("### close");
 
@@ -222,10 +229,41 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
+	protected void executePom() throws MojoExecutionException {
+
+		executeSigner(stagingPom());
+
+	}
+
+	protected void executeArtifact() throws MojoExecutionException {
+
+		final List<Artifact> artifactList = artifactList();
+
+		getLog().info("### put list " + artifactList.size());
+
+		for (final Artifact artifact : artifactList) {
+
+			getLog().info("### get artifact=" + artifact);
+
+			// executeDepend(artifact);
+
+		}
+
+		for (final Artifact artifact : artifactList) {
+
+			getLog().info("### put artifact=" + artifact);
+
+			executeDeploy(artifact);
+
+		}
+
+	}
+
 	protected void executeDepend(final Artifact artifact)
 			throws MojoExecutionException {
 
-		executeMojo(dependPlugin, dependGoal, //
+		/** XXX */
+		executeMojo(null, dependGoal, //
 
 				configuration( //
 				dependArtifactItemList(stagingFolder, artifact) //
@@ -237,17 +275,68 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
+	protected void executeDeploy(final Artifact artifact)
+			throws MojoExecutionException {
+
+		// element("pomFile", artifactFile(stagingFolder,
+		// stagingPom())), //
+
+		final String fileOne = artifact.getFile().getAbsolutePath();
+
+		final String fileTwo = fileOne + ".asc";
+
+		final Element[] configOne = new Element[] {
+				element("groupId", artifact.getGroupId()), //
+				element("artifactId", artifact.getArtifactId()), //
+				element("version", artifact.getVersion()), //
+				element("classifier", artifact.getClassifier()), //
+				element("packaging", artifact.getExtension()), //
+				element("generatePom", "false"), //
+				element("file", fileOne), //
+				element("url", stagingDeployURL), //
+				element("repositoryId", stagingServerId) //
+		};
+
+		final Element[] configTwo = new Element[] {
+				element("groupId", artifact.getGroupId()), //
+				element("artifactId", artifact.getArtifactId()), //
+				element("version", artifact.getVersion()), //
+				element("classifier", artifact.getClassifier()), //
+				element("packaging", artifact.getExtension()), //
+				element("generatePom", "false"), //
+				element("file", fileTwo), //
+				element("url", stagingDeployURL), //
+				element("repositoryId", stagingServerId) //
+		};
+
+		executeMojo(deployPlugin, deployGoal, configuration(configOne),
+				executionEnvironment(project, session, manager) //
+		);
+
+		executeMojo(deployPlugin, deployGoal, configuration(configTwo),
+				executionEnvironment(project, session, manager) //
+		);
+
+	}
+
 	protected void executeSigner(final Artifact artifact)
 			throws MojoExecutionException {
 
-		executeMojo(signerPlugin, signerGoal,
+		/** XXX */
+		executeMojo(null, signerGoal,
 
 		configuration( //
-				element("url", stagingDeployURL), //
-				element("repositoryId", stagingServerId), //
+				element("groupId", artifact.getGroupId()), //
+				element("artifactId", artifact.getArtifactId()), //
+				element("version", artifact.getVersion()), //
+				element("classifier", artifact.getClassifier()), //
+				element("packaging", artifact.getExtension()), //
+				//
 				element("file", artifactFile(stagingFolder, artifact)), //
 				element("pomFile", artifactFile(stagingFolder, stagingPom())), //
-				element("classifier", artifact.getClassifier()) //
+				//
+				element("url", stagingDeployURL), //
+				element("repositoryId", stagingServerId) //
 				), //
 
 				executionEnvironment(project, session, manager) //
