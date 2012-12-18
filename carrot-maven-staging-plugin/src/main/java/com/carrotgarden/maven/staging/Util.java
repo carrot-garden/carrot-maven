@@ -17,23 +17,25 @@ public class Util {
 
 		text.append(artifact.getArtifactId());
 		text.append("-");
-
 		text.append(artifact.getVersion());
-		text.append("-");
 
 		if (Util.hasClassifier(artifact)) {
+			text.append("-");
 			text.append(artifact.getClassifier());
 		}
 
-		text.append("-");
+		text.append(".");
 		text.append(artifact.getExtension());
 
 		return text.toString();
 	}
 
 	public static boolean hasClassifier(final Artifact artifact) {
+
 		final String classifier = artifact.getClassifier();
+
 		return classifier != null && classifier.length() != 0;
+
 	}
 
 	public static String artifactFile(final File folder, final Artifact artifact) {
@@ -44,39 +46,93 @@ public class Util {
 
 	}
 
-	public static Element artifactItem(final File folder,
+	/**
+	 * http://maven.apache.org/plugins/maven-dependency-plugin/examples/copying-
+	 * artifacts.html
+	 */
+	public static Element dependArtifactItem(final File folder,
 			final Artifact artifact) {
-	
-		final String destFileName = artifactFile(folder, artifact);
-	
+
+		final String outputDirectory = folder.getAbsolutePath();
+		final String destFileName = artifactName(artifact);
+
 		return element("artifactItem", //
+				//
 				element("groupId", artifact.getGroupId()), //
 				element("artifactId", artifact.getArtifactId()), //
 				element("version", artifact.getVersion()), //
 				element("classifier", artifact.getClassifier()), //
 				element("type", artifact.getExtension()), //
+				//
+				element("outputDirectory", outputDirectory), //
 				element("destFileName", destFileName) //
 		);
-	
+
 	}
 
-	public static Element artifactItemList(final File folder,
+	public static Element dependoutputDirectory(final String stagingFolder) {
+
+		return element("outputDirectory", stagingFolder);
+
+	}
+
+	public static Element dependArtifactItemList(final File folder,
+			final Artifact artifact) {
+
+		final List<Artifact> artifactList = new ArrayList<Artifact>();
+		artifactList.add(artifact);
+
+		return dependArtifactItemList(folder, artifactList);
+
+	}
+
+	public static Element dependArtifactItemList(final File folder,
 			final List<Artifact> artifactList) {
-	
+
 		final List<Element> elementList = new ArrayList<Element>();
-	
+
 		for (final Artifact artifact : artifactList) {
-	
-			final Element element = artifactItem(folder, artifact);
-	
+
+			final Element element = dependArtifactItem(folder, artifact);
+
 			elementList.add(element);
-	
+
 		}
-	
+
 		final Element[] elementArray = elementList.toArray(new Element[0]);
-	
+
 		return element("artifactItems", elementArray);
-	
+
+	}
+
+	/**
+	 * http://maven.apache.org/plugins/maven-gpg-plugin/sign-and-deploy-file-
+	 * mojo.html
+	 */
+	public static Element signerFile(final File folder, final Artifact artifact) {
+
+		final String file = artifactFile(folder, artifact);
+
+		return element("file", file);
+
+	}
+
+	public static Element signerURL(final String statingURL) {
+
+		return element("url", statingURL);
+
+	}
+
+	public static Element signerRepoId(final String serverId) {
+
+		return element("repositoryId", serverId);
+
+	}
+
+	public static Element signerPomFile(final String pomFile) {
+
+		return element("pomFile", pomFile);
+
 	}
 
 }

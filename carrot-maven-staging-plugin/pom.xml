@@ -132,6 +132,7 @@
 				<version>1.8</version>
 				<configuration>
 					<streamLogs>true</streamLogs>
+					<showErrors>true</showErrors>
 					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 				</configuration>
 				<executions>

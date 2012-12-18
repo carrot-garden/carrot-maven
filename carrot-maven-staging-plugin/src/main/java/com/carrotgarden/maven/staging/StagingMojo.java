@@ -15,62 +15,23 @@
  */
 package com.carrotgarden.maven.staging;
 
+import static com.carrotgarden.maven.staging.Util.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
 
 /**
  * 
- * @goal carrot-staging
+ * @goal sonatype-staging
  */
-public class StagingMojo extends AbstractMojo {
-
-	/**
-	 * The project currently being build.
-	 * 
-	 * @parameter default-value="${project}"
-	 * @parameter required
-	 * @readonly
-	 */
-	protected MavenProject project;
-
-	/**
-	 * The current Maven session.
-	 * 
-	 * @parameter default-value="${session}"
-	 * @parameter required
-	 * @readonly
-	 */
-	protected MavenSession session;
-
-	/**
-	 * The Maven BuildPluginManager component.
-	 * 
-	 * @component
-	 * @required
-	 */
-	protected BuildPluginManager manager;
-
-	//
+public class StagingMojo extends BaseMojo {
 
 	/**
 	 * @parameter
@@ -84,34 +45,11 @@ public class StagingMojo extends AbstractMojo {
 	 */
 	protected Plugin signerPlugin;
 
-	//
-
 	/**
-	 * @component
-	 * @readonly
-	 */
-	protected RepositorySystem repoSystem;
-
-	/**
-	 * @parameter default-value="${repositorySystemSession}"
-	 * @readonly
-	 */
-	protected RepositorySystemSession repoSession;
-
-	/**
-	 * @parameter default-value="${project.remotePluginRepositories}"
-	 * @readonly
-	 */
-	protected List<RemoteRepository> remoteRepos;
-
-	/**
-	 * @parameter expression="${localRepository}"
+	 * @parameter
 	 * @required
-	 * @readonly
 	 */
-	protected ArtifactRepository localRepository;
-
-	//
+	protected Plugin nexusPlugin;
 
 	/**
 	 * @parameter default-value="${project.groupId}"
@@ -133,7 +71,7 @@ public class StagingMojo extends AbstractMojo {
 	 * @parameter default-value="pom,jar,sources:jar,javadoc:jar"
 	 * @required
 	 */
-	protected String searchList;
+	protected String stagingSearchList;
 
 	/**
 	 * @parameter default-value="copy"
@@ -142,49 +80,48 @@ public class StagingMojo extends AbstractMojo {
 	protected String dependGoal;
 
 	/**
+	 * @parameter default-value="staging-close"
+	 * @required
+	 */
+	protected String nexusGoal;
+
+	/**
 	 * @parameter default-value="sign-and-deploy-file"
 	 * @required
 	 */
 	protected String signerGoal;
 
 	/**
-	 * @parameter default-value="${project.build.directory}/carrot-staging"
+	 * @parameter default-value="${project.build.directory}/sonatype-staging"
 	 * @required
 	 */
 	protected File stagingFolder;
 
+	/**
+	 * @parameter default-value= "https://oss.sonatype.org/"
+	 * @required
+	 */
+	protected String stagingNexusURL;
+	/**
+	 * @parameter default-value=
+	 *            "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+	 * @required
+	 */
+	protected String stagingDeployURL;
+
+	/**
+	 * @parameter default-value="sonatype-nexus-staging"
+	 * @required
+	 */
+	protected String stagingServerId;
+
 	//
-
-	protected boolean isResolved(final Artifact artifact) {
-
-		final ArtifactRequest request = new ArtifactRequest();
-
-		request.setArtifact(artifact);
-
-		request.setRepositories(remoteRepos);
-
-		try {
-
-			final ArtifactResult result = //
-			repoSystem.resolveArtifact(repoSession, request);
-
-			return result.isResolved();
-
-		} catch (final ArtifactResolutionException e) {
-
-			getLog().warn("missing artifact : " + artifact);
-
-			return false;
-
-		}
-
-	}
 
 	protected List<Artifact> artifactList() {
 
 		final List<Artifact> artifactList = new ArrayList<Artifact>();
 
-		final List<Tuple> tupleList = Tuple.fromList(searchList);
+		final List<Tuple> tupleList = Tuple.fromList(stagingSearchList);
 
 		for (final Tuple tuple : tupleList) {
 
@@ -208,20 +145,43 @@ public class StagingMojo extends AbstractMojo {
 
 	}
 
-	protected Element signerFile(final Artifact artifact) {
+	protected Artifact stagingPom() {
 
-		final String file = "";
+		final Artifact artifact = new DefaultArtifact( //
+				stagingGroupId, //
+				stagingArtifactId, //
+				"", //
+				"pom", //
+				stagingVersion //
+		);
 
-		return element("file", file);
+		return artifact;
 
+	}
+
+	protected void assertStagingPom() throws MojoExecutionException {
+		if (isResolved(stagingPom())) {
+			return;
+		}
+		final String message = "" + stagingPom();
+		getLog().error(message);
+		throw new MojoExecutionException(message);
 	}
 
 	@Override
 	public void execute() throws MojoExecutionException {
 
+		assertStagingPom();
+
+		getLog().info("### init");
+
 		final List<Artifact> artifactList = artifactList();
 
+		getLog().info("### artifactList size=" + artifactList.size());
+
 		for (final Artifact artifact : artifactList) {
+
+			getLog().info("### staging artifact=" + artifact);
 
 			executeDepend(artifact);
 
@@ -229,23 +189,21 @@ public class StagingMojo extends AbstractMojo {
 
 		}
 
+		getLog().info("### close");
+
+		executeNexus();
+
+		getLog().info("### done");
+
 	}
 
 	protected void executeDepend(final Artifact artifact)
 			throws MojoExecutionException {
 
-		final List<Artifact> artifactList = new ArrayList<Artifact>();
-		artifactList.add(artifact);
-
-		final Element artifactItems = //
-		Util.artifactItemList(stagingFolder, artifactList);
-
 		executeMojo(dependPlugin, dependGoal, //
 
-				configuration(
-
-				artifactItems
-
+				configuration( //
+				dependArtifactItemList(stagingFolder, artifact) //
 				), //
 
 				executionEnvironment(project, session, manager) //
@@ -257,14 +215,36 @@ public class StagingMojo extends AbstractMojo {
 	protected void executeSigner(final Artifact artifact)
 			throws MojoExecutionException {
 
-		final Element signerFile = signerFile(artifact);
-
-		executeMojo(signerPlugin, signerGoal, //
+		executeMojo(signerPlugin,
+				signerGoal, //
 
 				configuration(
+						signerFile(stagingFolder, artifact), //
+						signerURL(stagingDeployURL), //
+						signerRepoId(stagingServerId), //
+						signerPomFile(artifactFile(stagingFolder, stagingPom())) //
+				), //
 
-				signerFile
+				executionEnvironment(project, session, manager) //
 
+		);
+
+	}
+
+	protected void executeNexus() throws MojoExecutionException {
+
+		executeMojo(nexusPlugin, nexusGoal, //
+
+				configuration( //
+						//
+						element("automatic", "true"), //
+						//
+						element("groupId", stagingGroupId), //
+						element("artifactId", stagingArtifactId), //
+						element("version", stagingVersion), //
+						//
+						element("nexusUrl", stagingNexusURL), //
+						element("serverAuthId", stagingServerId) //
 				), //
 
 				executionEnvironment(project, session, manager) //
