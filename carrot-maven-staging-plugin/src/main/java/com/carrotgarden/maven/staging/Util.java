@@ -105,34 +105,4 @@ public class Util {
 
 	}
 
-	/**
-	 * http://maven.apache.org/plugins/maven-gpg-plugin/sign-and-deploy-file-
-	 * mojo.html
-	 */
-	public static Element signerFile(final File folder, final Artifact artifact) {
-
-		final String file = artifactFile(folder, artifact);
-
-		return element("file", file);
-
-	}
-
-	public static Element signerURL(final String statingURL) {
-
-		return element("url", statingURL);
-
-	}
-
-	public static Element signerRepoId(final String serverId) {
-
-		return element("repositoryId", serverId);
-
-	}
-
-	public static Element signerPomFile(final String pomFile) {
-
-		return element("pomFile", pomFile);
-
-	}
-
 }

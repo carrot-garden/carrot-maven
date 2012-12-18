@@ -196,29 +196,21 @@ public class StagingMojo extends BaseMojo {
 
 		assertStagingPom();
 
-		getLog().info("### find pom");
+		getLog().info("### get pom");
 
 		executeDepend(stagingPom());
 
-		if (isPackagingPom()) {
+		final List<Artifact> artifactList = artifactList();
 
-			getLog().info("### pom only");
+		getLog().info("### put list " + artifactList.size());
 
-			executeSigner(stagingPom());
+		for (final Artifact artifact : artifactList) {
 
-		} else {
+			getLog().info("### put artifact=" + artifact);
 
-			final List<Artifact> artifactList = artifactList();
+			executeDepend(artifact);
 
-			getLog().info("### pom and artifact " + artifactList.size());
-
-			for (final Artifact artifact : artifactList) {
-
-				executeDepend(artifact);
-
-			}
-
-			executeSigner(stagingArtifact());
+			executeSigner(artifact);
 
 		}
 
@@ -248,14 +240,14 @@ public class StagingMojo extends BaseMojo {
 	protected void executeSigner(final Artifact artifact)
 			throws MojoExecutionException {
 
-		executeMojo(signerPlugin,
-				signerGoal, //
+		executeMojo(signerPlugin, signerGoal,
 
-				configuration(
-						signerURL(stagingDeployURL), //
-						signerRepoId(stagingServerId), //
-						signerFile(stagingFolder, artifact), //
-						signerPomFile(artifactFile(stagingFolder, stagingPom())) //
+		configuration( //
+				element("url", stagingDeployURL), //
+				element("repositoryId", stagingServerId), //
+				element("file", artifactFile(stagingFolder, artifact)), //
+				element("pomFile", artifactFile(stagingFolder, stagingPom())), //
+				element("classifier", artifact.getClassifier()) //
 				), //
 
 				executionEnvironment(project, session, manager) //
