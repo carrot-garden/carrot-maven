@@ -20,10 +20,12 @@
 			<os family="windows" />
 		</condition>
 
-		<exec executable="${executable}">
+		<exec executable="${executable}" output="mvn.log">
 
 			<arg value="clean" />
 			<arg value="install" />
+
+			<arg value="--debug" />
 
 		</exec>
 	</target>

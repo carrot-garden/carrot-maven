@@ -87,6 +87,33 @@ public abstract class BaseMojo extends AbstractMojo {
 
 	}
 
+	protected Artifact resolved(final Artifact artifact) {
+
+		final ArtifactRequest request = new ArtifactRequest();
+
+		request.setArtifact(artifact);
+
+		request.setRepositories(remoteRepos);
+
+		try {
+
+			final ArtifactResult result = //
+			repoSystem.resolveArtifact(repoSession, request);
+
+			if (result.isResolved()) {
+				return result.getArtifact();
+			}
+
+		} catch (final ArtifactResolutionException e) {
+
+			getLog().warn("missing artifact : " + artifact);
+
+		}
+
+		return null;
+
+	}
+
 	protected boolean isPackagingPom() {
 		return "pom".equals(project.getPackaging());
 	}

@@ -15,7 +15,6 @@
  */
 package com.carrotgarden.maven.staging;
 
-import static com.carrotgarden.maven.staging.Util.*;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 import java.io.File;
@@ -33,18 +32,6 @@ import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
  * @goal sonatype-staging
  */
 public class StagingMojo extends BaseMojo {
-
-	/**
-	 * @parameter
-	 * @required
-	 */
-	// protected Plugin dependPlugin;
-
-	/**
-	 * @parameter
-	 * @required
-	 */
-	// protected Plugin signerPlugin;
 
 	/**
 	 * @parameter
@@ -88,12 +75,6 @@ public class StagingMojo extends BaseMojo {
 	protected String stagingSearchList;
 
 	/**
-	 * @parameter default-value="copy"
-	 * @required
-	 */
-	protected String dependGoal;
-
-	/**
 	 * @parameter default-value="deploy-file"
 	 * @required
 	 */
@@ -104,12 +85,6 @@ public class StagingMojo extends BaseMojo {
 	 * @required
 	 */
 	protected String nexusGoal;
-
-	/**
-	 * @parameter default-value="sign-and-deploy-file"
-	 * @required
-	 */
-	protected String signerGoal;
 
 	/**
 	 * @parameter default-value="${project.build.directory}/sonatype-staging"
@@ -137,7 +112,7 @@ public class StagingMojo extends BaseMojo {
 
 	//
 
-	protected List<Artifact> artifactList() {
+	protected List<Artifact> resolveArtifactList() {
 
 		final List<Artifact> artifactList = new ArrayList<Artifact>();
 
@@ -153,11 +128,13 @@ public class StagingMojo extends BaseMojo {
 					stagingVersion //
 			);
 
-			if (!isResolved(artifact)) {
+			final Artifact result = resolved(artifact);
+
+			if (result == null) {
 				continue;
 			}
 
-			artifactList.add(artifact);
+			artifactList.add(result);
 
 		}
 
@@ -205,21 +182,11 @@ public class StagingMojo extends BaseMojo {
 	@Override
 	public void execute() throws MojoExecutionException {
 
-		getLog().info("### init");
-
 		assertStagingPom();
 
-		getLog().info("### get pom");
+		getLog().info("### init");
 
-		// executeDepend(stagingPom());
-
-		// if (isPackagingPom()) {
-		// executePom();
-		// } else {
-		// executeJar();
-		// }
-
-		executeArtifact();
+		executeAll();
 
 		getLog().info("### close");
 
@@ -229,29 +196,15 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
-	protected void executePom() throws MojoExecutionException {
+	protected void executeAll() throws MojoExecutionException {
 
-		executeSigner(stagingPom());
+		final List<Artifact> artifactList = resolveArtifactList();
 
-	}
-
-	protected void executeArtifact() throws MojoExecutionException {
-
-		final List<Artifact> artifactList = artifactList();
-
-		getLog().info("### put list " + artifactList.size());
+		getLog().info("### list " + artifactList.size());
 
 		for (final Artifact artifact : artifactList) {
 
-			getLog().info("### get artifact=" + artifact);
-
-			// executeDepend(artifact);
-
-		}
-
-		for (final Artifact artifact : artifactList) {
-
-			getLog().info("### put artifact=" + artifact);
+			getLog().info("### artifact=" + artifact);
 
 			executeDeploy(artifact);
 
@@ -259,88 +212,60 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
-	protected void executeDepend(final Artifact artifact)
+	protected File stagingFile(final Artifact artifact, final String type)
 			throws MojoExecutionException {
 
-		/** XXX */
-		executeMojo(null, dependGoal, //
+		try {
 
-				configuration( //
-				dependArtifactItemList(stagingFolder, artifact) //
-				), //
+			final File file = artifact.getFile();
+			final File folder = file.getParentFile();
 
-				executionEnvironment(project, session, manager) //
+			String name = file.getName();
+			name = type == null ? name : name + "." + type;
 
-		);
+			final File source = new File(folder, name);
+			final File target = new File(stagingFolder, name);
+
+			// FileUtils.copyFile(source, target);
+
+			return target;
+
+		} catch (final Exception e) {
+
+			throw new MojoExecutionException("copy fail", e);
+
+		}
 
 	}
 
 	protected void executeDeploy(final Artifact artifact)
 			throws MojoExecutionException {
 
-		// element("pomFile", artifactFile(stagingFolder,
-		// stagingPom())), //
+		executeDeploy(artifact, null);
 
-		final String fileOne = artifact.getFile().getAbsolutePath();
-
-		final String fileTwo = fileOne + ".asc";
-
-		final Element[] configOne = new Element[] {
-				element("groupId", artifact.getGroupId()), //
-				element("artifactId", artifact.getArtifactId()), //
-				element("version", artifact.getVersion()), //
-				element("classifier", artifact.getClassifier()), //
-				element("packaging", artifact.getExtension()), //
-				element("generatePom", "false"), //
-				element("file", fileOne), //
-				element("url", stagingDeployURL), //
-				element("repositoryId", stagingServerId) //
-		};
-
-		final Element[] configTwo = new Element[] {
-				element("groupId", artifact.getGroupId()), //
-				element("artifactId", artifact.getArtifactId()), //
-				element("version", artifact.getVersion()), //
-				element("classifier", artifact.getClassifier()), //
-				element("packaging", artifact.getExtension()), //
-				element("generatePom", "false"), //
-				element("file", fileTwo), //
-				element("url", stagingDeployURL), //
-				element("repositoryId", stagingServerId) //
-		};
-
-		executeMojo(deployPlugin, deployGoal, configuration(configOne),
-				executionEnvironment(project, session, manager) //
-		);
-
-		executeMojo(deployPlugin, deployGoal, configuration(configTwo),
-				executionEnvironment(project, session, manager) //
-		);
+		executeDeploy(artifact, "asc");
 
 	}
 
-	protected void executeSigner(final Artifact artifact)
+	protected void executeDeploy(final Artifact artifact, final String type)
 			throws MojoExecutionException {
 
-		/** XXX */
-		executeMojo(null, signerGoal,
+		final File file = stagingFile(artifact, type);
 
-		configuration( //
+		final Element[] config = new Element[] {
 				element("groupId", artifact.getGroupId()), //
 				element("artifactId", artifact.getArtifactId()), //
 				element("version", artifact.getVersion()), //
 				element("classifier", artifact.getClassifier()), //
 				element("packaging", artifact.getExtension()), //
-				//
-				element("file", artifactFile(stagingFolder, artifact)), //
-				element("pomFile", artifactFile(stagingFolder, stagingPom())), //
-				//
+				element("generatePom", "false"), //
+				element("file", file.getAbsolutePath()), //
 				element("url", stagingDeployURL), //
 				element("repositoryId", stagingServerId) //
-				), //
+		};
 
+		executeMojo(deployPlugin, deployGoal, configuration(config),
 				executionEnvironment(project, session, manager) //
-
 		);
 
 	}
