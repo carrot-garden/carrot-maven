@@ -68,7 +68,9 @@ public class StagingMojo extends BaseMojo {
 	protected String stagingVersion;
 
 	/**
-	 * @parameter default-value="pom,jar,sources:jar,javadoc:jar"
+	 * default-value="pom,jar,sources:jar,javadoc:jar"
+	 * 
+	 * @parameter default-value="pom"
 	 * @required
 	 */
 	protected String stagingSearchList;
@@ -219,9 +221,9 @@ public class StagingMojo extends BaseMojo {
 				signerGoal, //
 
 				configuration(
-						signerFile(stagingFolder, artifact), //
 						signerURL(stagingDeployURL), //
 						signerRepoId(stagingServerId), //
+						signerFile(stagingFolder, artifact), //
 						signerPomFile(artifactFile(stagingFolder, stagingPom())) //
 				), //
 
