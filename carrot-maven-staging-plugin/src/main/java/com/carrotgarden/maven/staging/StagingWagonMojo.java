@@ -9,7 +9,6 @@ package com.carrotgarden.maven.staging;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,21 +24,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * copy existing released artifacts form private nexus server to sonatype
  * staging server
  * 
- * @goal sonatype-staging
+ * @inheritByDefault true
+ * 
+ * @goal sonatype-staging-wagon
  */
-public class StagingMojo extends BaseMojo {
+public class StagingWagonMojo extends BaseMojo {
 
 	private List<String> artifactList;
-
-	/**
-	 * provide dependency :
-	 * https://repository.sonatype.org/content/sites/maven-sites
-	 * /nexus-maven-plugin/
-	 * 
-	 * @parameter
-	 * @required
-	 */
-	protected Plugin nexusPlugin;
 
 	/**
 	 * settings.xml credentials entry for source server
@@ -59,48 +50,12 @@ public class StagingMojo extends BaseMojo {
 	protected String sourceServerURL;
 
 	/**
-	 * 
-	 * artifact to copy
-	 * 
-	 * @parameter default-value="${project.artifactId}"
-	 * @required
-	 */
-	protected String stagingArtifactId;
-
-	/**
-	 * * artifact to copy
-	 * 
-	 * @parameter default-value="${project.groupId}"
-	 * @required
-	 */
-	protected String stagingGroupId;
-
-	/**
-	 * nexus server running staging suite
-	 * 
-	 * http://www.sonatype.com/books/nexus-book
-	 * /reference/staging-sect-intro.html
-	 * 
-	 * @parameter default-value= "https://oss.sonatype.org/"
-	 * @required
-	 */
-	protected String stagingNexusURL;
-
-	/**
 	 * TODO
 	 * 
 	 * @parameter default-value="pom,jar,sources:jar,javadoc:jar"
 	 * @required
 	 */
 	protected String stagingSearchList;
-
-	/**
-	 * artifact to copy
-	 * 
-	 * @parameter default-value="${project.version}"
-	 * @required
-	 */
-	protected String stagingVersion;
 
 	/**
 	 * settings.xml credentials entry for target server
@@ -129,12 +84,6 @@ public class StagingMojo extends BaseMojo {
 	protected Plugin wagonPlugin;
 
 	//
-
-	/**
-	 * @parameter default-value="${project.build.directory}/sonatype-staging"
-	 * @required
-	 */
-	protected File workingFolder;
 
 	/**
 	 * discover artifact list assuming remote is a nexus server serving index
@@ -205,8 +154,6 @@ public class StagingMojo extends BaseMojo {
 
 		executePut();
 
-		executeNexus();
-
 		getLog().info("### done");
 
 	}
@@ -236,33 +183,6 @@ public class StagingMojo extends BaseMojo {
 	}
 
 	/**
-	 * close staging target
-	 */
-	protected void executeNexus() throws MojoExecutionException {
-
-		getLog().info("### nexus");
-
-		executeMojo(nexusPlugin, "staging-close", //
-
-				configuration( //
-						//
-						element("automatic", "true"), //
-						//
-						element("groupId", stagingGroupId), //
-						element("artifactId", stagingArtifactId), //
-						element("version", stagingVersion), //
-						//
-						element("nexusUrl", stagingNexusURL), //
-						element("serverAuthId", targetServerId) //
-				), //
-
-				executionEnvironment(project, session, manager) //
-
-		);
-
-	}
-
-	/**
 	 * upload into target
 	 */
 	protected void executePut() throws MojoExecutionException {
@@ -284,39 +204,6 @@ public class StagingMojo extends BaseMojo {
 
 		}
 
-	}
-
-	/** working folder */
-	protected String localPath() {
-		return workingFolder.getAbsolutePath();
-	}
-
-	/** working folder artifact */
-	protected String localPath(final String artifact) {
-		return new File(workingFolder, artifact).getAbsolutePath();
-	}
-
-	/** artifact familty identity */
-	protected String artifactPrefix() {
-		return stagingArtifactId + "-" + stagingVersion;
-	}
-
-	/** relative folder path on source or target server */
-	protected String remotePath() {
-
-		final String groupPath = stagingGroupId.replaceAll("\\.", "/");
-
-		final String artifactPath = stagingArtifactId + "/" + stagingVersion;
-
-		final String remotePath = groupPath + "/" + artifactPath;
-
-		return remotePath;
-
-	}
-
-	/** relative artifact path on source or target server */
-	protected String remotePath(final String artifact) {
-		return remotePath() + "/" + artifact;
 	}
 
 }

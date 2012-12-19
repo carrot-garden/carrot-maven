@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com> 
+	All rights reserved. Licensed under the OSI BSD License. http://www.opensource.org/licenses/bsd-license.php -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.5.0</version>
+		<relativePath />
+	</parent>
+
+	<groupId>com.carrotgarden.maven</groupId>
+	<artifactId>carrot-maven-staging-plugin-test-00</artifactId>
+	<packaging>pom</packaging>
+	<version>0.0.0</version>
+
+	<modules>
+		<module>carrot-maven-staging-plugin-test-01</module>
+		<module>carrot-maven-staging-plugin-test-02</module>
+	</modules>
+
+	<properties>
+		<projectJavaVersoin>1.6</projectJavaVersoin>
+	</properties>
+
+	<build>
+
+		<extensions>
+
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-http</artifactId>
+				<version>2.3</version>
+			</extension>
+
+		</extensions>
+
+		<plugins>
+
+			<plugin>
+
+				<groupId>com.carrotgarden.maven</groupId>
+				<artifactId>carrot-maven-staging-plugin</artifactId>
+				<version>@project.version@</version>
+
+				<configuration>
+
+					<wagonPlugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>wagon-maven-plugin</artifactId>
+						<version>1.0-beta-4</version>
+					</wagonPlugin>
+
+					<nexusPlugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-maven-plugin</artifactId>
+						<version>2.1</version>
+					</nexusPlugin>
+
+					<stagingGroupId>com.carrotgarden.osgi</stagingGroupId>
+					<stagingArtifactId>carrot-osgi-anno-scr-core</stagingArtifactId>
+					<stagingVersion>1.1.0</stagingVersion>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>staging-wagon</id>
+						<phase>test</phase>
+						<goals>
+							<goal>sonatype-staging-wagon</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>staging-close</id>
+						<phase>test-xxx</phase>
+						<goals>
+							<goal>sonatype-staging-close</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>

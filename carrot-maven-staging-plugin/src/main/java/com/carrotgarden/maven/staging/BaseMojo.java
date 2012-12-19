@@ -7,6 +7,7 @@
  */
 package com.carrotgarden.maven.staging;
 
+import java.io.File;
 import java.util.List;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -70,6 +71,33 @@ public abstract class BaseMojo extends AbstractMojo {
 	 * @readonly
 	 */
 	protected MavenSession session;
+	/**
+	 * 
+	 * artifact to copy
+	 * 
+	 * @parameter default-value="${project.artifactId}"
+	 * @required
+	 */
+	protected String stagingArtifactId;
+	/**
+	 * * artifact to copy
+	 * 
+	 * @parameter default-value="${project.groupId}"
+	 * @required
+	 */
+	protected String stagingGroupId;
+	/**
+	 * artifact to copy
+	 * 
+	 * @parameter default-value="${project.version}"
+	 * @required
+	 */
+	protected String stagingVersion;
+	/**
+	 * @parameter default-value="${project.build.directory}/sonatype-staging"
+	 * @required
+	 */
+	protected File workingFolder;
 
 	protected boolean isResolved(final Artifact artifact) {
 
@@ -125,6 +153,39 @@ public abstract class BaseMojo extends AbstractMojo {
 
 	protected boolean isPackagingPom() {
 		return "pom".equals(project.getPackaging());
+	}
+
+	/** working folder */
+	protected String localPath() {
+		return workingFolder.getAbsolutePath();
+	}
+
+	/** working folder artifact */
+	protected String localPath(final String artifact) {
+		return new File(workingFolder, artifact).getAbsolutePath();
+	}
+
+	/** artifact familty identity */
+	protected String artifactPrefix() {
+		return stagingArtifactId + "-" + stagingVersion;
+	}
+
+	/** relative folder path on source or target server */
+	protected String remotePath() {
+	
+		final String groupPath = stagingGroupId.replaceAll("\\.", "/");
+	
+		final String artifactPath = stagingArtifactId + "/" + stagingVersion;
+	
+		final String remotePath = groupPath + "/" + artifactPath;
+	
+		return remotePath;
+	
+	}
+
+	/** relative artifact path on source or target server */
+	protected String remotePath(final String artifact) {
+		return remotePath() + "/" + artifact;
 	}
 
 }
