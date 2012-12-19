@@ -18,14 +18,14 @@
 	</parent>
 
 	<artifactId>carrot-maven-staging-plugin</artifactId>
-	<version>1.1.0-SNAPSHOT</version>
+	<version>1.1.0</version>
 	<packaging>maven-plugin</packaging>
 
 	<scm>
 		<url>https://github.com/carrot-garden/carrot-maven</url>
 		<connection>scm:git:git://github.com/carrot-garden/carrot-maven.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>carrot-maven-staging-plugin-1.1.0</tag>
 	</scm>
 
 	<description>${project.organization.name} Sonatype Staging Plugin</description>
