@@ -29,9 +29,11 @@
 		<plugins>
 
 			<plugin>
+			
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-staging-plugin</artifactId>
 				<version>1.0.0-SNAPSHOT</version>
+				
 				<configuration>
 
 					<wagonPlugin>
@@ -56,7 +58,7 @@
 						<id>sonatype-staging</id>
 						<phase>test</phase>
 						<goals>
-							<goal>sonatype-staging2</goal>
+							<goal>sonatype-staging</goal>
 						</goals>
 					</execution>
 				</executions>

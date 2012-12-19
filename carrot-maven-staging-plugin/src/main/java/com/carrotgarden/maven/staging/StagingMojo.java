@@ -1,18 +1,3 @@
-/*
- * Copyright 2008-2011 Don Brown
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.carrotgarden.maven.staging;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
@@ -23,9 +8,11 @@ import java.util.List;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
+
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * 
@@ -33,162 +20,181 @@ import org.twdata.maven.mojoexecutor.MojoExecutor.Element;
  */
 public class StagingMojo extends BaseMojo {
 
-	/**
-	 * @parameter
-	 * @required
-	 */
-	protected Plugin deployPlugin;
+	private List<String> artifactList;
 
 	/**
+	 * provide dependency :
+	 * https://repository.sonatype.org/content/sites/maven-sites
+	 * /nexus-maven-plugin/
+	 * 
 	 * @parameter
 	 * @required
 	 */
 	protected Plugin nexusPlugin;
 
 	/**
-	 * @parameter default-value="${project.groupId}"
+	 * settings.xml credentials entry for source server
+	 * 
+	 * @parameter default-value="sonatype-nexusm-staging"
 	 * @required
 	 */
-	protected String stagingGroupId;
+	protected String sourceServerId;
+
 	/**
+	 * source artifact server url
+	 * 
+	 * @parameter default-value=
+	 *            "https://oss.sonatype.org/content/groups/public"
+	 * @required
+	 */
+	protected String sourceServerURL;
+
+	/**
+	 * 
+	 * artifact to copy
+	 * 
 	 * @parameter default-value="${project.artifactId}"
 	 * @required
 	 */
 	protected String stagingArtifactId;
 
 	/**
-	 * @parameter default-value="${project.version}"
+	 * * artifact to copy
+	 * 
+	 * @parameter default-value="${project.groupId}"
 	 * @required
 	 */
-	protected String stagingVersion;
+	protected String stagingGroupId;
 
 	/**
-	 * @parameter default-value="jar"
+	 * nexus server running staging suite
+	 * 
+	 * http://www.sonatype.com/books/nexus-book
+	 * /reference/staging-sect-intro.html
+	 * 
+	 * @parameter default-value= "https://oss.sonatype.org/"
 	 * @required
 	 */
-	protected String stagingExtension;
+	protected String stagingNexusURL;
 
 	/**
+	 * TODO
+	 * 
 	 * @parameter default-value="pom,jar,sources:jar,javadoc:jar"
 	 * @required
 	 */
 	protected String stagingSearchList;
 
 	/**
-	 * @parameter default-value="deploy-file"
+	 * artifact to copy
+	 * 
+	 * @parameter default-value="${project.version}"
 	 * @required
 	 */
-	protected String deployGoal;
+	protected String stagingVersion;
 
 	/**
-	 * @parameter default-value="staging-close"
+	 * settings.xml credentials entry for target server
+	 * 
+	 * @parameter default-value="sonatype-nexus-staging"
 	 * @required
 	 */
-	protected String nexusGoal;
+	protected String targetServerId;
+
+	/**
+	 * source artifact server url
+	 * 
+	 * 
+	 * @parameter default-value=
+	 *            "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+	 * @required
+	 */
+	protected String targetServerURL;
+
+	/**
+	 * * provide dependency : http://mojo.codehaus.org/wagon-maven-plugin/
+	 * 
+	 * @parameter
+	 * @required
+	 */
+	protected Plugin wagonPlugin;
+
+	//
 
 	/**
 	 * @parameter default-value="${project.build.directory}/sonatype-staging"
 	 * @required
 	 */
-	protected File stagingFolder;
+	protected File workingFolder;
 
 	/**
-	 * @parameter default-value= "https://oss.sonatype.org/"
-	 * @required
+	 * discover artifact list assuming remote is a nexus server serving index
 	 */
-	protected String stagingNexusURL;
-	/**
-	 * @parameter default-value=
-	 *            "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-	 * @required
-	 */
-	protected String stagingDeployURL;
+	protected List<String> artifactList() throws MojoExecutionException {
 
-	/**
-	 * @parameter default-value="sonatype-nexus-staging"
-	 * @required
-	 */
-	protected String stagingServerId;
+		try {
 
-	//
+			if (artifactList == null) {
 
-	protected List<Artifact> resolveArtifactList() {
+				artifactList = new ArrayList<String>();
 
-		final List<Artifact> artifactList = new ArrayList<Artifact>();
+				final WebClient webClient = new WebClient();
 
-		final List<Tuple> tupleList = Tuple.fromList(stagingSearchList);
+				final String indexPath = localPath("index.html");
 
-		for (final Tuple tuple : tupleList) {
+				final Element[] config = new Element[] {
+						element("url", sourceServerURL), //
+						element("fromFile", remotePath()), //
+						element("toFile", indexPath), //
+						element("serverId", sourceServerId) //
+				};
 
-			final Artifact artifact = new DefaultArtifact( //
-					stagingGroupId, //
-					stagingArtifactId, //
-					tuple.classifier, //
-					tuple.extension, //
-					stagingVersion //
-			);
+				executeMojo(wagonPlugin, "download-single",
+						configuration(config),
+						executionEnvironment(project, session, manager) //
+				);
 
-			final Artifact result = resolved(artifact);
+				final String indexURL = "file:" + indexPath;
 
-			if (result == null) {
-				continue;
+				final HtmlPage page = webClient.getPage(indexURL);
+
+				@SuppressWarnings("unchecked")
+				final List<HtmlAnchor> list = (List<HtmlAnchor>) page
+						.getByXPath("//a");
+
+				for (final HtmlAnchor anchor : list) {
+
+					final String artifact = anchor.getTextContent().trim();
+
+					if (artifact.startsWith(artifactPrefix())) {
+						artifactList.add(artifact);
+					}
+
+				}
+
 			}
 
-			artifactList.add(result);
+			return artifactList;
+
+		} catch (final Throwable e) {
+
+			throw new MojoExecutionException("can not get list", e);
 
 		}
 
-		return artifactList;
-
 	}
 
-	protected Artifact stagingPom() {
-
-		final Artifact artifact = new DefaultArtifact( //
-				stagingGroupId, //
-				stagingArtifactId, //
-				null, //
-				"pom", //
-				stagingVersion //
-		);
-
-		return artifact;
-
-	}
-
-	protected Artifact stagingArtifact() {
-
-		final Artifact artifact = new DefaultArtifact( //
-				stagingGroupId, //
-				stagingArtifactId, //
-				"", //
-				stagingExtension, //
-				stagingVersion //
-		);
-
-		return artifact;
-
-	}
-
-	protected void assertStagingPom() throws MojoExecutionException {
-		if (isResolved(stagingPom())) {
-			return;
-		}
-		final String message = "" + stagingPom();
-		getLog().error(message);
-		throw new MojoExecutionException(message);
-	}
-
+	/**
+	 * plugin invocation
+	 */
 	@Override
 	public void execute() throws MojoExecutionException {
 
-		assertStagingPom();
-
 		getLog().info("### init");
 
-		executeAll();
+		executeGet();
 
-		getLog().info("### close");
+		executePut();
 
 		executeNexus();
 
@@ -196,83 +202,38 @@ public class StagingMojo extends BaseMojo {
 
 	}
 
-	protected void executeAll() throws MojoExecutionException {
+	/**
+	 * fetch from source
+	 */
+	protected void executeGet() throws MojoExecutionException {
 
-		final List<Artifact> artifactList = resolveArtifactList();
+		for (final String artifact : artifactList()) {
 
-		getLog().info("### list " + artifactList.size());
+			getLog().info("### get " + artifact);
 
-		for (final Artifact artifact : artifactList) {
+			final Element[] config = new Element[] {
+					element("url", sourceServerURL), //
+					element("fromFile", remotePath(artifact)), //
+					element("toFile", localPath(artifact)), //
+					element("serverId", sourceServerId) //
+			};
 
-			getLog().info("### artifact=" + artifact);
-
-			executeDeploy(artifact);
-
-		}
-
-	}
-
-	protected File stagingFile(final Artifact artifact, final String type)
-			throws MojoExecutionException {
-
-		try {
-
-			final File file = artifact.getFile();
-			final File folder = file.getParentFile();
-
-			String name = file.getName();
-			name = type == null ? name : name + "." + type;
-
-			final File source = new File(folder, name);
-			final File target = new File(stagingFolder, name);
-
-			// FileUtils.copyFile(source, target);
-
-			return target;
-
-		} catch (final Exception e) {
-
-			throw new MojoExecutionException("copy fail", e);
+			executeMojo(wagonPlugin, "download-single", configuration(config),
+					executionEnvironment(project, session, manager) //
+			);
 
 		}
 
 	}
 
-	protected void executeDeploy(final Artifact artifact)
-			throws MojoExecutionException {
-
-		executeDeploy(artifact, null);
-
-		executeDeploy(artifact, "asc");
-
-	}
-
-	protected void executeDeploy(final Artifact artifact, final String type)
-			throws MojoExecutionException {
-
-		final File file = stagingFile(artifact, type);
-
-		final Element[] config = new Element[] {
-				element("groupId", artifact.getGroupId()), //
-				element("artifactId", artifact.getArtifactId()), //
-				element("version", artifact.getVersion()), //
-				element("classifier", artifact.getClassifier()), //
-				element("packaging", artifact.getExtension()), //
-				element("generatePom", "false"), //
-				element("file", file.getAbsolutePath()), //
-				element("url", stagingDeployURL), //
-				element("repositoryId", stagingServerId) //
-		};
-
-		executeMojo(deployPlugin, deployGoal, configuration(config),
-				executionEnvironment(project, session, manager) //
-		);
-
-	}
-
+	/**
+	 * close staging target
+	 */
 	protected void executeNexus() throws MojoExecutionException {
 
-		executeMojo(nexusPlugin, nexusGoal, //
+		getLog().info("### nexus");
+
+		executeMojo(nexusPlugin, "staging-close", //
 
 				configuration( //
 						//
@@ -283,13 +244,70 @@ public class StagingMojo extends BaseMojo {
 						element("version", stagingVersion), //
 						//
 						element("nexusUrl", stagingNexusURL), //
-						element("serverAuthId", stagingServerId) //
+						element("serverAuthId", targetServerId) //
 				), //
 
 				executionEnvironment(project, session, manager) //
 
 		);
 
+	}
+
+	/**
+	 * upload into target
+	 */
+	protected void executePut() throws MojoExecutionException {
+
+		for (final String artifact : artifactList()) {
+
+			getLog().info("### put " + artifact);
+
+			final Element[] config = new Element[] {
+					element("url", targetServerURL), //
+					element("fromFile", localPath(artifact)), //
+					element("toFile", remotePath(artifact)), //
+					element("serverId", targetServerId) //
+			};
+
+			executeMojo(wagonPlugin, "upload-single", configuration(config),
+					executionEnvironment(project, session, manager) //
+			);
+
+		}
+
+	}
+
+	/** working folder */
+	protected String localPath() {
+		return workingFolder.getAbsolutePath();
+	}
+
+	/** working folder artifact */
+	protected String localPath(final String artifact) {
+		return new File(workingFolder, artifact).getAbsolutePath();
+	}
+
+	/** artifact familty identity */
+	protected String artifactPrefix() {
+		return stagingArtifactId + "-" + stagingVersion;
+	}
+
+	/** relative folder path on source or target server */
+	protected String remotePath() {
+
+		final String groupPath = stagingGroupId.replaceAll("\\.", "/");
+
+		final String artifactPath = stagingArtifactId + "/" + stagingVersion;
+
+		final String remotePath = groupPath + "/" + artifactPath;
+
+		return remotePath;
+
+	}
+
+	/** relative artifact path on source or target server */
+	protected String remotePath(final String artifact) {
+		return remotePath() + "/" + artifact;
 	}
 
 }

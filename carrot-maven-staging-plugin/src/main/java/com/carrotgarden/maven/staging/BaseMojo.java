@@ -22,7 +22,7 @@ public abstract class BaseMojo extends AbstractMojo {
 	 * @required
 	 * @readonly
 	 */
-	protected ArtifactRepository localRepository;
+	protected ArtifactRepository localRepo;
 	/**
 	 * The Maven BuildPluginManager component.
 	 * 
@@ -42,7 +42,7 @@ public abstract class BaseMojo extends AbstractMojo {
 	 * @parameter default-value="${project.remotePluginRepositories}"
 	 * @readonly
 	 */
-	protected List<RemoteRepository> remoteRepos;
+	protected List<RemoteRepository> remoteRepoList;
 	/**
 	 * @parameter default-value="${repositorySystemSession}"
 	 * @readonly
@@ -68,7 +68,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
 		request.setArtifact(artifact);
 
-		request.setRepositories(remoteRepos);
+		request.setRepositories(remoteRepoList);
 
 		try {
 
@@ -93,7 +93,7 @@ public abstract class BaseMojo extends AbstractMojo {
 
 		request.setArtifact(artifact);
 
-		request.setRepositories(remoteRepos);
+		request.setRepositories(remoteRepoList);
 
 		try {
 

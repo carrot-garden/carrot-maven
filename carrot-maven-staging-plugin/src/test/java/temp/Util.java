@@ -1,4 +1,4 @@
-package com.carrotgarden.maven.staging;
+package temp;
 
 import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 

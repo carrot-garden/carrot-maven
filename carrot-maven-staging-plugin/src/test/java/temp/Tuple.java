@@ -1,4 +1,4 @@
-package com.carrotgarden.maven.staging;
+package temp;
 
 import java.util.ArrayList;
 import java.util.List;
