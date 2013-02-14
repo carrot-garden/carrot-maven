@@ -9,10 +9,10 @@
 package com.carrotgarden.maven.aws.ecc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -179,7 +179,7 @@ public class ElastiCompImageList extends ElastiComp {
 				.get(imageMapResultProperty);
 
 		if (imageMap == null) {
-			imageMap = new HashMap<String, List<Image>>();
+			imageMap = new TreeMap<String, List<Image>>();
 			props.put(imageMapResultProperty, imageMap);
 		}
 
