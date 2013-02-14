@@ -8,8 +8,10 @@
 package com.carrotgarden.maven.aws.ecc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 
@@ -28,6 +30,7 @@ import com.amazonaws.services.ec2.model.DescribeImagesResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.EbsBlockDevice;
+import com.amazonaws.services.ec2.model.Filter;
 import com.amazonaws.services.ec2.model.Image;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.InstanceStateName;
@@ -403,6 +406,57 @@ public class CarrotElasticCompute {
 		}
 
 		logger.info("removed imageId = " + imageId);
+
+	}
+
+	/** List AMI images matching a given filter and regex. */
+	public List<Image> imageList(//
+			final String imageFilter, //
+			final String imageRegex, //
+			final String entrySplit, //
+			final String keySplit, //
+			final String valueSplit //
+	) throws Exception {
+
+		final String[] entryArray = imageFilter.split(entrySplit);
+
+		final List<Filter> filterList = new ArrayList<Filter>();
+
+		for (final String entry : entryArray) {
+
+			final String[] termArray = entry.split(keySplit);
+
+			final String key = termArray[0];
+			final String valuesText = termArray[1];
+
+			final String[] valueArray = valuesText.split(valueSplit);
+
+			final Filter filter = new Filter(key, Arrays.asList(valueArray));
+
+			filterList.add(filter);
+
+		}
+
+		final DescribeImagesRequest request = new DescribeImagesRequest();
+		request.setFilters(filterList);
+
+		final DescribeImagesResult result = amazonClient
+				.describeImages(request);
+
+		final List<Image> resultImages = result.getImages();
+
+		final List<Image> imageList = new ArrayList<Image>();
+
+		final Pattern pattern = Pattern.compile(imageRegex);
+
+		for (final Image image : resultImages) {
+			final String search = image.toString();
+			if (pattern.matcher(search).matches()) {
+				imageList.add(image);
+			}
+		}
+
+		return imageList;
 
 	}
 

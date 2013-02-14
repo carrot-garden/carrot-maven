@@ -1,12 +1,5 @@
-<!--
-
-    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
-
-    All rights reserved. Licensed under the OSI BSD License.
-
-    http://www.opensource.org/licenses/bsd-license.php
-
--->
+<!-- Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com> 
+	All rights reserved. Licensed under the OSI BSD License. http://www.opensource.org/licenses/bsd-license.php -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -16,7 +9,7 @@
 		<groupId>com.carrotgarden.base</groupId>
 		<artifactId>carrot-archon</artifactId>
 		<version>1.2.0</version>
-		<relativePath/>
+		<relativePath />
 	</parent>
 
 	<artifactId>carrot-maven-aws-plugin-test-image-build</artifactId>
@@ -36,6 +29,52 @@
 
 
 	<profiles>
+
+		<profile>
+
+			<id>image-list</id>
+
+			<build>
+
+				<plugins>
+
+					<plugin>
+
+						<groupId>com.carrotgarden.maven</groupId>
+						<artifactId>carrot-maven-aws-plugin</artifactId>
+						<version>1.2.3-SNAPSHOT</version>
+
+						<configuration>
+
+							<!-- used by cloud formation & elastic compute goals -->
+							<!-- <amazonRegion>eu-west-1</amazonRegion> -->
+							<!-- <amazonRegion>us-east-1</amazonRegion> -->
+							<amazonRegion>${amazonRegion}</amazonRegion>
+
+							<!-- used by elastic compute goals -->
+							<computeServerId>com.carrotgarden.aws.compute</computeServerId>
+							
+						</configuration>
+
+						<executions>
+
+							<execution>
+								<id>image-list</id>
+								<phase>package</phase>
+								<goals>
+									<goal>elastic-compute-image-list</goal>
+								</goals>
+							</execution>
+
+						</executions>
+
+					</plugin>
+
+				</plugins>
+
+			</build>
+
+		</profile>
 
 		<profile>
 

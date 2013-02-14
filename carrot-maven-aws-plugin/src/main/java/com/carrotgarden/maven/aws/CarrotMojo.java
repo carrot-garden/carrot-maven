@@ -110,6 +110,9 @@ public abstract class CarrotMojo extends AbstractMojo {
 		}
 	}
 
+	/**
+	 * @return if propName present - "project.propName", otherwise "propValue"
+	 */
 	protected String projectValue(final String propValue, final String propName) {
 		if (propName == null) {
 			return propValue;
