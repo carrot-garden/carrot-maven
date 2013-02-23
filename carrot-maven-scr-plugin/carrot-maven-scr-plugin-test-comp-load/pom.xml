@@ -1,62 +1,72 @@
-<!--
-
-    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
-
-    All rights reserved. Licensed under the OSI BSD License.
-
-    http://www.opensource.org/licenses/bsd-license.php
-
--->
+<!-- Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com> 
+	All rights reserved. Licensed under the OSI BSD License. http://www.opensource.org/licenses/bsd-license.php -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.carrotgarden.base</groupId>
-		<artifactId>carrot-archon</artifactId>
-		<version>1.2.1</version>
-	</parent>
+	<!-- <parent> -->
+	<!-- <groupId>com.carrotgarden.base</groupId> -->
+	<!-- <artifactId>carrot-archon</artifactId> -->
+	<!-- <version>1.5.0</version> -->
+	<!-- <relativePath /> -->
+	<!-- </parent> -->
 
+	<groupId>com.carrotgarden.test</groupId>
 	<artifactId>carrot-maven-scr-plugin-test-comp-load</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<properties>
 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
 		<carrotJavaVersion>1.6</carrotJavaVersion>
 
-		<carrotScrAnnoVersion>1.1.3</carrotScrAnnoVersion>
+		<projectAnnoVersion>2.0.0-SNAPSHOT</projectAnnoVersion>
+
+		<projectOsgiVersion>4.3.1</projectOsgiVersion>
+
+		<projectScrPluginVersion>2.0.0-SNAPSHOT</projectScrPluginVersion>
+		<projectBndPluginVersion>2.3.7</projectBndPluginVersion>
 
 	</properties>
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.carrotgarden.osgi</groupId>
-			<artifactId>carrot-osgi-anno-scr-core</artifactId>
-			<version>${carrotScrAnnoVersion}</version>
-		</dependency>
-
+		<!-- Logging library. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<version>1.7.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
+			<version>1.0.9</version>
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- OSGI specification with DS annotations. -->
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.core</artifactId>
+			<version>${projectOsgiVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
 			<artifactId>org.osgi.compendium</artifactId>
+			<version>${projectOsgiVersion}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- OSGI addendum with custom DS annotations. -->
+		<dependency>
+			<groupId>com.carrotgarden.osgi</groupId>
+			<artifactId>carrot-osgi-anno-scr-core</artifactId>
+			<version>${projectAnnoVersion}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -69,12 +79,13 @@
 			<plugin>
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${projectScrPluginVersion}</version>
 				<configuration>
+					<!-- Unwanted interfaces. -->
 					<excludedServices>
 						<service>java.lang.Runnable</service>
 					</excludedServices>
-					<!-- eclipse maven console -->
+					<!-- Eclipse maven console settings. -->
 					<eclipseSettings>
 						<logBuildTimes>true</logBuildTimes>
 						<logErrorTraces>true</logErrorTraces>
@@ -93,7 +104,7 @@
 					</execution>
 					<execution>
 						<id>generate</id>
-						<phase>prepare-package</phase>
+						<phase>process-classes</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -104,6 +115,8 @@
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
+				<version>${projectBndPluginVersion}</version>
+				<extensions>true</extensions>
 				<configuration>
 					<instructions>
 						<Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
@@ -113,6 +126,36 @@
 
 		</plugins>
 
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.carrotgarden.maven</groupId>
+										<artifactId>carrot-maven-scr-plugin</artifactId>
+										<versionRange>[2.0.0-SNAPSHOT,)</versionRange>
+										<goals>
+											<goal>generate</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

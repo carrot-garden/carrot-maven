@@ -9,10 +9,13 @@ package com.carrotgarden.maven.scr;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Execute;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 
 /**
- * clean component descriptors from outputDirectorySCR
+ * Clean component descriptors from outputDirectorySCR
  * 
  * @goal clean
  * 
@@ -31,67 +34,34 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	@Override
 	public void execute() throws MojoFailureException {
 
-		if (!isProperPackaging()) {
-			getLog().info("skip for packaging=" + project.getPackaging());
-			return;
-		}
+		try {
 
-		//
-
-		final File folder = outputDirectorySCR();
-
-		getLog().info("");
-
-		getLog().info("delete : " + folder);
-
-		if (folder.exists()) {
-
-			final boolean isDelete = deleteDir(folder);
-
-			if (!isDelete) {
-				getLog().warn("delete failed");
+			if (!isProperPackaging()) {
+				getLog().info("skip for packaging=" + project.getPackaging());
+				return;
 			}
 
-		}
+			//
 
-		getLog().info("create : " + folder);
+			final File folder = outputDirectorySCR();
 
-		if (!folder.exists()) {
+			getLog().info("");
 
-			final boolean isCreate = folder.mkdirs();
-
-			if (!isCreate) {
-				getLog().warn("create failed");
+			if (folder.exists()) {
+				getLog().info("folder delete : " + folder);
+				FileUtils.deleteDirectory(folder);
 			}
 
-		}
-
-	}
-
-	/**
-	 * Deletes all files and subdirectories under dir. Returns true if all
-	 * deletions were successful. If a deletion fails, the method stops
-	 * attempting to delete and returns false.
-	 */
-	protected static boolean deleteDir(final File dir) {
-
-		if (dir.isDirectory()) {
-
-			final String[] children = dir.list();
-
-			for (int i = 0; i < children.length; i++) {
-
-				final boolean success = deleteDir(new File(dir, children[i]));
-
-				if (!success) {
-					return false;
+			if (!folder.exists()) {
+				getLog().info("folder create : " + folder);
+				if (!folder.mkdirs()) {
+					throw new IllegalStateException("Folder create failure.");
 				}
-
 			}
 
+		} catch (Throwable e) {
+			throw new MojoFailureException("bada-boom", e);
 		}
-
-		return dir.delete();
 
 	}
 

@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -21,7 +22,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 
 /**
- * generate component descriptors form annotated java classes
+ * Generate component descriptors form annotated java classes.
  * 
  * @goal generate
  * 
@@ -72,11 +73,11 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		}
 
 		if (isProcessMainClasses) {
-			processClassesDirectory(ClassesSelector.COMPILE);
+			processClassFolder(ClassesSelector.COMPILE);
 		}
 
 		if (isProcessTestClasses) {
-			processClassesDirectory(ClassesSelector.TESTING);
+			processClassFolder(ClassesSelector.TESTING);
 		}
 
 		if (isIncludeEmptyDescriptor) {
@@ -103,44 +104,53 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 	}
 
-	protected void processClassesDirectory(final ClassesSelector selector)
+	/**
+	 * Generate DS component descriptors for given class path type.
+	 */
+	protected void processClassFolder(final ClassesSelector selector)
 			throws MojoFailureException {
 
 		try {
 
+			final Pattern excludePattern = Pattern
+					.compile(excludeFileNameRegex);
+
 			final File classesDirectory = selector.getClassesDirectory(this);
 
-			if (isValidDirectory(classesDirectory)) {
-				getLog().info("");
-				getLog().info("input classes = " + classesDirectory);
-			} else {
-				throw new MojoFailureException("classes directory invalid");
-			}
+			MojoUtil.ensureFolder(classesDirectory);
 
-			/** collect all class files */
+			getLog().info("");
+			getLog().info("input classes = " + classesDirectory);
+
+			/** Collect all class files. */
 			@SuppressWarnings("unchecked")
 			final Iterator<File> iter = FileUtils.iterateFiles(
 					classesDirectory, EXTENSIONS, IS_RECURSIVE);
 
-			final ClassLoader loader = getClassloader(selector);
+			final ClassLoader loader = makeClassLoader(selector);
 
 			getLog().info("");
 			getLog().info("output directory = " + outputDirectorySCR());
 
 			while (iter.hasNext()) {
 
-				/** discovered *.class file */
+				/** Discovered *.class file. */
 				final File file = iter.next();
 
-				/** resolved class name */
-				final String name = getClassName(classesDirectory, file);
+				/** Ignore excluded files. */
+				if (excludePattern.matcher(file.getName()).matches()) {
+					continue;
+				}
+
+				/** Resolved class name. */
+				final String name = makeClassName(classesDirectory, file);
 
 				getLog().debug("\t class : " + name);
 
-				/** make individual descriptor */
-				final String text = getMaker().make(loader, name);
+				/** Make individual descriptor. */
+				final String text = maker().make(loader, name);
 
-				/** non component returns null */
+				/** Non components returns null. */
 				final boolean isComponent = text != null;
 
 				allclassesCounter++;
@@ -184,13 +194,11 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	}
 
 	/**
-	 * 
-	 * descriptor file name convention:
-	 * 
+	 * Descriptor file name convention:
+	 * <p>
 	 * from: com.carrotgarden.test.TestComp
-	 * 
+	 * <p>
 	 * into: com.carrotgarden.test.TestComp.xml
-	 * 
 	 */
 	protected void saveDescriptor(final String name, final String text)
 			throws Exception {
@@ -206,9 +214,11 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	}
 
 	/**
+	 * Generate full java class name.
+	 * 
 	 * @return java class FQN
 	 */
-	protected String getClassName(final File classesDirectory,
+	protected String makeClassName(final File classesDirectory,
 			final File classFile) {
 
 		final URI folderURI = classesDirectory.toURI();
@@ -234,10 +244,12 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	}
 
 	/**
-	 * @return class loader that will include both project and plugin
+	 * Generate extended class loader.
+	 * 
+	 * @return class loader that will include both project and plug-in
 	 *         dependencies
 	 **/
-	protected ClassLoader getClassloader(final ClassesSelector selector)
+	protected ClassLoader makeClassLoader(final ClassesSelector selector)
 			throws Exception {
 
 		final List<String> pathList = selector.getClasspathElements(project);
@@ -251,16 +263,21 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			entryUrlArray[index++] = entryURL;
 		}
 
-		/** maven plugin class loader */
-		final ClassLoader TCCL = Thread.currentThread().getContextClassLoader();
+		/** Maven plug-in class loader. */
+		final ClassLoader parentLoader = Thread.currentThread()
+				.getContextClassLoader();
 
-		/** class path loader for a selector */
-		final URLClassLoader loader = new URLClassLoader(entryUrlArray, TCCL);
+		/** Combo class path loader for a selector. */
+		final URLClassLoader customLoader = new URLClassLoader(entryUrlArray,
+				parentLoader);
 
-		return loader;
+		return customLoader;
 
 	}
 
+	/**
+	 * Class selector: compile vs testing class path.
+	 */
 	protected enum ClassesSelector {
 
 		COMPILE() {
@@ -302,6 +319,9 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 	}
 
+	/**
+	 * Attach descriptor resource to final jar.
+	 */
 	protected void includeDescriptorResource() {
 
 		final Resource resource = new Resource();
@@ -321,6 +341,9 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 	protected static final String NULL_XML = "null.xml";
 
+	/**
+	 * Attach placeholder DS component descriptor to final jar.
+	 */
 	protected void includeEmptyDescriptor() throws MojoFailureException {
 
 		final URL source = getClass().getResource(NULL_XML);

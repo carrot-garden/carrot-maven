@@ -18,25 +18,42 @@ import org.apache.maven.project.MavenProject;
 import com.carrotgarden.osgi.anno.scr.make.Maker;
 
 /**
+ * Base for maven goals.
  */
 public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
+	 * Java class extension during class discovery.
+	 */
+	protected static final String[] EXTENSIONS = new String[] { "class" };
+
+	/** Find classes from all packages during class discovery */
+	protected static final boolean IS_RECURSIVE = true;
+
+	/**
+	 * Exclude java *.class files with this file name regex expression.
+	 * 
+	 * @required
+	 * @parameter default-value= ".*-.*"
+	 */
+	protected String excludeFileNameRegex;
+
+	/**
 	 * @readonly
 	 * @required
-	 * @parameter expression="${project}"
+	 * @parameter property="project"
 	 */
 	protected MavenProject project;
 
 	/**
-	 * map of key/value settings for eclipse m2e scr connector
+	 * Map of "key=value" settings for eclipse m2e scr connector.
 	 * 
 	 * @parameter
 	 */
 	protected Map<String, String> eclipseSettings = new HashMap<String, String>();
 
 	/**
-	 * location of generated scr component descriptor files in final bundle
+	 * Location of generated DS component descriptor files in final bundle.
 	 * 
 	 * @required
 	 * @parameter default-value= "OSGI-INF/service-component"
@@ -44,7 +61,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected String targetDirectorySCR;
 
 	/**
-	 * default extension used for generated scr component descriptor files
+	 * Default extension used for generated DS component descriptor files.
 	 * 
 	 * @required
 	 * @parameter default-value="xml"
@@ -52,7 +69,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected String outputExtensionSCR;
 
 	/**
-	 * location of compiled "main" class files
+	 * Location of compiled "main" class files.
 	 * 
 	 * @required
 	 * @parameter default-value="${project.build.outputDirectory}"
@@ -60,7 +77,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected File outputMainClasses;
 
 	/**
-	 * location of compiled "test" class files
+	 * Location of compiled "test" class files.
 	 * 
 	 * @required
 	 * @parameter default-value="${project.build.testOutputDirectory}"
@@ -68,7 +85,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected File outputTestClasses;
 
 	/**
-	 * collection of names of unwanted component service interfaces
+	 * Collection of names of unwanted component service interfaces.
 	 * 
 	 * @required
 	 * @parameter default-value="java.lang.Cloneable"
@@ -76,7 +93,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected Set<String> excludedServices;
 
 	/**
-	 * should "main" classes be processed?
+	 * Should "main" classes be processed?
 	 * 
 	 * @required
 	 * @parameter default-value="true"
@@ -84,7 +101,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected boolean isProcessMainClasses;
 
 	/**
-	 * should "test" classes be processed?
+	 * Should "test" classes be processed?
 	 * 
 	 * @required
 	 * @parameter default-value="false"
@@ -92,7 +109,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected boolean isProcessTestClasses;
 
 	/**
-	 * should include an empty component descriptor?
+	 * Should include an empty component descriptor?
 	 * 
 	 * @required
 	 * @parameter default-value="true"
@@ -108,8 +125,8 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected boolean isIncludeGeneratedDescritors;
 
 	/**
-	 * collection of names of known maven project packaging types for which to
-	 * invoke this plug-in
+	 * Collection of names of known maven project packaging types for which to
+	 * invoke this plug-in.
 	 * 
 	 * @required
 	 * @parameter default-value="bundle"
@@ -119,7 +136,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	// ####################################################
 
 	/**
-	 * such as "./target/OSGI-INF/service-component"
+	 * Build output directory, such as "./target/OSGI-INF/service-component".
 	 */
 	protected File outputDirectorySCR() {
 
@@ -127,6 +144,9 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	}
 
+	/**
+	 * Check if current project packaging is proper for goal execution.
+	 */
 	protected boolean isProperPackaging() {
 
 		final String packaging = project.getPackaging();
@@ -143,47 +163,14 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	private Maker maker;
 
-	protected Maker getMaker() {
+	/**
+	 * Maker of DS component descriptions..
+	 */
+	protected Maker maker() {
 		if (maker == null) {
 			maker = new Maker(excludedServices);
 		}
 		return maker;
 	}
-
-	protected static boolean isValidDirectory(final File file) {
-
-		if (file == null) {
-			return false;
-		}
-
-		if (!file.exists()) {
-			return false;
-		}
-
-		if (!file.isDirectory()) {
-			return false;
-		}
-
-		if (!file.canRead()) {
-			return false;
-		}
-
-		if (!file.canWrite()) {
-			return false;
-		}
-
-		return true;
-
-	}
-
-	//
-
-	/** java class extension during class discovery */
-	protected static final String[] EXTENSIONS = new String[] { "class" };
-
-	/** find classes from all packages during class discovery */
-	protected static final boolean IS_RECURSIVE = true;
-
-	//
 
 }

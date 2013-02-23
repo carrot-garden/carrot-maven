@@ -1,0 +1,27 @@
+<lifecycles>
+	<lifecycle>
+		<id>default</id>
+		<phases>
+			<phase>
+				<id>clean</id>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+					</execution>
+				</executions>
+			</phase>
+			<phase>
+				<id>process-classes</id>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</phase>
+		</phases>
+	</lifecycle>
+</lifecycles>
