@@ -13,7 +13,7 @@
   <skin>
   	<groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.1</version>
+    <version>1.3.0</version>
   </skin>
 
   <custom>
@@ -47,8 +47,8 @@
     </menu>
     
     <menu name="Examples">
-      <item name="Components" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-comp-load"/>
-      <item name="Skip pom.xml" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-skip-pom"/>
+      <item name="Test 1" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-1"/>
+      <item name="Test 2" href="https://github.com/carrot-garden/carrot-maven/tree/master/carrot-maven-scr-plugin/carrot-maven-scr-plugin-test-2"/>
     </menu>
         
     <menu ref="reports"/>
