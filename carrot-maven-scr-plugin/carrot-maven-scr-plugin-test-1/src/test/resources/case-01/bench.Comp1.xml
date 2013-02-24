@@ -1,0 +1,6 @@
+<container xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+  <component name="bench.Comp1" activate="activate1">
+    <implementation class="bench.Comp1"/>
+    <reference name="java.lang.Runnable/*" interface="java.lang.Runnable" bind="bind" unbind="unbind"/>
+  </component>
+</container>

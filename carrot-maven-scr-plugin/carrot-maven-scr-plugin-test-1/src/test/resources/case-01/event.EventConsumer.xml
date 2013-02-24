@@ -1,0 +1,9 @@
+<container xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+  <component name="event.EventConsumer">
+    <implementation class="event.EventConsumer"/>
+    <service>
+      <provide interface="org.osgi.service.event.EventHandler"/>
+    </service>
+    <property name="event.topics" type="String">event/EventTest/START</property>
+  </component>
+</container>
