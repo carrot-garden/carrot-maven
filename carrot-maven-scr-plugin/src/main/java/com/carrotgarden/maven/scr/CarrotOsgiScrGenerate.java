@@ -35,7 +35,14 @@ import org.apache.maven.project.MavenProject;
  */
 public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
+	/**
+	 * Progress counter.
+	 */
 	private int descriptorCounter;
+
+	/**
+	 * Progress counter.
+	 */
 	private int allclassesCounter;
 
 	/**
@@ -176,9 +183,9 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			getLog().info("");
 
 			if (descriptorCounter == 0) {
-				getLog().warn("did not find any active scr components");
+				getLog().warn("Did not find any active scr components.");
 			} else {
-				getLog().info("active components count = " + descriptorCounter);
+				getLog().info("Active components count = " + descriptorCounter);
 			}
 
 		} catch (final MojoFailureException exception) {
@@ -187,7 +194,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		} catch (final Throwable exception) {
 
-			throw new MojoFailureException("execution failure", exception);
+			throw new MojoFailureException("Execution failure.", exception);
 
 		}
 
@@ -227,12 +234,11 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		final String path = folderURI.relativize(fileURI).getPath();
 
 		/**
-		 * cut out file extension and convert to java class FQN
-		 * 
+		 * Cut out file extension and convert to java class FQN.
+		 * <p>
 		 * from: com/carrotgarden/test/TestComp.class
-		 * 
+		 * <p>
 		 * into: com.carrotgarden.test.TestComp
-		 * 
 		 */
 
 		final int index = path.lastIndexOf(".");
@@ -312,9 +318,15 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		;
 
+		/**
+		 * List of dependency class path elements for a project.
+		 */
 		public abstract List<String> getClasspathElements(MavenProject project)
 				throws DependencyResolutionRequiredException;
 
+		/**
+		 * Maven build output folder for a selector.
+		 */
 		public abstract File getClassesDirectory(CarrotOsgiScrGenerate mojo);
 
 	}

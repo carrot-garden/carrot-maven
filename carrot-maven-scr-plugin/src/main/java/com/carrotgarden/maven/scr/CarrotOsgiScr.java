@@ -18,7 +18,7 @@ import org.apache.maven.project.MavenProject;
 import com.carrotgarden.osgi.anno.scr.make.Maker;
 
 /**
- * Base for maven goals.
+ * Base for Maven goals.
  */
 public abstract class CarrotOsgiScr extends AbstractMojo {
 
@@ -39,6 +39,8 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected String excludeFileNameRegex;
 
 	/**
+	 * Current maven pom.xml.
+	 * 
 	 * @readonly
 	 * @required
 	 * @parameter property="project"
@@ -46,7 +48,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected MavenProject project;
 
 	/**
-	 * Map of "key=value" settings for eclipse m2e scr connector.
+	 * Map of "key=value" settings for Eclipse m2e-scr connector plugin.
 	 * 
 	 * @parameter
 	 */
@@ -164,7 +166,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	private Maker maker;
 
 	/**
-	 * Maker of DS component descriptions..
+	 * Maker of DS component descriptors.
 	 */
 	protected Maker maker() {
 		if (maker == null) {

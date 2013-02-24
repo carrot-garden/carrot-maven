@@ -15,7 +15,7 @@ import org.apache.maven.plugins.annotations.Execute;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 
 /**
- * Clean component descriptors from outputDirectorySCR
+ * Clean component descriptors from {@link #outputDirectorySCR}.
  * 
  * @goal clean
  * 
