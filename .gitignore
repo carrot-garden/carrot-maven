@@ -16,5 +16,3 @@ logs/
 
 release.properties
 pom.xml.*
-
-!/.project
