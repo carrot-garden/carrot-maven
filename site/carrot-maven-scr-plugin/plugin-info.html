@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>carrot-maven-scr-plugin - Project Distribution Management</title>
+    <title>carrot-maven-scr-plugin - Plugin Documentation</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -73,8 +73,8 @@
                           <a href="index.html" title="About">About</a>
             </li>
                   <li class="none">
-                          <a href="plugin-info.html" title="Plugin Goals">Plugin Goals</a>
-            </li>
+            <strong>Plugin Goals</strong>
+          </li>
           </ul>
                        <h5>Examples</h5>
                   <ul>
@@ -87,56 +87,29 @@
           </ul>
                        <h5>Project Documentation</h5>
                   <ul>
-                                                                                                                                                                                                                                                                                                                        <li class="expanded">
+                                                                                                                                                                                                                                                                                                              <li class="collapsed">
                           <a href="project-info.html" title="Project Information">Project Information</a>
+                  </li>
+                                                                                                                                                      <li class="expanded">
+                          <a href="project-reports.html" title="Project Reports">Project Reports</a>
                     <ul>
                       <li class="none">
-                          <a href="index.html" title="About">About</a>
+                          <a href="xref/index.html" title="Source Xref">Source Xref</a>
             </li>
                       <li class="none">
-                          <a href="team-list.html" title="Project Team">Project Team</a>
+                          <a href="xref-test/index.html" title="Test Source Xref">Test Source Xref</a>
             </li>
                       <li class="none">
-                          <a href="dependency-info.html" title="Dependency Information">Dependency Information</a>
+                          <a href="testapidocs/index.html" title="Test JavaDocs">Test JavaDocs</a>
             </li>
                       <li class="none">
-                          <a href="dependency-management.html" title="Dependency Management">Dependency Management</a>
+                          <a href="apidocs/index.html" title="JavaDocs">JavaDocs</a>
             </li>
                       <li class="none">
-                          <a href="plugins.html" title="Project Plugins">Project Plugins</a>
-            </li>
-                      <li class="none">
-                          <a href="integration.html" title="Continuous Integration">Continuous Integration</a>
-            </li>
-                      <li class="none">
-                          <a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
-            </li>
-                      <li class="none">
-                          <a href="source-repository.html" title="Source Repository">Source Repository</a>
-            </li>
-                      <li class="none">
-                          <a href="license.html" title="Project License">Project License</a>
-            </li>
-                      <li class="none">
-                          <a href="plugin-management.html" title="Plugin Management">Plugin Management</a>
-            </li>
-                      <li class="none">
-            <strong>Distribution Management</strong>
+            <strong>Plugin Documentation</strong>
           </li>
-                      <li class="none">
-                          <a href="project-summary.html" title="Project Summary">Project Summary</a>
-            </li>
-                      <li class="none">
-                          <a href="mail-lists.html" title="Mailing Lists">Mailing Lists</a>
-            </li>
-                      <li class="none">
-                          <a href="dependencies.html" title="Dependencies">Dependencies</a>
-            </li>
               </ul>
         </li>
-                                                                                                                                            <li class="collapsed">
-                          <a href="project-reports.html" title="Project Reports">Project Reports</a>
-                  </li>
           </ul>
                       
             
@@ -153,7 +126,33 @@
       <div id="bodyColumn" class="content">
         <div id="contentBox">
                               
-          <div class="section"><h2>Overview<a name="Overview"></a></h2><a name="Overview"></a><p>The following is the distribution management information used by this project.</p><div class="section"><h3>Repository - sonatype-nexus-staging<a name="Repository_-_sonatype-nexus-staging"></a></h3><a name="Repository_-_sonatype-nexus-staging"></a><a class="externalLink" href="https://oss.sonatype.org/service/local/staging/deploy/maven2/">https://oss.sonatype.org/service/local/staging/deploy/maven2/</a></div><div class="section"><h3>Snapshot Repository - sonatype-nexus-snapshots<a name="Snapshot_Repository_-_sonatype-nexus-snapshots"></a></h3><a name="Snapshot_Repository_-_sonatype-nexus-snapshots"></a><a class="externalLink" href="https://oss.sonatype.org/content/repositories/snapshots">https://oss.sonatype.org/content/repositories/snapshots</a></div></div>
+          <div class="section"><h2>Plugin Documentation<a name="Plugin_Documentation"></a></h2><a name="Plugin_Documentation"></a><p>Goals available for this plugin:</p><table border="0" class="zebra-striped"><tr class="a"><th>Goal</th><th>Description</th></tr><tr class="b"><td><a href="clean-mojo.html">carrotscr:clean</a></td><td>Clean component descriptors from <code>outputDirectorySCR</code>.</td></tr><tr class="a"><td><a href="generate-mojo.html">carrotscr:generate</a></td><td>Generate component descriptors form annotated java classes.</td></tr></table><div class="section"><h3>System Requirements<a name="System_Requirements"></a></h3><a name="System_Requirements"></a><p>The following specifies the minimum requirements to run this Maven plugin:</p><table border="0" class="zebra-striped"><tr class="a"><td>Maven</td><td>3.0.4</td></tr><tr class="b"><td>JDK</td><td>1.6</td></tr><tr class="a"><td>Memory</td><td>No minimum requirement.</td></tr><tr class="b"><td>Disk Space</td><td>No minimum requirement.</td></tr></table></div><div class="section"><h3>Usage<a name="Usage"></a></h3><a name="Usage"></a><p>You should specify the version in your project's plugin configuration:</p><div class="source"><pre class="prettyprint">&lt;project&gt;
+  ...
+  &lt;build&gt;
+    &lt;!-- To define the plugin version in your parent POM --&gt;
+    &lt;pluginManagement&gt;
+      &lt;plugins&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;com.carrotgarden.maven&lt;/groupId&gt;
+          &lt;artifactId&gt;carrot-maven-scr-plugin&lt;/artifactId&gt;
+          &lt;version&gt;2.0.1-SNAPSHOT&lt;/version&gt;
+        &lt;/plugin&gt;
+        ...
+      &lt;/plugins&gt;
+    &lt;/pluginManagement&gt;
+    &lt;!-- To use the plugin goals in your POM or parent POM --&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;com.carrotgarden.maven&lt;/groupId&gt;
+        &lt;artifactId&gt;carrot-maven-scr-plugin&lt;/artifactId&gt;
+        &lt;version&gt;2.0.1-SNAPSHOT&lt;/version&gt;
+      &lt;/plugin&gt;
+      ...
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+  ...
+&lt;/project&gt;
+</pre></div><p>For more information, see <a class="externalLink" href="http://maven.apache.org/guides/mini/guide-configuring-plugins.html">&quot;Guide to Configuring Plug-ins&quot;</a></p></div></div>
                   </div>
       </div>
     </div>
