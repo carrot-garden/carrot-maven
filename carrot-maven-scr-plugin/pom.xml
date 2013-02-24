@@ -20,7 +20,7 @@
 
 	<groupId>com.carrotgarden.maven</groupId>
 	<artifactId>carrot-maven-scr-plugin</artifactId>
-	<version>2.0.2-SNAPSHOT</version>
+	<version>2.0.1</version>
 	<packaging>maven-plugin</packaging>
 
 	<description>${project.organization.name} SCR Maven Plugin</description>
@@ -29,7 +29,7 @@
 		<url>https://github.com/carrot-garden/carrot-maven</url>
 		<connection>scm:git:git://github.com/carrot-garden/carrot-maven.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>carrot-maven-scr-plugin-2.0.1</tag>
 	</scm>
 
 
