@@ -38,7 +38,7 @@
 		<!-- Does not provide DS annotations. -->
 		<projectOsgiVersion>4.2.0</projectOsgiVersion>
 
-		<projectScrPluginVersion>2.0.0-SNAPSHOT</projectScrPluginVersion>
+		<projectScrPluginVersion>2.0.1-SNAPSHOT</projectScrPluginVersion>
 
 		<projectBndPluginVersion>2.3.7</projectBndPluginVersion>
 

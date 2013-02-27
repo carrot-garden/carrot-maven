@@ -33,7 +33,7 @@
 		<projectJavaVersion>1.6</projectJavaVersion>
 
 		<!-- Retain annotations in class only. -->
-		<projectAnnoVersion>2.0.0</projectAnnoVersion>
+		<projectAnnoVersion>2.0.1</projectAnnoVersion>
 		
 		<!-- Provides DS annotations with class retention. -->
 		<projectOsgiVersion>4.3.1</projectOsgiVersion>
