@@ -1,0 +1,49 @@
+<!--
+
+    Copyright (C) 2010-2013 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+
+    All rights reserved. Licensed under the OSI BSD License.
+
+    http://www.opensource.org/licenses/bsd-license.php
+
+-->
+<project default="maven" basedir="./..">
+
+	<echo message="basedir : ${basedir}" />
+
+	<target name="maven">
+
+		<condition property="executable" value="mvn">
+			<os family="unix" />
+		</condition>
+		<condition property="executable" value="mvn.bat">
+			<os family="windows" />
+		</condition>
+
+		<!-- Build plugin. -->
+		<exec executable="${executable}">
+			<arg value="clean" />
+			<arg value="install" />
+		</exec>
+
+		<!-- Invoke tests. -->
+		<exec executable="${executable}" dir="${basedir}/carrot-maven-scr-plugin-test-0">
+			<arg value="clean" />
+			<arg value="verify" />
+		</exec>
+		<exec executable="${executable}" dir="${basedir}/carrot-maven-scr-plugin-test-1">
+			<arg value="clean" />
+			<arg value="verify" />
+		</exec>
+		<exec executable="${executable}" dir="${basedir}/carrot-maven-scr-plugin-test-2">
+			<arg value="clean" />
+			<arg value="verify" />
+		</exec>
+		<exec executable="${executable}" dir="${basedir}/carrot-maven-scr-plugin-test-3">
+			<arg value="clean" />
+			<arg value="verify" />
+		</exec>
+
+	</target>
+
+</project>

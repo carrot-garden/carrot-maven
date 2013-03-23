@@ -7,6 +7,8 @@
  */
 package com.carrotgarden.maven.scr;
 
+import static com.carrotgarden.maven.scr.MojoUtil.*;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -34,17 +36,17 @@ import org.apache.maven.plugin.MojoFailureException;
 public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 	/**
-	 * Empty DS descriptor included in plugin jar.
+	 * Empty DS descriptor included in the plugin jar.
 	 */
 	protected static final String NULL_XML = "null.xml";
 
 	/**
-	 * Progress counter.
+	 * Progress counter for all classes.
 	 */
 	private int allclassesCounter;
 
 	/**
-	 * Progress counter.
+	 * Progress counter for DS component classes.
 	 */
 	private int descriptorCounter;
 
@@ -55,12 +57,23 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	public void execute() throws MojoFailureException {
 		try {
 
+			contextMessageClear(project.getFile());
+
 			logInfo("generate");
 			logInfo("incremental: " + isContextIncremental());
 
 			if (!isProperPackaging()) {
 				logInfo("skip for packaging=" + project.getPackaging());
 				return;
+			}
+
+			final File folder = outputDirectorySCR();
+			if (!folder.exists()) {
+				logDebug("");
+				logDebug("folder created : " + folder);
+				if (!folder.mkdirs()) {
+					throw new IllegalStateException("folder create failure");
+				}
 			}
 
 			logDebug("");
@@ -74,8 +87,6 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			for (final String packaging : properPackaging) {
 				logDebug("\t packaging=" + packaging);
 			}
-
-			//
 
 			descriptorCounter = 0;
 			allclassesCounter = 0;
@@ -99,16 +110,10 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			}
 
 			if (isIncludeGeneratedDescritors) {
-				if (isContextFull()) {
-					includeDescriptorResource();
-				} else {
-					/** Do not register resource on incremental build. */
-				}
+				includeDescriptorResource();
 			}
 
 			final long timeFinish = System.nanoTime();
-
-			//
 
 			logDebug("");
 
@@ -120,48 +125,63 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			logDebug("time, millis total     = " + timeDiff / 1000 / 1000);
 			logDebug("rate, millis per descr = " + timeRate / 1000 / 1000);
 
-		} catch (final Throwable exception) {
-			throw new MojoFailureException("bada-boom", exception);
+		} catch (final Throwable e) {
+			contextMessageError(project.getFile(), "generate failure", e);
+			throw new MojoFailureException("bada-boom", e);
 		}
 	}
 
 	/**
-	 * Attach descriptor resource to the final jar.
+	 * Attach DS descriptor folder resource to the final jar.
 	 */
 	protected void includeDescriptorResource() {
 
-		final Resource resource = new Resource();
+		if (isContextIncremental()) {
+			logDebug("skip including descriptor resource for incremental build");
+			return;
+		}
 
 		final String sourcePath = outputDirectorySCR().getPath();
 		final String targetPath = targetDirectorySCR;
 
+		final Resource resource = new Resource();
 		resource.setDirectory(sourcePath);
 		resource.setTargetPath(targetPath);
 
 		logDebug("");
 		logDebug("including descriptor resource = " + resource);
 
-		project.addResource(resource);
+		final List<Resource> resourceList = project.getResources();
+
+		for (final Resource existing : resourceList) {
+			if (resource.getTargetPath().equals(existing.getTargetPath())) {
+				logDebug("overriding descriptor resource = " + existing);
+				resourceList.remove(existing);
+			}
+		}
+
+		resourceList.add(resource);
 
 	}
 
 	/**
 	 * Attach empty place holder DS component descriptor to the final jar.
 	 */
-	protected void includeEmptyDescriptor() throws MojoFailureException {
+	protected void includeEmptyDescriptor() throws Exception {
+
+		if (isContextIncremental()) {
+			logDebug("skip including empty descriptor for incremental build");
+			return;
+		}
 
 		final URL source = getClass().getResource(NULL_XML);
 
-		final File target = new File(outputDirectorySCR(), NULL_XML);
-
-		try {
-			FileUtils.copyURLToFile(source, target);
-		} catch (final Exception e) {
-			throw new MojoFailureException("can not get " + NULL_XML, e);
-		}
+		final File target = absolute(new File(outputDirectorySCR(), NULL_XML));
 
 		logDebug("");
 		logDebug("including empty descriptor = " + target);
+
+		FileUtils.copyURLToFile(source, target);
 
 	}
 
@@ -180,7 +200,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		int index = 0;
 		for (final String path : pathList) {
-			final URL entryURL = new File(path).toURI().toURL();
+			final URL entryURL = absolute(path).toURI().toURL();
 			logDebug("\t dependency = " + entryURL);
 			entryUrlArray[index++] = entryURL;
 		}
@@ -205,8 +225,8 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	protected String makeClassName(final File classesDirectory,
 			final File classFile) {
 
-		final URI folderURI = classesDirectory.toURI();
-		final URI fileURI = classFile.toURI();
+		final URI folderURI = absolute(classesDirectory).toURI();
+		final URI fileURI = absolute(classFile).toURI();
 
 		final String path = folderURI.relativize(fileURI).getPath();
 
@@ -239,22 +259,31 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	protected void processClassFolder(final ClassesSelector selector)
 			throws Throwable {
 
-		final Pattern excludePattern = Pattern.compile(excludeFileNameRegex);
-
 		final File classesDirectory = selector.getClassesDirectory(this);
 
-		MojoUtil.ensureFolder(classesDirectory);
-
 		logDebug("");
-		logDebug("input classes = " + classesDirectory);
+		if (!classesDirectory.exists()) {
+			logDebug("skip for missing classes directory");
+			return;
+		} else {
+			logDebug("input classes = " + classesDirectory);
+		}
 
 		/** Collect all class files. */
 		final Iterator<File> iter = processIterator(classesDirectory);
+
+		if (!iter.hasNext()) {
+			logDebug("");
+			logDebug("skip for no changes in classes directory");
+			return;
+		}
 
 		final ClassLoader loader = makeClassLoader(selector);
 
 		logDebug("");
 		logDebug("output directory = " + outputDirectorySCR());
+
+		final Pattern excludePattern = Pattern.compile(excludeFileNameRegex);
 
 		while (iter.hasNext()) {
 
@@ -276,7 +305,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			/** Make individual descriptor. */
 			final String text = maker().make(loader, name);
 
-			/** Non components returns null. */
+			/** Non components return null. */
 			final boolean isComponent = text != null;
 
 			allclassesCounter++;
@@ -300,7 +329,6 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		}
 
 		logInfo("");
-
 		if (descriptorCounter == 0) {
 			logInfo("did not find any active scr components.");
 		} else {
@@ -330,7 +358,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 
 		final File file = new File(outputDirectorySCR(), outputFileSCR(name));
 
-		FileUtils.writeStringToFile(file, text);
+		FileUtils.writeStringToFile(absolute(file), text);
 
 		contextRefresh(file);
 

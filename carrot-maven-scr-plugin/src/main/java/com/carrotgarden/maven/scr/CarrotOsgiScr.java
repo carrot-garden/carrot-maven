@@ -7,6 +7,8 @@
  */
 package com.carrotgarden.maven.scr;
 
+import static com.carrotgarden.maven.scr.MojoUtil.*;
+
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +40,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 			@Override
 			public File getClassesDirectory(final CarrotOsgiScr mojo) {
-				return mojo.outputMainClasses;
+				return absolute(mojo.outputMainClasses);
 			}
 
 			@Override
@@ -56,7 +58,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 			@Override
 			public File getClassesDirectory(final CarrotOsgiScr mojo) {
-				return mojo.outputTestClasses;
+				return absolute(mojo.outputTestClasses);
 			}
 
 			@Override
@@ -213,7 +215,7 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * Location of generated DS component descriptor files in the final bundle
-	 * jar.
+	 * jar. This is a relative path to jar root or target/classes.
 	 * 
 	 * @required
 	 * @parameter default-value= "OSGI-INF/service-component"
@@ -222,6 +224,8 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * Find changed files.
+	 * 
+	 * @return list of relative paths
 	 */
 	protected String[] contextChanged(final File folder,
 			final String... includes) {
@@ -234,6 +238,8 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 
 	/**
 	 * Find deleted files.
+	 * 
+	 * @return list of relative paths
 	 */
 	protected String[] contextDeleted(final File folder,
 			final String... includes) {
@@ -260,7 +266,8 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 			@Override
 			public File next() throws NoSuchElementException {
 				if (hasNext())
-					return new File(folder, relativePathArray[index++]);
+					return absolute(new File(absolute(folder),
+							relativePathArray[index++]));
 				else
 					throw new NoSuchElementException();
 			}
@@ -277,7 +284,23 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	 * Report generated file back to Eclipse.
 	 */
 	protected void contextRefresh(final File file) {
-		buildContext.refresh(file);
+		buildContext.refresh(absolute(file));
+	}
+
+	/**
+	 * Clear Eclipse error log entry.
+	 */
+	protected void contextMessageClear(final File file) {
+		buildContext.removeMessages(absolute(file));
+	}
+
+	/**
+	 * Make entry in Eclipse error log.
+	 */
+	protected void contextMessageError(final File file, final String message,
+			final Throwable cause) {
+		buildContext.addMessage(absolute(file), 0, 0, message,
+				BuildContext.SEVERITY_ERROR, cause);
 	}
 
 	/**
@@ -340,10 +363,12 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	}
 
 	/**
-	 * Build output directory, such as "./target/OSGI-INF/service-component".
+	 * Build output directory, such as
+	 * "${basedir}/target/OSGI-INF/service-component".
 	 */
 	protected File outputDirectorySCR() {
-		return new File(outputMainClasses, targetDirectorySCR);
+		return absolute(new File(absolute(outputMainClasses),
+				targetDirectorySCR));
 	}
 
 }

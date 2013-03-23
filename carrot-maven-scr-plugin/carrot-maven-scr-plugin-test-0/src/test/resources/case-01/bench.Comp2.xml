@@ -1,0 +1,18 @@
+<container xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+  <component name="bench.Comp2" activate="activate1" deactivate="deactivate2">
+    <implementation class="bench.Comp2"/>
+    <service>
+      <provide interface="java.lang.Runnable"/>
+    </service>
+    <property name="AAA" type="String">aaa aaa aaa</property>
+    <property name="good-bye" type="String">see you later</property>
+    <property name="hello" type="String">hello there</property>
+    <property name="hello-string" type="String">hello string</property>
+    <property name="multi-lines" type="String">
+ one 
+ two 
+</property>
+    <reference name="java.lang.Runnable/*" interface="java.lang.Runnable" bind="bind" unbind="unbind"/>
+    <reference name="java.util.concurrent.Callable/*" interface="java.util.concurrent.Callable" bind="bind" unbind="unbind"/>
+  </component>
+</container>

@@ -33,6 +33,8 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	public void execute() throws MojoFailureException {
 		try {
 
+			contextMessageClear(project.getFile());
+
 			logInfo("clean");
 			logInfo("incremental: " + isContextIncremental());
 
@@ -46,18 +48,12 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 			logDebug("");
 
 			if (folder.exists()) {
-				logDebug("folder delete : " + folder);
+				logDebug("folder deleted : " + folder);
 				FileUtils.deleteDirectory(folder);
 			}
 
-			if (!folder.exists()) {
-				logDebug("folder create : " + folder);
-				if (!folder.mkdirs()) {
-					throw new IllegalStateException("folder create failure");
-				}
-			}
-
 		} catch (final Throwable e) {
+			contextMessageError(project.getFile(), "clean failure", e);
 			throw new MojoFailureException("bada-boom", e);
 		}
 	}

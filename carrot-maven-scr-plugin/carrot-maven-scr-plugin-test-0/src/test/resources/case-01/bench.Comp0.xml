@@ -1,0 +1,14 @@
+<container xmlns="http://www.osgi.org/xmlns/scr/v1.1.0">
+  <component name="hello" factory="factory hello">
+    <implementation class="bench.Comp0"/>
+    <service servicefactory="true">
+      <provide interface="java.lang.Runnable"/>
+      <provide interface="java.util.concurrent.Executor"/>
+    </service>
+    <property name="KEY" type="String">key</property>
+    <property name="VALUE" type="String">value</property>
+    <reference name="java.lang.Cloneable/*" interface="java.lang.Cloneable" bind="bind" unbind="unbind"/>
+    <reference name="java.lang.Runnable/*" interface="java.lang.Runnable" bind="bind" unbind="unbind"/>
+    <reference name="java.util.concurrent.Executor/*" interface="java.util.concurrent.Executor" bind="bind" unbind="unbind"/>
+  </component>
+</container>

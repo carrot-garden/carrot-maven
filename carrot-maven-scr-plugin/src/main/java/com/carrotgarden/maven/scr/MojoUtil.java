@@ -99,4 +99,22 @@ public class MojoUtil {
 
 	}
 
+	/**
+	 * Ensure absolute, not relative path.
+	 */
+	public static File absolute(final File file) {
+		if (file.isAbsolute()) {
+			return file;
+		} else {
+			return file.getAbsoluteFile();
+		}
+	}
+
+	/**
+	 * Ensure absolute, not relative path.
+	 */
+	public static File absolute(final String file) {
+		return new File(file).getAbsoluteFile();
+	}
+
 }

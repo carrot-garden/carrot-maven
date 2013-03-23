@@ -15,8 +15,6 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Property;
 import org.osgi.service.component.annotations.Reference;
 
-////
-
 @Component(property = { "hello-string:String=hello string" })
 public class Comp2 extends Comp1 implements Runnable {
 
