@@ -29,7 +29,7 @@
 		<url>https://github.com/carrot-garden/carrot-maven</url>
 		<connection>scm:git:git://github.com/carrot-garden/carrot-maven.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-maven.git</developerConnection>
-		<tag>master</tag>
+		<tag>carrot-maven-scr-plugin-2.0.X</tag>
 	</scm>
 
 
