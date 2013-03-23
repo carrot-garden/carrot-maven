@@ -14,7 +14,7 @@ import org.osgi.service.component.annotations.Property;
 import org.osgi.service.component.annotations.Reference;
 
 @Component( //
-		name = "hello", factory = "factory hello", servicefactory = true)
+name = "hello", factory = "factory hello", servicefactory = true)
 public class Comp0 implements Runnable, Cloneable, Executor {
 
 	@Property

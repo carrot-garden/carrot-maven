@@ -11,8 +11,6 @@ import java.io.File;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Execute;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 
 /**
  * Clean component descriptors from {@link #outputDirectorySCR}.
@@ -33,36 +31,35 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	 */
 	@Override
 	public void execute() throws MojoFailureException {
-
 		try {
 
+			logInfo("clean");
+			logInfo("incremental: " + isContextIncremental());
+
 			if (!isProperPackaging()) {
-				getLog().info("skip for packaging=" + project.getPackaging());
+				logInfo("skip for packaging=" + project.getPackaging());
 				return;
 			}
 
-			//
-
 			final File folder = outputDirectorySCR();
 
-			getLog().info("");
+			logDebug("");
 
 			if (folder.exists()) {
-				getLog().info("folder delete : " + folder);
+				logDebug("folder delete : " + folder);
 				FileUtils.deleteDirectory(folder);
 			}
 
 			if (!folder.exists()) {
-				getLog().info("folder create : " + folder);
+				logDebug("folder create : " + folder);
 				if (!folder.mkdirs()) {
-					throw new IllegalStateException("Folder create failure.");
+					throw new IllegalStateException("folder create failure");
 				}
 			}
 
-		} catch (Throwable e) {
+		} catch (final Throwable e) {
 			throw new MojoFailureException("bada-boom", e);
 		}
-
 	}
 
 }

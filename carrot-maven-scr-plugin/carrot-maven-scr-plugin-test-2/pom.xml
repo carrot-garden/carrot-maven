@@ -1,12 +1,5 @@
-<!--
-
-    Copyright (C) 2010-2013 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
-
-    All rights reserved. Licensed under the OSI BSD License.
-
-    http://www.opensource.org/licenses/bsd-license.php
-
--->
+<!-- Copyright (C) 2010-2013 Andrei Pozolotin <Andrei.Pozolotin@gmail.com> 
+	All rights reserved. Licensed under the OSI BSD License. http://www.opensource.org/licenses/bsd-license.php -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
@@ -15,7 +8,7 @@
 	<parent>
 		<groupId>com.carrotgarden.base</groupId>
 		<artifactId>carrot-archon</artifactId>
-		<version>1.5.0</version>
+		<version>1.6.0-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 
@@ -23,7 +16,7 @@
 	<artifactId>carrot-maven-scr-plugin-test-2</artifactId>
 	<version>1.1.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
-	
+
 	<description>
 		Verify current/standard annotations.
 	</description>
@@ -34,18 +27,17 @@
 
 		<!-- Retain annotations in class only. -->
 		<projectAnnoVersion>2.0.1</projectAnnoVersion>
-		
+
 		<!-- Provides DS annotations with class retention. -->
 		<projectOsgiVersion>4.3.1</projectOsgiVersion>
 
-		<projectScrPluginVersion>2.0.0-SNAPSHOT</projectScrPluginVersion>
-
 		<projectBndPluginVersion>2.3.7</projectBndPluginVersion>
+
+		<projectScrPluginVersion>3.0.0-SNAPSHOT</projectScrPluginVersion>
 
 	</properties>
 
 	<dependencies>
-
 
 		<!-- Logging library. -->
 		<dependency>
@@ -118,31 +110,12 @@
 				<artifactId>carrot-maven-scr-plugin</artifactId>
 				<version>${projectScrPluginVersion}</version>
 				<configuration>
-					<!-- Unwanted interfaces. -->
-					<excludedServices>
-						<service>java.lang.Runnable</service>
-					</excludedServices>
-					<!-- Eclipse maven console settings. -->
-					<eclipseSettings>
-						<logBuildTimes>true</logBuildTimes>
-						<logErrorTraces>true</logErrorTraces>
-						<logExcludedServices>true</logExcludedServices>
-						<logInvocationDetails>true</logInvocationDetails>
-						<logComponentDescriptors>true</logComponentDescriptors>
-					</eclipseSettings>
+					<enableInfoLogging>true</enableInfoLogging>
 				</configuration>
 				<executions>
 					<execution>
-						<id>clean</id>
-						<phase>clean</phase>
 						<goals>
 							<goal>clean</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>generate</id>
-						<phase>process-classes</phase>
-						<goals>
 							<goal>generate</goal>
 						</goals>
 					</execution>
@@ -163,37 +136,6 @@
 
 		</plugins>
 
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.carrotgarden.maven</groupId>
-										<artifactId>carrot-maven-scr-plugin</artifactId>
-										<versionRange>[0,)</versionRange>
-										<goals>
-											<goal>generate</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-		
 	</build>
 
 </project>
