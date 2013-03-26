@@ -7,6 +7,8 @@
  */
 package com.barchart.karaf.test.api;
 
+//
+
 public interface HealthReport {
 
 	/**

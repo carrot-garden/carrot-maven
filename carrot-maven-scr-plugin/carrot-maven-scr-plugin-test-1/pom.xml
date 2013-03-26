@@ -39,6 +39,19 @@
 
 	<dependencies>
 
+		<!-- date/time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+
+		<!-- servlet -->
+		<dependency>
+			<groupId>org.apache.geronimo.specs</groupId>
+			<artifactId>geronimo-servlet_3.0_spec</artifactId>
+			<version>1.0</version>
+		</dependency>
+
 		<!-- Logging library. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
