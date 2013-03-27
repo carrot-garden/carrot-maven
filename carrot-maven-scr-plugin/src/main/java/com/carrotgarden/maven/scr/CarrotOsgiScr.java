@@ -281,13 +281,6 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	}
 
 	/**
-	 * Report generated file back to Eclipse.
-	 */
-	protected void contextRefresh(final File file) {
-		buildContext.refresh(absolute(file));
-	}
-
-	/**
 	 * Clear Eclipse error log entry.
 	 */
 	protected void contextMessageClear(final File file) {
@@ -301,6 +294,13 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 			final Throwable cause) {
 		buildContext.addMessage(absolute(file), 0, 0, message,
 				BuildContext.SEVERITY_ERROR, cause);
+	}
+
+	/**
+	 * Report generated file back to Eclipse.
+	 */
+	protected void contextRefresh(final File file) {
+		buildContext.refresh(absolute(file));
 	}
 
 	/**
@@ -369,6 +369,13 @@ public abstract class CarrotOsgiScr extends AbstractMojo {
 	protected File outputDirectorySCR() {
 		return absolute(new File(absolute(outputMainClasses),
 				targetDirectorySCR));
+	}
+
+	/**
+	 * Current project pom.xml file.
+	 */
+	protected File pomFile() {
+		return project.getFile();
 	}
 
 }

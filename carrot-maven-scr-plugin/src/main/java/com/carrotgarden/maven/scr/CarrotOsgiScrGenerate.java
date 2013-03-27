@@ -57,7 +57,7 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	public void execute() throws MojoFailureException {
 		try {
 
-			contextMessageClear(project.getFile());
+			contextMessageClear(pomFile());
 
 			logInfo("generate");
 			logInfo("incremental: " + isContextIncremental());
@@ -70,9 +70,10 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			final File folder = outputDirectorySCR();
 			if (!folder.exists()) {
 				logDebug("");
-				logDebug("folder created : " + folder);
-				if (!folder.mkdirs()) {
-					throw new IllegalStateException("folder create failure");
+				if (folder.mkdirs()) {
+					logDebug("folder created : " + folder);
+				} else {
+					logError("failed to create folder : " + folder);
 				}
 			}
 
@@ -126,7 +127,9 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 			logDebug("rate, millis per descr = " + timeRate / 1000 / 1000);
 
 		} catch (final Throwable e) {
-			contextMessageError(project.getFile(), "generate failure", e);
+			final String message = "generate failure: " + e;
+			logError(message);
+			contextMessageError(pomFile(), message, e);
 			throw new MojoFailureException("bada-boom", e);
 		}
 	}

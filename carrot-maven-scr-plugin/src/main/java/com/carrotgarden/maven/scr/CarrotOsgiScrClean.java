@@ -33,7 +33,7 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 	public void execute() throws MojoFailureException {
 		try {
 
-			contextMessageClear(project.getFile());
+			contextMessageClear(pomFile());
 
 			logInfo("clean");
 			logInfo("incremental: " + isContextIncremental());
@@ -53,7 +53,9 @@ public class CarrotOsgiScrClean extends CarrotOsgiScr {
 			}
 
 		} catch (final Throwable e) {
-			contextMessageError(project.getFile(), "clean failure", e);
+			final String message = "clean failure: " + e;
+			logError(message);
+			contextMessageError(pomFile(), message, e);
 			throw new MojoFailureException("bada-boom", e);
 		}
 	}
