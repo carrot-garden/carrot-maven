@@ -135,12 +135,25 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 	}
 
 	/**
-	 * Attach DS descriptor folder resource to the final jar.
+	 * Check if resource with given target path is present in the list.
+	 */
+	protected boolean hasResource(final Resource resource,
+			final List<Resource> resourceList) {
+		for (final Resource existing : resourceList) {
+			if (resource.getTargetPath().equals(existing.getTargetPath())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Attach DS descriptor resource folder to the final jar.
 	 */
 	protected void includeDescriptorResource() {
 
 		if (isContextIncremental()) {
-			logDebug("skip including descriptor resource for incremental build");
+			logDebug("do not include descriptor resource for incremental build");
 			return;
 		}
 
@@ -151,19 +164,16 @@ public class CarrotOsgiScrGenerate extends CarrotOsgiScr {
 		resource.setDirectory(sourcePath);
 		resource.setTargetPath(targetPath);
 
-		logDebug("");
-		logDebug("including descriptor resource = " + resource);
-
 		final List<Resource> resourceList = project.getResources();
 
-		for (final Resource existing : resourceList) {
-			if (resource.getTargetPath().equals(existing.getTargetPath())) {
-				logDebug("overriding descriptor resource = " + existing);
-				resourceList.remove(existing);
-			}
+		logDebug("");
+		if (hasResource(resource, resourceList)) {
+			logDebug("use existing descriptor resource = " + resource);
+			return;
+		} else {
+			logDebug("include created descriptor resource = " + resource);
+			resourceList.add(resource);
 		}
-
-		resourceList.add(resource);
 
 	}
 
