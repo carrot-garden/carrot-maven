@@ -9,10 +9,14 @@ package com.carrotgarden.maven.aws.cfn;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.apache.maven.settings.Proxy;
 import org.slf4j.Logger;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.cloudformation.AmazonCloudFormation;
 import com.amazonaws.services.cloudformation.AmazonCloudFormationAsyncClient;
@@ -54,10 +58,12 @@ public class CarrotCloudForm {
 
 	private final long waitBetweenAttempts;
 
+	private final List<String> awsCapabilities;
+
 	public CarrotCloudForm(final Logger logger, final String stackName,
 			final String stackTemplate, final Map<String, String> stackParams,
 			final long timeout, final AWSCredentials credentials,
-			final String endpoint) {
+			final String endpoint, List<String> awsCapabilities, final List<Proxy> proxies) {
 
 		this.logger = logger;
 
@@ -70,10 +76,12 @@ public class CarrotCloudForm {
 		this.timeout = timeout;
 
 		this.endpoint = endpoint;
+		
+		this.awsCapabilities = awsCapabilities;
 
 		this.waitBetweenAttempts = 10; // query every 10s
 
-		this.amazonClient = newClient(); // keep last
+		this.amazonClient = newClient(proxies); // keep last
 
 	}
 
@@ -135,10 +143,35 @@ public class CarrotCloudForm {
 
 	}
 
-	private AmazonCloudFormation newClient() {
+	private AmazonCloudFormation newClient(final List<Proxy> proxies) {
 
-		final AmazonCloudFormation amazonClient = new AmazonCloudFormationAsyncClient(
+		ClientConfiguration config = new ClientConfiguration();
+		if (!proxies.isEmpty()) {
+			final Proxy proxy = proxies.get(0);
+			if (proxies.size() > 1) {
+				logger.warn(
+						"More than one proxy specified; using the first one [{}]",
+						proxy.getHost());
+			}
+			config.setProxyHost(proxy.getHost());
+			config.setProxyPort(proxy.getPort());
+			config.setProxyUsername(proxy.getUsername());
+			config.setProxyPassword(proxy.getPassword());
+			final String protocol = proxy.getProtocol();
+			if (null != protocol) {
+				config.setProtocol(Protocol.valueOf(protocol
+						.toUpperCase(Locale.ENGLISH)));
+			}
+			/*
+			 *  This setup ignores nonProxyHosts, unfortunately. However, the
+			 *  target of the HTTP requests is always going to be AWS's servers,
+			 *  and you probably wouldn't have specified that in nonProxyHosts anyway.
+			 */
+		}
+
+		final AmazonCloudFormationAsyncClient amazonClient = new AmazonCloudFormationAsyncClient(
 				credentials);
+		amazonClient.setConfiguration(config);
 
 		logger.info("stack endpoint : {}", endpoint);
 
@@ -226,6 +259,7 @@ public class CarrotCloudForm {
 		request.withStackName(name);
 		request.withParameters(paramList);
 		request.withTemplateBody(template);
+		request.setCapabilities(awsCapabilities);
 
 		amazonClient.createStack(request);
 
