@@ -10,10 +10,12 @@ package com.carrotgarden.maven.aws.cfn;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.settings.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,8 @@ public class TestCarrotCloudForm {
 		//
 
 		final CarrotCloudForm formation = new CarrotCloudForm(logger, stackName,
-				stackTemplate, stackParams, timeout, credentials, null);
+				stackTemplate, stackParams, timeout, credentials, null, 
+				Collections.<String>emptyList(), Collections.<Proxy>emptyList());
 
 		formation.stackCreate();
 

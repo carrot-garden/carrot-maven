@@ -8,6 +8,7 @@
 package com.carrotgarden.maven.aws.cfn;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -115,6 +116,15 @@ public abstract class CloudForm extends CarrotMojo {
 		return amazonEndpoint(stackEndpoint, stackEndpintFormat);
 	}
 
+
+	/**
+	 * AWS CloudFormation capabilities. You must set this to include "CAPABILITY_IAM"
+	 * if your stack creates IAM resources. 
+	 * 
+	 * @parameter 
+	 */
+	protected List<String> capabilities;
+	
 	//
 
 	protected Map<String, String> loadPluginProperties() throws Exception {
@@ -170,10 +180,10 @@ public abstract class CloudForm extends CarrotMojo {
 
 		final long stackTimeout = Util.safeNumber(getLog(), this.stackTimeout,
 				600);
-
+		
 		final CarrotCloudForm formation = new CarrotCloudForm(logger,
 				stackName(), stackTemplate, stackParams, stackTimeout,
-				credentials, stackEndpoint());
+				credentials, stackEndpoint(), capabilities, settings().getProxies());
 
 		return formation;
 
