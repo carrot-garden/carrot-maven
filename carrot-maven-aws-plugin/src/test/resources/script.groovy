@@ -22,5 +22,7 @@ def result = "result"
 
 println "result = $result"
 
+log.info "testing the logger"
+
 return result
  

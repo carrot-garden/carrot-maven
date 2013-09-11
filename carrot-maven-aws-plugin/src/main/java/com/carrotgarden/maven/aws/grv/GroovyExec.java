@@ -59,7 +59,7 @@ public class GroovyExec extends GroovyBase {
 
 			if (groovyText != null && groovyText.length() != 0) {
 
-				getLog().info("groovy exec text : " + singleLine(groovyText));
+				getLog().info("groovy exec text : " + (logText? singleLine(groovyText): "[suppressed]"));
 
 				runner.execute(groovyText);
 

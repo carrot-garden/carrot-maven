@@ -35,6 +35,14 @@ public abstract class GroovyBase extends CarrotMojo {
 	 * @parameter default-value=""
 	 */
 	protected String groovyText;
+	
+	/**
+	 * whether to log the script text during the build (The script might be long,
+	 * or contain sensitive data)
+	 * 
+	 * @parameter default-value="true"
+	 */
+	protected boolean logText;
 
 	/**
 	 * should load all system properties from {@link System#getenv()}
@@ -72,7 +80,7 @@ public abstract class GroovyBase extends CarrotMojo {
 
 		final MavenProject project = new MavenProjectAdaptor(mavenProps);
 
-		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project, getLog());
 
 		return runner;
 
