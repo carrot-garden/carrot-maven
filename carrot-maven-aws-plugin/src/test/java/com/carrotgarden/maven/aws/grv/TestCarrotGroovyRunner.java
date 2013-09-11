@@ -14,8 +14,10 @@ import java.io.File;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestCarrotGroovyRunner {
 
@@ -31,7 +33,7 @@ public class TestCarrotGroovyRunner {
 
 		when(project.getProperties()).thenReturn(properties);
 
-		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project, Mockito.mock(Log.class));
 
 		final File script = new File("./src/test/resources/script.groovy");
 
@@ -40,7 +42,7 @@ public class TestCarrotGroovyRunner {
 		assertEquals(result, "result");
 
 		assertEquals(properties.get("prop-key"), "prop-value-2");
-
+		
 	}
 
 	@Test
@@ -55,7 +57,7 @@ public class TestCarrotGroovyRunner {
 
 		when(project.getProperties()).thenReturn(properties);
 
-		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project);
+		final CarrotGroovyRunner runner = new CarrotGroovyRunner(project, Mockito.mock(Log.class));
 
 		final File file = new File("./src/test/resources/script.groovy");
 
