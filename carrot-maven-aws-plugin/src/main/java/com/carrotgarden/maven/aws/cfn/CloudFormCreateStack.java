@@ -15,6 +15,7 @@ import java.util.Properties;
 
 import org.apache.maven.plugin.MojoFailureException;
 
+import com.amazonaws.services.cloudformation.model.OnFailure;
 import com.amazonaws.services.cloudformation.model.Output;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackStatus;
@@ -136,6 +137,11 @@ public class CloudFormCreateStack extends CloudForm {
 	 * @parameter default-value="true"
 	 */
 	protected boolean stackIsPersistOutputProperties;
+	
+	/**
+	 * @parameter default-value="ROLLBACK"
+	 */
+	protected OnFailure onFailure;
 
 	/**
 	 * {@inheritDoc}
@@ -161,7 +167,7 @@ public class CloudFormCreateStack extends CloudForm {
 
 			formation.logParamList();
 
-			final Stack stack = formation.stackCreate();
+			final Stack stack = formation.stackCreate(onFailure);
 
 			final StackStatus status = StackStatus.fromValue(stack
 					.getStackStatus());
