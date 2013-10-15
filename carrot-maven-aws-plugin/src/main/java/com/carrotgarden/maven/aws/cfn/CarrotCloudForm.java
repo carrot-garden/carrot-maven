@@ -22,6 +22,7 @@ import com.amazonaws.services.cloudformation.model.DescribeStackEventsRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStackEventsResult;
 import com.amazonaws.services.cloudformation.model.DescribeStacksRequest;
 import com.amazonaws.services.cloudformation.model.DescribeStacksResult;
+import com.amazonaws.services.cloudformation.model.OnFailure;
 import com.amazonaws.services.cloudformation.model.Parameter;
 import com.amazonaws.services.cloudformation.model.Stack;
 import com.amazonaws.services.cloudformation.model.StackEvent;
@@ -72,6 +73,7 @@ public class CarrotCloudForm {
 		this.endpoint = endpoint;
 
 		this.waitBetweenAttempts = 10; // query every 10s
+		
 
 		this.amazonClient = newClient(); // keep last
 
@@ -219,13 +221,14 @@ public class CarrotCloudForm {
 
 	/**
 	 */
-	public Stack stackCreate() throws Exception {
+	public Stack stackCreate(final OnFailure onFailure) throws Exception {
 
 		final CreateStackRequest request = new CreateStackRequest();
 
 		request.withStackName(name);
 		request.withParameters(paramList);
 		request.withTemplateBody(template);
+		request.setOnFailure(onFailure);
 
 		amazonClient.createStack(request);
 

@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.cloudformation.model.OnFailure;
 
 public class TestCarrotCloudForm {
 
@@ -49,7 +50,7 @@ public class TestCarrotCloudForm {
 		final CarrotCloudForm formation = new CarrotCloudForm(logger, stackName,
 				stackTemplate, stackParams, timeout, credentials, null);
 
-		formation.stackCreate();
+		formation.stackCreate(OnFailure.ROLLBACK);
 
 		assertTrue(true);
 
