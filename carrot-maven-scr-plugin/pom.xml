@@ -39,7 +39,7 @@
 
 		<projectAnnoVersion>2.0.2</projectAnnoVersion>
 
-		<projectAsmVersion>4.1</projectAsmVersion>
+		<projectAsmVersion>5.0.2</projectAsmVersion>
 
 		<projectOsgiVersion>4.3.1</projectOsgiVersion>
 
